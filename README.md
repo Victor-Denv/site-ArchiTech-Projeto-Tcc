@@ -68,13 +68,13 @@ Para executar o projeto em sua máquina, basta clonar o repositório e abrir o a
 
 Este projeto é o resultado da colaboração e do esforço de uma equipe dedicada. Agradecimentos especiais a todos os envolvidos:
 
-* 🎨 **Protótipo e Design Visual:** **Adriane Barreto** - [LinkedIn](https://www.linkedin.com/in/seu-usuario/)
+* 🎨 **Protótipo e Design Visual:** **Adriane Barreto** - [GitHub](https://www.linkedin.com/in/seu-usuario/)
     * Idealizou e **criou no Canva** o protótipo que serviu como base e inspiração visual para toda a interface.
 
-* 💻 **Desenvolvimento Principal (Front-End):** **Vitor Lopes** - [GitHub](https://github.com/seu-usuario) | [LinkedIn](https://www.linkedin.com/in/seu-usuario/)
+* 💻 **Desenvolvimento Principal (Front-End):** **Vitor Lopes** - [GitHub](https://github.com/Victor-Denv) | 
     * Responsável pela codificação da maior parte da estrutura HTML, CSS e interações em JavaScript.
 
-* 🤝 **Contribuição no Desenvolvimento:** **Ana Luiza** - [GitHub](https://github.com/seu-usuario) | [LinkedIn](https://www.linkedin.com/in/seu-usuario/)
+* 🤝 **Contribuição no Desenvolvimento:** **Ana Luiza** - [GitHub](https://github.com/seu-usuario) |
     * Auxiliou em partes do código, colaborando com ajustes e contribuindo para a finalização do projeto.
 
 ---
