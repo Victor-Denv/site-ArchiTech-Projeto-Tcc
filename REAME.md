@@ -22,7 +22,7 @@ O layout final busca ser fiel à visão original do protótipo, com uma estrutur
 
 O projeto está hospedado na plataforma **Vercel** e pode ser acessado publicamente através do seguinte link:
 
-**[➡️ Acessar o Dashboard Architech](https://site-projeto-tcc.vercel.app/)**
+**[➡️ Acessar o Dashboard Architech](https://site-archi-tech-projeto-tcc.vercel.app/)**
 
 #### Execução Local
 
