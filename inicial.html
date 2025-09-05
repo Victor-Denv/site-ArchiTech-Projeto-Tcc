@@ -12,7 +12,14 @@
 </head>
 <body>
 
-    <div class="painel-container">
+    <div id="splash-screen">
+        <div class="splash-content">
+            <i class="fa-solid fa-layer-group"></i>
+            <h1>ARCHITECH</h1>
+            <div class="loader"></div>
+        </div>
+    </div>
+    <div class="painel-container" id="main-content" style="display: none;">
         <aside class="barra-lateral-esquerda">
             <div class="logotipo">
                 <i class="fa-solid fa-layer-group"></i>
@@ -30,9 +37,9 @@
             </nav>
             <div class="rodape-barra-lateral">
                 <ul>
-                     <li><a href="#"><i class="fa-solid fa-user"></i> Conta</a></li>
-                     <li><a href="#"><i class="fa-solid fa-right-from-bracket"></i> Sair</a></li>
-                     <li><a href="#"><i class="fa-solid fa-circle-question"></i> Ajuda</a></li>
+                      <li><a href="#"><i class="fa-solid fa-user"></i> Conta</a></li>
+                      <li><a href="#"><i class="fa-solid fa-right-from-bracket"></i> Sair</a></li>
+                      <li><a href="#"><i class="fa-solid fa-circle-question"></i> Ajuda</a></li>
                 </ul>
             </div>
         </aside>
@@ -162,15 +169,15 @@
                     <div class="conteudo-mensagem">
                         <div class="cabecalho-mensagem">
                             <strong>DataLia</strong>
-                    
                         </div>
-                        
                         <p>Oi, eu sou a DataLia, sua assistente IA de CAD. Como posso te ajudar hoje?</p>
-                        
                     </div>
                 </div>
             </section>
 
-        </aside> </div> 
-     <script src="inicial.js"></script>
-    </body>
+        </aside> 
+    </div> 
+    
+    <script src="inicial.js"></script>
+</body>
+</html>
