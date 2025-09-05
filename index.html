@@ -3,174 +3,186 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Architech</title>
-    <link rel="stylesheet" href="style.css">
+    <title>ArchiTech - Gestão Inteligente de Documentos</title>
+    
+    <!-- Tailwind CSS (Framework de Estilo) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts: Poppins -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-</head>
-<body>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Ícones (Feather Icons) -->
+    <script src="https://unpkg.com/feather-icons"></script>
 
-    <div class="painel-container">
-        <aside class="barra-lateral-esquerda">
-            <div class="logotipo">
-                <i class="fa-solid fa-layer-group"></i>
-                <h1>ARCHITECH</h1>
+    <!-- Nosso CSS Customizado (DEVE VIR DEPOIS DO TAILWIND) -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="text-white">
+
+    <!-- =========== TELA DE LOGIN =========== -->
+    <div id="login-page" class="min-h-screen flex items-center justify-center bg-gradient-custom p-4">
+        <div class="w-full max-w-md">
+            <div class="text-center mb-8">
+                <h1 class="text-4xl font-bold text-white">ArchiTech</h1>
+                <p class="text-purple-200 mt-2">Gestão inteligente para seus documentos.</p>
             </div>
-            <nav class="menu-navegacao">
-                <ul>
-                    <li class="ativo"><a href="#"><i class="fa-solid fa-house"></i> Início</a></li>
-                    <li><a href="#"><i class="fa-solid fa-chart-pie"></i> Relatório de gestão</a></li>
-                    <li><a href="#"><i class="fa-solid fa-robot"></i> Automação de documentos</a></li>
-                    <li><a href="#"><i class="fa-solid fa-message"></i> Mensagem</a></li>
-                    <li><a href="#"><i class="fa-solid fa-shield-halved"></i> Segurança e Compliance</a></li>
-                    <li><a href="#"><i class="fa-solid fa-gear"></i> Configuração</a></li>
-                </ul>
-            </nav>
-            <div class="rodape-barra-lateral">
-                <ul>
-                     <li><a href="#"><i class="fa-solid fa-user"></i> Conta</a></li>
-                     <li><a href="#"><i class="fa-solid fa-right-from-bracket"></i> Sair</a></li>
-                     <li><a href="#"><i class="fa-solid fa-circle-question"></i> Ajuda</a></li>
-                </ul>
+
+            <div class="glassmorphism p-8 rounded-2xl shadow-2xl">
+                <h2 class="text-2xl font-semibold text-center mb-6">Acesse sua conta</h2>
+                <form id="login-form">
+                    <div class="mb-4">
+                        <label for="email" class="block mb-2 text-sm font-medium text-gray-300">Email</label>
+                        <input type="email" id="email" class="form-input w-full" placeholder="seuemail@exemplo.com" required>
+                    </div>
+                    <div class="mb-6">
+                        <label for="password" class="block mb-2 text-sm font-medium text-gray-300">Senha</label>
+                        <input type="password" id="password" class="form-input w-full" placeholder="••••••••" required>
+                    </div>
+                    <div class="flex items-center justify-between mb-6">
+                        <a href="#" class="text-sm text-purple-300 hover:underline">Esqueceu a senha?</a>
+                    </div>
+                    <button type="submit" class="w-full btn-primary text-white font-bold py-3 px-4 rounded-lg focus:outline-none focus:shadow-outline">
+                        Entrar
+                    </button>
+                    <p class="text-center text-sm text-gray-400 mt-6">
+                        Não tem uma conta? <a href="#" class="text-purple-300 hover:underline font-medium">Cadastre-se</a>
+                    </p>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- =========== PÁGINA PRINCIPAL DA APLICAÇÃO (APÓS LOGIN) =========== -->
+    <div id="app-page" class="flex min-h-screen bg-gradient-custom">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-black bg-opacity-20 p-6 flex flex-col justify-between">
+            <div>
+                <h1 class="text-2xl font-bold mb-10">ArchiTech</h1>
+                <nav class="flex flex-col space-y-2">
+                    <a href="#" id="nav-dashboard" class="flex items-center p-3 rounded-lg text-white">
+                        <i data-feather="grid" class="w-5 h-5 mr-3"></i>
+                        Dashboard
+                    </a>
+                    <a href="#" id="nav-settings" class="flex items-center p-3 rounded-lg hover:bg-white hover:bg-opacity-10">
+                        <i data-feather="settings" class="w-5 h-5 mr-3"></i>
+                        Configurações
+                    </a>
+                </nav>
+            </div>
+            <div>
+                 <a href="#" id="nav-logout" class="flex items-center p-3 rounded-lg hover:bg-white hover:bg-opacity-10 text-red-400">
+                    <i data-feather="log-out" class="w-5 h-5 mr-3"></i>
+                    Sair
+                </a>
             </div>
         </aside>
 
-        <main class="conteudo-principal">
-            <header class="cabecalho-principal">
-                <div class="barra-pesquisa">
-                    <i class="fa-solid fa-search"></i>
-                    <input type="text" placeholder="Pesquisar">
+        <!-- Conteúdo Principal -->
+        <main class="flex-1 p-8">
+            <!-- TELA DE CADASTRO DE ARQUIVOS (DASHBOARD) -->
+            <div id="dashboard-content">
+                <h2 class="text-3xl font-bold mb-8">Cadastro e Busca de Arquivos</h2>
+                
+                <!-- Área de Upload -->
+                <div class="glassmorphism rounded-2xl p-8 mb-8">
+                    <h3 class="text-xl font-semibold mb-4">Adicionar novos documentos</h3>
+                    <div id="drop-zone" class="border-2 border-dashed border-gray-500 rounded-lg p-10 text-center cursor-pointer transition">
+                        <i data-feather="upload-cloud" class="w-16 h-16 mx-auto text-gray-400 mb-4"></i>
+                        <p class="text-gray-300">Arraste e solte os arquivos aqui</p>
+                        <p class="text-gray-500 text-sm my-2">ou</p>
+                        <label for="file-upload" class="cursor-pointer inline-block btn-primary text-white font-semibold py-2 px-4 rounded-lg">
+                            Selecione os arquivos
+                        </label>
+                        <input id="file-upload" type="file" multiple class="hidden">
+                    </div>
+                     <div id="file-list" class="mt-4 space-y-2"></div>
                 </div>
-                <div class="icones-cabecalho">
-                    <i class="fa-solid fa-sliders"></i>
-                    <i class="fa-solid fa-bell"></i>
-                </div>
-            </header>
 
-            <section class="banner-destaque">
-                <h2>Arquivista, veja algumas das atualizações do nosso acervo enquanto você esteve fora...</h2>
-                <button class="botao-principal">Saiba mais</button>
-            </section>
-
-            <section class="acesso-rapido">
-                <div class="cabecalho-secao">
-                    <h3>Acesso rápido</h3>
-                    <a href="#" class="botao-ver-tudo">ver tudo</a>
-                </div>
-                <div class="grade-cartoes">
-                    <div class="item-cartao cartao-ativo">
-                        <i class="fa-solid fa-building-columns"></i>
-                        <span>O arquivo</span>
+                <!-- Lista de Arquivos Recentes -->
+                <div>
+                    <h3 class="text-xl font-semibold mb-4">Documentos Recentes</h3>
+                    <div class="glassmorphism rounded-2xl overflow-hidden">
+                        <table class="w-full text-left">
+                            <thead class="bg-black bg-opacity-20">
+                                <tr>
+                                    <th class="p-4">Nome do Arquivo</th>
+                                    <th class="p-4">Data de Upload</th>
+                                    <th class="p-4">Status</th>
+                                    <th class="p-4">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Exemplo de arquivo -->
+                                <tr class="border-b border-white border-opacity-10">
+                                    <td class="p-4 flex items-center"><i data-feather="file-text" class="w-5 h-5 mr-3 text-purple-400"></i> Relatorio_Financeiro_Q3.pdf</td>
+                                    <td class="p-4">05/09/2025</td>
+                                    <td class="p-4"><span class="bg-green-500 text-white px-2 py-1 text-xs rounded-full">Categorizado</span></td>
+                                    <td class="p-4"><button class="text-gray-400 hover:text-white"><i data-feather="more-horizontal"></i></button></td>
+                                </tr>
+                                 <tr class="border-b border-white border-opacity-10">
+                                    <td class="p-4 flex items-center"><i data-feather="file-text" class="w-5 h-5 mr-3 text-purple-400"></i> Contrato_Novo_Cliente.docx</td>
+                                    <td class="p-4">04/09/2025</td>
+                                    <td class="p-4"><span class="bg-yellow-500 text-white px-2 py-1 text-xs rounded-full">Pendente</span></td>
+                                    <td class="p-4"><button class="text-gray-400 hover:text-white"><i data-feather="more-horizontal"></i></button></td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
-                    <div class="item-cartao">
-                        <i class="fa-solid fa-user-tie"></i>
-                        <span>A arquivista</span>
-                    </div>
-                    <div class="item-cartao">
-                        <i class="fa-solid fa-calendar-days"></i>
-                        <span>Visitas agendadas</span>
-                    </div>
-                    <div class="item-cartao">
-                        <i class="fa-solid fa-chart-line"></i>
-                        <span>Painel de controle</span>
-                    </div>
-                    <div class="item-cartao">
-                        <i class="fa-solid fa-lock"></i>
-                        <span>Segurança da Informação</span>
-                    </div>
-                </div>
-            </section>
-
-            <section class="outras-unidades">
-                 <div class="cabecalho-secao">
-                    <h3>Outras unidades de arquivo</h3>
-                    <a href="#" class="botao-ver-tudo">ver tudo</a>
-                </div>
-                <div class="espaco-mapa">
-                    <p>Mapa interativo aqui</p>
-                </div>
-            </section>
-        </main>
-
-        <aside class="barra-lateral-direita">
-            <div class="secao-perfil">
-                <img src="https://i.pravatar.cc/50?u=jisoo" alt="Foto de Jisoo Kim">
-                <div class="info-perfil">
-                    <h4>Jisoo Kim</h4>
-                    <span>Arquivista</span>
                 </div>
             </div>
-
-            <section class="secao-agenda">
-                <div class="cabecalho-secao">
-                    <h4>Agenda</h4>
-                    <i class="fa-solid fa-ellipsis"></i>
-                </div>
-                <div class="datas-agenda">
-                    <div class="cartao-data">
-                        <span>2024</span>
-                        <strong>20</strong>
-                        <span>Julho</span>
+            
+            <!-- TELA DE CONFIGURAÇÕES -->
+            <div id="settings-content">
+                 <h2 class="text-3xl font-bold mb-8">Configurações</h2>
+                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <!-- Perfil do Usuário -->
+                    <div class="glassmorphism rounded-2xl p-8">
+                        <h3 class="text-xl font-semibold mb-6">Perfil</h3>
+                        <form>
+                            <div class="mb-4">
+                                <label for="profile-name" class="block mb-2 text-sm font-medium text-gray-300">Nome</label>
+                                <input type="text" id="profile-name" class="form-input w-full" value="Usuário ArchiTech" required>
+                            </div>
+                            <div class="mb-6">
+                                <label for="profile-email" class="block mb-2 text-sm font-medium text-gray-300">Email</label>
+                                <input type="email" id="profile-email" class="form-input w-full" value="usuario@architech.com" required>
+                            </div>
+                            <button type="submit" class="w-full md:w-auto btn-primary text-white font-bold py-2 px-6 rounded-lg">
+                                Salvar Alterações
+                            </button>
+                        </form>
                     </div>
-                     <div class="cartao-data">
-                        <span>2025</span>
-                        <strong>18</strong>
-                        <span>Agosto</span>
+
+                    <!-- Alterar Senha -->
+                    <div class="glassmorphism rounded-2xl p-8">
+                        <h3 class="text-xl font-semibold mb-6">Alterar Senha</h3>
+                        <form>
+                            <div class="mb-4">
+                                <label for="current-password" class="block mb-2 text-sm font-medium text-gray-300">Senha Atual</label>
+                                <input type="password" id="current-password" class="form-input w-full" required>
+                            </div>
+                             <div class="mb-4">
+                                <label for="new-password" class="block mb-2 text-sm font-medium text-gray-300">Nova Senha</label>
+                                <input type="password" id="new-password" class="form-input w-full" required>
+                            </div>
+                            <div class="mb-6">
+                                <label for="confirm-password" class="block mb-2 text-sm font-medium text-gray-300">Confirmar Nova Senha</label>
+                                <input type="password" id="confirm-password" class="form-input w-full" required>
+                            </div>
+                            <button type="submit" class="w-full md:w-auto btn-primary text-white font-bold py-2 px-6 rounded-lg">
+                                Alterar Senha
+                            </button>
+                        </form>
                     </div>
-                </div>
-            </section>
+                 </div>
+            </div>
+        </main>
+    </div>
 
-            <section class="atividades-disponiveis">
-                 <div class="cabecalho-secao">
-                    <h4>Atividades disponíveis</h4>
-                    <i class="fa-solid fa-ellipsis"></i>
-                </div>
-                <ul>
-                    <li class="item-atividade destacado">
-                        <div class="fundo-icone"><i class="fa-solid fa-book-open"></i></div>
-                        <div class="info-atividade">
-                            <strong>Curso de Restauração</strong>
-                            <span>Profa Dra Alice Duha</span>
-                        </div>
-                    </li>
-                    <li class="item-atividade">
-                        <div class="fundo-icone"><i class="fa-solid fa-landmark"></i></div>
-                        <div class="info-atividade">
-                            <strong>Conhecendo o Arquivo</strong>
-                            <span>Arq. Louise Anunciação</span>
-                        </div>
-                    </li>
-                    <li class="item-atividade">
-                        <div class="fundo-icone"><i class="fa-solid fa-heart-pulse"></i></div>
-                        <div class="info-atividade">
-                            <strong>O que são arquivos de saúde?</strong>
-                            <span>Prof Ilara Moraes</span>
-                        </div>
-                    </li>
-                </ul>
-            </section>
+    <!-- Nosso JavaScript -->
+    <script src="script.js"></script>
+</body>
+</html>
 
-            <section class="secao-mensagem">
-                <div class="cabecalho-secao">
-                    <h4>Message</h4>
-                    <i class="fa-solid fa-ellipsis"></i>
-                </div>
-                <div class="preview-mensagem">
-                    <img src="https://i.pravatar.cc/40?u=datalia" alt="Avatar DataLia">
-                    <div class="conteudo-mensagem">
-                        <div class="cabecalho-mensagem">
-                            <strong>DataLia</strong>
-                    
-                        </div>
-                        
-                        <p>Oi, eu sou a DataLia, sua assistente IA de CAD. Como posso te ajudar hoje?</p>
-                        
-                    </div>
-                </div>
-            </section>
-
-        </aside> </div> 
-     <script src="script.js"></script>
-    </body>
