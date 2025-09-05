@@ -18,23 +18,23 @@
 }
 
 /* Container principal da área de configurações */
-.configuracoes-container {
+.settings-container {
     display: flex;
     gap: 30px;
     align-items: flex-start;
 }
 
 /* Menu lateral das configurações */
-.menu-configuracoes {
+.settings-menu {
     flex-basis: 220px; /* Largura do menu */
     flex-shrink: 0;
 }
 
-.menu-configuracoes ul {
+.settings-menu ul {
     list-style: none;
 }
 
-.menu-configuracoes ul li a {
+.settings-menu ul li a {
     display: flex;
     align-items: center;
     gap: 12px;
@@ -46,26 +46,26 @@
     border-left: 3px solid transparent;
 }
 
-.menu-configuracoes ul li a:hover {
+.settings-menu ul li a:hover {
     background-color: var(--background-color);
 }
 
 /* Estilo do item ativo no menu de configurações */
-.menu-configuracoes ul li.ativo a {
+.settings-menu ul li.active a {
     color: var(--primary-purple);
     font-weight: 600;
     border-left: 3px solid var(--primary-purple);
 }
 
 /* Área de conteúdo à direita */
-.conteudo-configuracoes {
+.settings-content {
     flex-grow: 1;
     background-color: var(--card-background);
     border-radius: 15px;
     padding: 30px;
 }
 
-.conteudo-configuracoes h2 {
+.settings-content h2 {
     font-size: 1.5rem;
     padding-bottom: 15px;
     margin-bottom: 25px;
@@ -73,27 +73,27 @@
 }
 
 /* Seção do Perfil (Nome + Foto) */
-.bloco-perfil {
+.profile-section {
     display: flex;
     gap: 30px;
     margin-bottom: 20px;
 }
-.detalhes-perfil {
+.profile-details {
     flex-grow: 1;
 }
-.area-foto-perfil {
+.profile-pic-area {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 10px;
 }
-.area-foto-perfil img {
+.profile-pic-area img {
     width: 100px;
     height: 100px;
     border-radius: 50%;
     object-fit: cover;
 }
-.area-foto-perfil .botao-editar {
+.profile-pic-area .btn-edit {
     width: 100%;
     padding: 8px;
     border-radius: 8px;
@@ -103,19 +103,20 @@
     font-weight: 500;
 }
 
+
 /* Estilo geral para grupos de formulário */
-.grupo-formulario {
+.form-group {
     margin-bottom: 25px;
 }
 
-.grupo-formulario label {
+.form-group label {
     display: block;
     font-weight: 600;
     margin-bottom: 8px;
 }
 
-.grupo-formulario input,
-.grupo-formulario textarea {
+.form-group input,
+.form-group textarea {
     width: 100%;
     padding: 12px;
     border: 1px solid var(--border-color);
@@ -124,21 +125,21 @@
     font-family: var(--font-family);
     background-color: var(--background-color);
 }
-.grupo-formulario input:focus,
-.grupo-formulario textarea:focus {
+.form-group input:focus,
+.form-group textarea:focus {
     outline: none;
     border-color: var(--primary-purple);
     box-shadow: 0 0 0 2px var(--light-purple);
 }
 
-.grupo-formulario .texto-ajuda {
+.form-group .helper-text {
     font-size: 0.85rem;
     color: var(--text-light);
     margin-top: 8px;
 }
 
 /* Botão de salvar */
-.botao-salvar {
+.btn-save {
     background-color: var(--primary-purple);
     color: var(--text-white);
     border: none;
@@ -151,6 +152,6 @@
     display: inline-block; /* Para não ocupar a largura toda */
     margin-top: 10px;
 }
-.botao-salvar:hover {
+.btn-save:hover {
     transform: scale(1.05);
 }

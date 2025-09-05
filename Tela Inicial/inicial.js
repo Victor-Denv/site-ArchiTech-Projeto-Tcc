@@ -1,66 +1,58 @@
 // --- SCRIPT DA TELA DE CARREGAMENTO ---
 window.addEventListener('load', () => {
-    // Seleciona os elementos pelos novos IDs em português
-    const telaCarregamento = document.getElementById('tela-carregamento');
-    const conteudoPrincipal = document.getElementById('conteudo-principal-container');
+    const splashScreen = document.getElementById('splash-screen');
+    const mainContent = document.getElementById('main-content');
 
-    const duracaoCarregamento = 2500; // 2.5 segundos
+    // Define o tempo que a splash screen ficará visível (em milissegundos)
+    const splashDuration = 2500; // 2.5 segundos
 
     setTimeout(() => {
         // Adiciona a classe para iniciar a transição de desaparecimento
-        telaCarregamento.classList.add('escondida');
+        splashScreen.classList.add('hidden');
 
-        // Mostra o conteúdo principal após a transição da tela de carregamento
-        telaCarregamento.addEventListener('transitionend', () => {
-            if (telaCarregamento) {
-                telaCarregamento.remove(); 
+        // Mostra o conteúdo principal após a transição da splash screen
+        splashScreen.addEventListener('transitionend', () => {
+            // Garante que a splash seja removida do DOM após a animação
+            if (splashScreen) {
+                splashScreen.remove(); 
             }
-            if (conteudoPrincipal) {
-                conteudoPrincipal.style.display = 'grid';
-            }
-        }, { once: true });
+            mainContent.style.display = 'grid'; // Usa 'grid' como no seu CSS original
+        }, { once: true }); // O evento só será executado uma vez
 
-    }, duracaoCarregamento);
+    }, splashDuration);
 });
+
 
 // --- SCRIPT ORIGINAL DA PÁGINA ---
 document.addEventListener('DOMContentLoaded', () => {
-    // Atualiza a saudação no banner
     const saudacaoTitulo = document.querySelector('.banner-destaque h2');
     if (saudacaoTitulo) {
         const horaAtual = new Date().getHours();
         let saudacao = '';
 
         if (horaAtual >= 5 && horaAtual < 12) {
-            saudacao = 'Bom dia, Arquivista!';
+            saudacao = 'Bom dia, Arquivista!!';
         } else if (horaAtual >= 12 && horaAtual < 18) {
-            saudacao = 'Boa tarde, Arquivista!';
+            saudacao = 'Boa Tarde, Arquivista!!';
         } else {
-            saudacao = 'Boa noite, Arquivista!';
+            saudacao = 'Boa Noite, Arquivista!!';
         }
 
         const textoOriginal = "Veja algumas das atualizações do nosso acervo enquanto você esteve fora...";
         saudacaoTitulo.textContent = `${saudacao} ${textoOriginal}`;
     }
 
-    // Lógica para ativar item do menu ao clicar
     const menuItens = document.querySelectorAll('.menu-navegacao ul li');
     menuItens.forEach(item => {
-        item.addEventListener('click', (evento) => {
-            // Se o link não for para outra página, previne o comportamento padrão
-            const link = item.querySelector('a');
-            if (link && link.getAttribute('href') === '#') {
-                evento.preventDefault();
+        item.addEventListener('click', () => {
+            const itemAtivoAtual = document.querySelector('.menu-navegacao li.ativo');
+            if (itemAtivoAtual) {
+                itemAtivoAtual.classList.remove('ativo');
             }
-
-            // Remove a classe 'ativo' de todos os itens
-            menuItens.forEach(i => i.classList.remove('ativo'));
-            // Adiciona a classe 'ativo' apenas no item clicado
             item.classList.add('ativo');
         });
     });
 
-    // Botão "Saiba mais" do banner
     const botaoSaibaMais = document.querySelector('.banner-destaque .botao-principal');
     if (botaoSaibaMais) {
         botaoSaibaMais.addEventListener('click', () => {
@@ -68,7 +60,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Ícone de notificações no cabeçalho
     const iconeNotificacoes = document.querySelector('.icones-cabecalho .fa-bell');
     if (iconeNotificacoes) {
         iconeNotificacoes.addEventListener('click', () => {
@@ -76,10 +67,9 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Card de mensagem da assistente IA
-    const previaMensagem = document.querySelector('.previa-mensagem');
-    if (previaMensagem) {
-        previaMensagem.addEventListener('click', () => {
+    const previewMensagem = document.querySelector('.preview-mensagem');
+    if (previewMensagem) {
+        previewMensagem.addEventListener('click', () => {
             alert('O chat com a assistente DataLia será aberto em uma nova janela.');
         });
     }
