@@ -18,23 +18,23 @@
 }
 
 /* Container principal da área de configurações */
-.settings-container {
+.configuracoes-container {
     display: flex;
     gap: 30px;
     align-items: flex-start;
 }
 
 /* Menu lateral das configurações */
-.settings-menu {
+.menu-configuracoes {
     flex-basis: 220px; /* Largura do menu */
     flex-shrink: 0;
 }
 
-.settings-menu ul {
+.menu-configuracoes ul {
     list-style: none;
 }
 
-.settings-menu ul li a {
+.menu-configuracoes ul li a {
     display: flex;
     align-items: center;
     gap: 12px;
@@ -46,26 +46,26 @@
     border-left: 3px solid transparent;
 }
 
-.settings-menu ul li a:hover {
+.menu-configuracoes ul li a:hover {
     background-color: var(--background-color);
 }
 
 /* Estilo do item ativo no menu de configurações */
-.settings-menu ul li.active a {
+.menu-configuracoes ul li.ativo a {
     color: var(--primary-purple);
     font-weight: 600;
     border-left: 3px solid var(--primary-purple);
 }
 
 /* Área de conteúdo à direita */
-.settings-content {
+.conteudo-configuracoes {
     flex-grow: 1;
     background-color: var(--card-background);
     border-radius: 15px;
     padding: 30px;
 }
 
-.settings-content h2 {
+.conteudo-configuracoes h2 {
     font-size: 1.5rem;
     padding-bottom: 15px;
     margin-bottom: 25px;
@@ -73,27 +73,27 @@
 }
 
 /* Seção do Perfil (Nome + Foto) */
-.profile-section {
+.bloco-perfil {
     display: flex;
     gap: 30px;
     margin-bottom: 20px;
 }
-.profile-details {
+.detalhes-perfil {
     flex-grow: 1;
 }
-.profile-pic-area {
+.area-foto-perfil {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 10px;
 }
-.profile-pic-area img {
+.area-foto-perfil img {
     width: 100px;
     height: 100px;
     border-radius: 50%;
     object-fit: cover;
 }
-.profile-pic-area .btn-edit {
+.area-foto-perfil .botao-editar {
     width: 100%;
     padding: 8px;
     border-radius: 8px;
@@ -103,20 +103,19 @@
     font-weight: 500;
 }
 
-
 /* Estilo geral para grupos de formulário */
-.form-group {
+.grupo-formulario {
     margin-bottom: 25px;
 }
 
-.form-group label {
+.grupo-formulario label {
     display: block;
     font-weight: 600;
     margin-bottom: 8px;
 }
 
-.form-group input,
-.form-group textarea {
+.grupo-formulario input,
+.grupo-formulario textarea {
     width: 100%;
     padding: 12px;
     border: 1px solid var(--border-color);
@@ -125,21 +124,21 @@
     font-family: var(--font-family);
     background-color: var(--background-color);
 }
-.form-group input:focus,
-.form-group textarea:focus {
+.grupo-formulario input:focus,
+.grupo-formulario textarea:focus {
     outline: none;
     border-color: var(--primary-purple);
     box-shadow: 0 0 0 2px var(--light-purple);
 }
 
-.form-group .helper-text {
+.grupo-formulario .texto-ajuda {
     font-size: 0.85rem;
     color: var(--text-light);
     margin-top: 8px;
 }
 
 /* Botão de salvar */
-.btn-save {
+.botao-salvar {
     background-color: var(--primary-purple);
     color: var(--text-white);
     border: none;
@@ -152,6 +151,6 @@
     display: inline-block; /* Para não ocupar a largura toda */
     margin-top: 10px;
 }
-.btn-save:hover {
+.botao-salvar:hover {
     transform: scale(1.05);
 }
