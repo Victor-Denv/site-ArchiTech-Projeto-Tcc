@@ -70,4 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const previewMensagem = document.querySelector('.preview-mensagem');
     if (previewMensagem) {
         previewMensagem.addEventListener('click', () => {
-            alert('O chat com a assistente virtual será implementado em breve!');
+            alert('O chat com a assistente DataLia será aberto em uma nova janela.');
+        });
+    }
+});
