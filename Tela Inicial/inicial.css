@@ -32,7 +32,7 @@ ul {
     list-style: none;
 }
 
-/* ---- LAYOUT PRINCIPAL COM CSS GRID ---- */
+/* ---- LAYOUT PRINCIPAL ---- */
 .painel-container {
     display: grid;
     grid-template-columns: 260px 1fr 320px;
@@ -180,7 +180,7 @@ ul {
 
 .acesso-rapido .grade-cartoes {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
     gap: 20px;
 }
 
@@ -223,7 +223,6 @@ ul {
     justify-content: center;
     color: var(--text-light);
 }
-
 
 /* ---- COLUNA DA DIREITA (INFORMAÇÕES) ---- */
 .barra-lateral-direita {
@@ -303,12 +302,13 @@ ul {
     color: var(--primary-purple);
 }
 
-.secao-mensagem .preview-mensagem {
+.secao-mensagem .previa-mensagem {
     background-color: var(--light-purple);
     padding: 15px;
     border-radius: 15px;
     display: flex;
     gap: 10px;
+    cursor: pointer;
 }
 
 .secao-mensagem img {
@@ -324,13 +324,9 @@ ul {
     align-items: center;
     margin-bottom: 5px;
 }
-.secao-mensagem .cabecalho-mensagem span i {
-    font-size: 0.5rem;
-    color: #52E588;
-}
 
 /* ---- ESTILOS DA TELA DE CARREGAMENTO (SPLASH SCREEN) ---- */
-#splash-screen {
+#tela-carregamento {
     position: fixed;
     top: 0;
     left: 0;
@@ -348,26 +344,26 @@ ul {
     visibility: visible;
 }
 
-#splash-screen.hidden {
+#tela-carregamento.escondida {
     opacity: 0;
     visibility: hidden;
 }
 
-#splash-screen .splash-content {
+#tela-carregamento .conteudo-carregamento {
     text-align: center;
 }
 
-#splash-screen .splash-content i {
+#tela-carregamento .conteudo-carregamento i {
     font-size: 4rem;
     margin-bottom: 10px;
 }
 
-#splash-screen .splash-content h1 {
+#tela-carregamento .conteudo-carregamento h1 {
     font-size: 2.5rem;
     margin-bottom: 30px;
 }
 
-.loader {
+.animacao-carregamento {
     border: 4px solid rgba(255, 255, 255, 0.3);
     border-top: 4px solid var(--text-white);
     border-radius: 50%;
