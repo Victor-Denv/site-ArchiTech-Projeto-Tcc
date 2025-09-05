@@ -1,0 +1,157 @@
+/* Importando variáveis para manter a consistência */
+:root {
+    --primary-purple: #8C52E5;
+    --light-purple: #E8D5F5;
+    --background-color: #F8F7FC;
+    --card-background: #FFFFFF;
+    --text-dark: #333333;
+    --text-light: #888;
+    --text-white: #FFFFFF;
+    --border-color: #EFEFEF;
+    --font-family: 'Poppins', sans-serif;
+}
+
+/* Título principal da página */
+.conteudo-principal h1 {
+    font-size: 2rem;
+    margin-bottom: 25px;
+}
+
+/* Container principal da área de configurações */
+.settings-container {
+    display: flex;
+    gap: 30px;
+    align-items: flex-start;
+}
+
+/* Menu lateral das configurações */
+.settings-menu {
+    flex-basis: 220px; /* Largura do menu */
+    flex-shrink: 0;
+}
+
+.settings-menu ul {
+    list-style: none;
+}
+
+.settings-menu ul li a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 15px;
+    border-radius: 8px;
+    font-weight: 500;
+    color: var(--text-dark);
+    margin-bottom: 5px;
+    border-left: 3px solid transparent;
+}
+
+.settings-menu ul li a:hover {
+    background-color: var(--background-color);
+}
+
+/* Estilo do item ativo no menu de configurações */
+.settings-menu ul li.active a {
+    color: var(--primary-purple);
+    font-weight: 600;
+    border-left: 3px solid var(--primary-purple);
+}
+
+/* Área de conteúdo à direita */
+.settings-content {
+    flex-grow: 1;
+    background-color: var(--card-background);
+    border-radius: 15px;
+    padding: 30px;
+}
+
+.settings-content h2 {
+    font-size: 1.5rem;
+    padding-bottom: 15px;
+    margin-bottom: 25px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+/* Seção do Perfil (Nome + Foto) */
+.profile-section {
+    display: flex;
+    gap: 30px;
+    margin-bottom: 20px;
+}
+.profile-details {
+    flex-grow: 1;
+}
+.profile-pic-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+.profile-pic-area img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+.profile-pic-area .btn-edit {
+    width: 100%;
+    padding: 8px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    background-color: var(--background-color);
+    cursor: pointer;
+    font-weight: 500;
+}
+
+
+/* Estilo geral para grupos de formulário */
+.form-group {
+    margin-bottom: 25px;
+}
+
+.form-group label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 1rem;
+    font-family: var(--font-family);
+    background-color: var(--background-color);
+}
+.form-group input:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: var(--primary-purple);
+    box-shadow: 0 0 0 2px var(--light-purple);
+}
+
+.form-group .helper-text {
+    font-size: 0.85rem;
+    color: var(--text-light);
+    margin-top: 8px;
+}
+
+/* Botão de salvar */
+.btn-save {
+    background-color: var(--primary-purple);
+    color: var(--text-white);
+    border: none;
+    padding: 12px 25px;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: transform 0.2s;
+    display: inline-block; /* Para não ocupar a largura toda */
+    margin-top: 10px;
+}
+.btn-save:hover {
+    transform: scale(1.05);
+}

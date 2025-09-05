@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Architech - Configurações</title>
+    <link rel="stylesheet" href="inicial.css">
+    <link rel="stylesheet" href="configuracoes.css">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+    <div class="painel-container">
+        <aside class="barra-lateral-esquerda">
+            <div class="logotipo">
+                <i class="fa-solid fa-layer-group"></i>
+                <h1>ARCHITECH</h1>
+            </div>
+            <nav class="menu-navegacao">
+                <ul>
+                    <li><a href="inicial.html"><i class="fa-solid fa-house"></i> Início</a></li>
+                    <li><a href="#"><i class="fa-solid fa-chart-pie"></i> Relatório de gestão</a></li>
+                    <li><a href="#"><i class="fa-solid fa-robot"></i> Automação de documentos</a></li>
+                    <li><a href="#"><i class="fa-solid fa-message"></i> Mensagem</a></li>
+                    <li><a href="#"><i class="fa-solid fa-shield-halved"></i> Segurança e Compliance</a></li>
+                    <li class="ativo"><a href="configuracoes.html"><i class="fa-solid fa-gear"></i> Configuração</a></li>
+                </ul>
+            </nav>
+            <div class="rodape-barra-lateral">
+                <ul>
+                    <li><a href="#"><i class="fa-solid fa-user"></i> Conta</a></li>
+                    <li><a href="#"><i class="fa-solid fa-right-from-bracket"></i> Sair</a></li>
+                    <li><a href="#"><i class="fa-solid fa-circle-question"></i> Ajuda</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <main class="conteudo-principal">
+            <header class="cabecalho-principal">
+                <div class="barra-pesquisa">
+                    <i class="fa-solid fa-search"></i>
+                    <input type="text" placeholder="Pesquisar nas configurações">
+                </div>
+                <div class="icones-cabecalho">
+                    <i class="fa-solid fa-sliders"></i>
+                    <i class="fa-solid fa-bell"></i>
+                </div>
+            </header>
+            
+            <h1>Configurações</h1>
+
+            <div class="settings-container">
+                <aside class="settings-menu">
+                    <ul>
+                        <li class="active"><a href="#"><i class="fa-solid fa-user"></i> Perfil público</a></li>
+                        <li><a href="#"><i class="fa-solid fa-key"></i> Conta</a></li>
+                        <li><a href="#"><i class="fa-solid fa-palette"></i> Aparência</a></li>
+                        <li><a href="#"><i class="fa-solid fa-bell"></i> Notificações</a></li>
+                        <li><a href="#"><i class="fa-solid fa-shield-halved"></i> Senha e autenticação</a></li>
+                    </ul>
+                </aside>
+
+                <div class="settings-content">
+                    <section id="perfil-publico">
+                        <h2>Perfil público</h2>
+                        <div class="profile-section">
+                            <div class="profile-details">
+                                <div class="form-group">
+                                    <label for="nome">Nome</label>
+                                    <input type="text" id="nome" value="Jisoo Kim">
+                                    <p class="helper-text">Seu nome pode aparecer no Architech onde você contribui ou é mencionado.</p>
+                                </div>
+                            </div>
+                            <div class="profile-pic-area">
+                                <label>Foto de perfil</label>
+                                <img src="https://i.pravatar.cc/100?u=jisoo" alt="Foto de Jisoo Kim">
+                                <button class="btn-edit">Editar</button>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="email">E-mail público</label>
+                            <input type="email" id="email" value="jisoo.kim@example.com">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="bio">Biografia</label>
+                            <textarea id="bio" rows="3">Arquivista na Architech, especialista em digitalização e compliance de documentos.</textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                             <label for="pronome">Pronomes</label>
+                             <input type="text" id="pronome" placeholder="Ex: ela/dela">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="url">URL</label>
+                            <input type="url" id="url" placeholder="https://seusite.com">
+                       </div>
+
+                        <button class="btn-save">Salvar alterações</button>
+                    </section>
+                </div>
+            </div>
+        </main>
+
+        <aside class="barra-lateral-direita">
+            <div class="secao-perfil">
+                <img src="https://i.pravatar.cc/50?u=jisoo" alt="Foto de Jisoo Kim">
+                <div class="info-perfil">
+                    <h4>Jisoo Kim</h4>
+                    <span>Arquivista</span>
+                </div>
+            </div>
+        </aside> 
+    </div>
+</body>
+</html>
