@@ -1,3 +1,31 @@
+// =======================================================
+//     COLE ISSO NO COMEÇO DO SEU ARQUIVO inicial.js
+// =======================================================
+
+// Sua configuração do Firebase (copie e cole do site do Firebase)
+const firebaseConfig = {
+    apiKey: "COLE_SUA_API_KEY_COMPLETA_AQUI", // Pegue da tela do Firebase
+    authDomain: "architech-vitor-tcc.firebaseapp.com",
+    projectId: "architech-vitor-tcc",
+    storageBucket: "architech-vitor-tcc.appspot.com",
+    messagingSenderId: "COLE_SEU_MESSAGING_SENDER_ID_COMPLETO_AQUI", // Pegue da tela do Firebase
+    appId: "COLE_SEU_APP_ID_COMPLETO_AQUI", // Pegue da tela do Firebase
+    measurementId: "G-Q77B66GZ03"
+};
+
+// Inicializa o Firebase
+firebase.initializeApp(firebaseConfig);
+
+// Deixa o banco de dados (db) e o storage prontos para usar
+const db = firebase.firestore();
+const storage = firebase.storage();
+
+console.log("Firebase Conectado com SUCESSO a partir do inicial.js!"); 
+
+
+// ----- O RESTO DO SEU CÓDIGO DO 'inicial.js' VEM DEPOIS DAQUI -----
+// ...
+// ...
 // --- SCRIPT DA TELA DE CARREGAMENTO ---
 window.addEventListener('load', () => {
     const splashScreen = document.getElementById('splash-screen');
