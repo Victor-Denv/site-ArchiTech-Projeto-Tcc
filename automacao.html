@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Automação De documentos</title>
+    <link rel="stylesheet" href="automacao.css">
+</head>
+<div id="formularioCadastro">
+    <h2>Cadastrar Novo Arquivo</h2>
+    <p>Preencha os dados para registrar o arquivo físico e gerar um QR Code de rastreio.</p>
+    
+    <div>
+        <label for="nomeArquivo">Nome do Arquivo:</label><br>
+        <input type="text" id="nomeArquivo" placeholder="Ex: Contrato Cliente X 2025">
+    </div>
+    
+    <div>
+        <label for="localizacaoArquivo">Localização Física:</label><br>
+        <input type="text" id="localizacaoArquivo" placeholder="Ex: Prateleira A, Gaveta 3">
+    </div>
+    
+    <div>
+        <label for="tipoArquivo">Tipo de Arquivo:</label><br>
+        <select id="tipoArquivo">
+            <option value="documento">Documento (PDF)</option>
+            <option value="imagem">Imagem (JPG/PNG)</option>
+            <option value="certificacao">Certificação</option>
+            <option value="outro">Outro</option>
+        </select>
+    </div>
+    
+    <div>
+        <label for="arquivoUpload">Anexar o arquivo (opcional):</label><br>
+        <input type="file" id="arquivoUpload">
+    </div>
+    
+    <button id="btnSalvarArquivo">
+        Salvar e Gerar QR Code
+    </button>
+
+    <div id="qrcode"></div>
+</div>
+<body>
+    
+</body>
+</html>

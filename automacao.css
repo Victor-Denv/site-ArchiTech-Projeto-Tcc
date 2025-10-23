@@ -1,0 +1,91 @@
+* {
+    font-family: 'Poppins', sans-serif;
+}
+#formularioCadastro {
+    background-color: #2a2a3a; /* Um fundo escuro, mas um pouco mais claro que o principal */
+    color: #f0f0f0;
+    padding: 25px;
+    margin: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Título do formulário */
+#formularioCadastro h2 {
+    color: #ffffff;
+    font-size: 24px;
+    margin-bottom: 10px;
+    border-bottom: 2px solid #6f42c1; /* Linha com a cor roxa do seu tema */
+    padding-bottom: 5px;
+}
+
+/* Parágrafo de descrição */
+#formularioCadastro p {
+    font-size: 14px;
+    color: #b0b0b0;
+    margin-bottom: 20px;
+}
+
+/* Divs que agrupam os labels e inputs */
+#formularioCadastro > div {
+    margin-bottom: 15px;
+}
+
+/* Labels (Nome do Arquivo, Localização, etc) */
+#formularioCadastro label {
+    display: block;
+    font-weight: bold;
+    font-size: 14px;
+    margin-bottom: 5px;
+    color: #d0d0d0;
+}
+
+/* Estilo para os campos de texto e o select */
+#formularioCadastro input[type="text"],
+#formularioCadastro select {
+    width: 100%;
+    padding: 10px;
+    font-size: 14px;
+    background-color: #1e1e2d; /* Fundo do input mais escuro */
+    color: #f0f0f0;
+    border: 1px solid #444;
+    border-radius: 5px;
+    box-sizing: border-box; /* Isso previne que o padding quebre o layout */
+}
+
+/* Estilo para o campo de upload de arquivo */
+#formularioCadastro input[type="file"] {
+    color: #b0b0b0;
+    font-size: 13px;
+    margin-top: 5px;
+}
+
+/* Botão principal de Salvar */
+#btnSalvarArquivo {
+    padding: 12px 25px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #ffffff;
+    background-color: #6f42c1; /* A cor roxa principal do seu tema */
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+/* Efeito de hover (passar o mouse) no botão */
+#btnSalvarArquivo:hover {
+    background-color: #5a37a0; /* Um tom de roxo mais escuro */
+}
+
+/* Onde o QR Code vai aparecer */
+#qrcode {
+    margin-top: 25px;
+    padding: 15px;
+    background-color: #ffffff; /* Fundo branco é ESSENCIAL para o QR code ser lido */
+    border-radius: 5px;
+    display: inline-block; /* Para se ajustar ao tamanho do QR code */
+    min-width: 150px; /* Garante que o box apareça */
+    min-height: 150px;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+}
