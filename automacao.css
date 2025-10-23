@@ -12,6 +12,7 @@
 
 /* Título do formulário */
 #formularioCadastro h2 {
+     font-family: 'Poppins', sans-serif;
     color: #ffffff;
     font-size: 24px;
     margin-bottom: 10px;
@@ -21,6 +22,7 @@
 
 /* Parágrafo de descrição */
 #formularioCadastro p {
+     font-family: 'Poppins', sans-serif;
     font-size: 14px;
     color: #b0b0b0;
     margin-bottom: 20px;
@@ -33,6 +35,7 @@
 
 /* Labels (Nome do Arquivo, Localização, etc) */
 #formularioCadastro label {
+     font-family: 'Poppins', sans-serif;
     display: block;
     font-weight: bold;
     font-size: 14px;
@@ -43,6 +46,7 @@
 /* Estilo para os campos de texto e o select */
 #formularioCadastro input[type="text"],
 #formularioCadastro select {
+     font-family: 'Poppins', sans-serif;
     width: 100%;
     padding: 10px;
     font-size: 14px;
