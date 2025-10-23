@@ -40,7 +40,7 @@
     font-weight: bold;
     font-size: 14px;
     margin-bottom: 5px;
-    color: #d0d0d0;
+    color: #050505;
 }
 
 /* Estilo para os campos de texto e o select */
@@ -51,7 +51,7 @@
     padding: 10px;
     font-size: 14px;
     background-color: white; /* Fundo do input mais escuro */
-    color: #f0f0f0;
+    color: #000000;
     border: 1px solid #444;
     border-radius: 5px;
     box-sizing: border-box; /* Isso previne que o padding quebre o layout */
