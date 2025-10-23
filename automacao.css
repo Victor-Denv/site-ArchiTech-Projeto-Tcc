@@ -2,7 +2,7 @@
     font-family: 'Poppins', sans-serif;
 }
 #formularioCadastro {
-    background-color: #2a2a3a; /* Um fundo escuro, mas um pouco mais claro que o principal */
+    background-color: #e7e7f5; /* Um fundo escuro, mas um pouco mais claro que o principal */
     color: #f0f0f0;
     padding: 25px;
     margin: 20px;
@@ -46,7 +46,7 @@
     width: 100%;
     padding: 10px;
     font-size: 14px;
-    background-color: #1e1e2d; /* Fundo do input mais escuro */
+    background-color: white; /* Fundo do input mais escuro */
     color: #f0f0f0;
     border: 1px solid #444;
     border-radius: 5px;
