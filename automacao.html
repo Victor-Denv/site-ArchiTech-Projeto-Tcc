@@ -6,7 +6,9 @@
     <title>Automação De documentos</title>
     <link rel="stylesheet" href="automacao.css">
 </head>
-<div id="formularioCadastro">
+
+<body>
+   <div id="formularioCadastro">
     <h2>Cadastrar Novo Arquivo</h2>
     <p>Preencha os dados para registrar o arquivo físico e gerar um QR Code de rastreio.</p>
     
@@ -40,8 +42,13 @@
     </button>
 
     <div id="qrcode"></div>
-</div>
-<body>
-    
+</div> 
+
+
+<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-storage-compat.js"></script>
+
+    <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
+
+    <script src="./inicial.js"></script>
 </body>
 </html>
