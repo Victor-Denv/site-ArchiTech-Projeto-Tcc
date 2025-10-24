@@ -1,7 +1,7 @@
 const firebaseConfig = {
   apiKey: "AIzaSyCPym-OjXGXY7IhA1u3DDPIOPi5tECDhR8",
   authDomain: "architeck-e92b4.firebaseapp.com",
-  databaseURL: "https://architeck-e92b4-default-rtdb.firebaseio.com/",
+  databaseURL: "https://architeck-e92b4-default-rtdb.firebaseio.com",
   projectId: "architeck-e92b4",
   storageBucket: "architeck-e92b4.firebasestorage.app",
   messagingSenderId: "97992394607",
@@ -9,13 +9,9 @@ const firebaseConfig = {
   measurementId: "G-N7T7B468Z9"
 };
 
-// Inicializa o Firebase
-firebase.initializeApp(firebaseConfig);
-
-// Deixa o banco de dados (db) e o storage prontos para usar
-
-const storage = firebase.storage();
-
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
 console.log("Firebase Conectado com SUCESSO a partir do inicial.js!"); 
 
 

@@ -8,17 +8,17 @@ document.addEventListener('DOMContentLoaded', function() {
 const firebaseConfig = {
   apiKey: "AIzaSyCPym-OjXGXY7IhA1u3DDPIOPi5tECDhR8",
   authDomain: "architeck-e92b4.firebaseapp.com",
-  databaseURL: "https://architeck-e92b4-default-rtdb.firebaseio.com/",
+  databaseURL: "https://architeck-e92b4-default-rtdb.firebaseio.com",
   projectId: "architeck-e92b4",
   storageBucket: "architeck-e92b4.firebasestorage.app",
   messagingSenderId: "97992394607",
   appId: "1:97992394607:web:130d060bdfff02d8474a9a",
   measurementId: "G-N7T7B468Z9"
 };
-    // Inicializa o Firebase
-    firebase.initializeApp(firebaseConfig);
-    // Inicializa o serviço de Autenticação
-    const auth = firebase.auth();
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
 
     // =======================================================
     //     PEGANDO OS ELEMENTOS DO HTML
