@@ -1,8 +1,3 @@
-// =======================================================
-//     COLE ISSO NO COMEÇO DO SEU ARQUIVO inicial.js
-// =======================================================
-
-// Sua configuração do Firebase (copie e cole do site do Firebase)
 const firebaseConfig = {
   apiKey: "AIzaSyD",
   authDomain: "architech-vitor-tcc.firebaseapp.com",
