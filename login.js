@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', function() {
 const firebaseConfig = {
   apiKey: "AIzaSyCPym-OjXGXY7IhA1u3DDPIOPi5tECDhR8",
   authDomain: "architeck-e92b4.firebaseapp.com",
-  databaseURL: "https://architeck-e92b4-default-rtdb.firebaseio.com",
+  databaseURL: "https://architeck-e92b4-default-rtdb.firebaseio.com/",
   projectId: "architeck-e92b4",
   storageBucket: "architeck-e92b4.firebasestorage.app",
   messagingSenderId: "97992394607",
