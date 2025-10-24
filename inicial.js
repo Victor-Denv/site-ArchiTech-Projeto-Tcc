@@ -4,7 +4,7 @@
 
 // Sua configuração do Firebase (copie e cole do site do Firebase)
 const firebaseConfig = {
-  apiKey: "AIzaSyD... (sua chave)",
+  apiKey: "AIzaSyD",
   authDomain: "architech-vitor-tcc.firebaseapp.com",
 
   // ADICIONE ESTA LINHA COM A URL CORRETA DA IMAGEM 124
