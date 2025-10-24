@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Automação De documentos</title>
+    <link rel="stylesheet" href="automacao.css">
+</head>
+
+<body>
+    <div id="formularioCadastro" class="abas-conteudo" style="border-radius: 8px !important; margin: 20px;">
+        
+        <h2>Detalhes do Arquivo</h2>
+        <p>Informações do arquivo físico e atualização de local.</p>
+
+        <div style="border-bottom: 1px solid #444; padding-bottom: 15px;">
+            <h3 style="color: #6f42c1;">Informações Salvas</h3>
+            
+            <p>
+                <strong>Nome:</strong>
+                <span id="nomeArquivoDisplay">Carregando...</span>
+            </p>
+            <p>
+                <strong>Tipo:</strong>
+                <span id="tipoArquivoDisplay">Carregando...</span>
+            </p>
+            <p>
+                <strong>Data de Cadastro:</strong>
+                <span id="dataCadastroDisplay">Carregando...</span>
+            </p>
+            <p style="font-size: 1.2em; font-weight: bold;">
+                <strong>LOCALIZAÇÃO ATUAL:</strong>
+                <span id="localizacaoAtualDisplay" style="color: #00ff00;">Carregando...</span>
+            </p>
+        </div>
+
+        <div style="margin-top: 20px;">
+            <h3 style="color: #6f42c1;">Atualizar Localização Física</h3>
+            <p>Moveu o arquivo? Salve a nova localização aqui.</p>
+            
+            <div>
+                <label for="novaLocalizacaoInput">Nova Localização:</label><br>
+                <input type="text" id="novaLocalizacaoInput" placeholder="Ex: Mesa do Gerente, Gaveta 2">
+            </div>
+            
+            <button id="btnAtualizarLocal" style="margin-top: 10px;">
+                Salvar Nova Localização
+            </button>
+            
+            <button id="btnIrParaCadastro" style="margin-top: 10px; margin-left: 10px; background-color: #28a745;">
+                + Adicionar Novo Arquivo
+            </button>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-storage-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script> 
+    <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
+    <script src="./inicial.js"></script>
+</body>
+</html>

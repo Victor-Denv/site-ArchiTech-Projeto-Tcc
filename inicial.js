@@ -258,3 +258,99 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    
+    // Procura os elementos da página 'arquivo.html'
+    const nomeDisplay = document.getElementById('nomeArquivoDisplay');
+    
+    // Se 'nomeDisplay' existir, significa que estamos na página 'arquivo.html'
+    if (nomeDisplay) {
+
+        console.log("Estamos na página arquivo.html, procurando ID...");
+
+        // 1. LER O ID DA URL
+        const params = new URLSearchParams(window.location.search);
+        const arquivoId = params.get('id'); // Pega o ID (ex: 'ABC123XYZ')
+
+        if (!arquivoId) {
+            console.error("Nenhum ID de arquivo encontrado na URL!");
+            document.getElementById('formularioCadastro').innerHTML = "<h2>Erro: ID não encontrado na URL.</h2>";
+            return;
+        }
+
+        console.log("ID encontrado:", arquivoId);
+
+        // Referência para este arquivo específico no banco de dados
+        const arquivoRef = db.ref('arquivos/' + arquivoId);
+        
+        // Elementos que vamos preencher
+        const localDisplay = document.getElementById('localizacaoAtualDisplay');
+        const tipoDisplay = document.getElementById('tipoArquivoDisplay');
+        const dataDisplay = document.getElementById('dataCadastroDisplay');
+
+        // 2. BUSCAR OS DADOS NO REALTIME DATABASE (EM TEMPO REAL)
+        arquivoRef.on('value', (snapshot) => {
+            const data = snapshot.val();
+            
+            if (data) {
+                console.log("Dados recebidos:", data);
+                // Coloca os dados nos campos <span id="...">
+                nomeDisplay.innerText = data.nome;
+                localDisplay.innerText = data.localizacao; // A localização atual
+                tipoDisplay.innerText = data.tipo;
+                
+                // Formata a data
+                const dataCadastro = new Date(data.dataCadastro);
+                dataDisplay.innerText = dataCadastro.toLocaleString('pt-BR');
+
+            } else {
+                console.error("Nenhum dado encontrado para este ID.");
+                nomeDisplay.innerText = "Arquivo não encontrado.";
+                localDisplay.innerText = "N/A";
+            }
+        });
+
+        // 3. FAZER O BOTÃO DE ATUALIZAR LOCALIZAÇÃO FUNCIONAR
+        const btnAtualizar = document.getElementById('btnAtualizarLocal');
+        const novaLocalizacaoInput = document.getElementById('novaLocalizacaoInput');
+
+        btnAtualizar.addEventListener('click', function() {
+            const novaLocalizacao = novaLocalizacaoInput.value;
+
+            if (!novaLocalizacao) {
+                alert("Por favor, digite a nova localização.");
+                return;
+            }
+
+            console.log("Atualizando localização para:", novaLocalizacao);
+            btnAtualizar.innerText = "Salvando...";
+
+            // ATUALIZA o campo 'localizacao' no banco de dados
+            arquivoRef.update({
+                localizacao: novaLocalizacao
+            })
+            .then(() => {
+                alert("Localização atualizada com sucesso!");
+                novaLocalizacaoInput.value = ""; // Limpa o campo
+                btnAtualizar.innerText = "Salvar Nova Localização";
+            })
+            .catch((error) => {
+                console.error("Erro ao atualizar:", error);
+                alert("Erro ao atualizar. Tente novamente.");
+                btnAtualizar.innerText = "Salvar Nova Localização";
+            });
+        });
+        
+        // 4. FAZER O BOTÃO "ADICIONAR NOVO" FUNCIONAR
+        const btnIrParaCadastro = document.getElementById('btnIrParaCadastro');
+        
+        btnIrParaCadastro.addEventListener('click', function() {
+            console.log("Indo para a página de automação...");
+            // Redireciona o usuário para a página de cadastro
+            window.location.href = "automacao.html";
+        });
+        
+    } // Fim do 'if (nomeDisplay)'
+});
