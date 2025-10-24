@@ -195,3 +195,66 @@ document.addEventListener('DOMContentLoaded', function() {
     } // Fim do 'if (btnSalvar)'
 
 }); // Fim do 'DOMContentLoaded'
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    
+    // Procura o container da lista (que só existe na 'listar.html')
+    const containerDaLista = document.getElementById('containerDaLista');
+
+    if (containerDaLista) {
+        console.log("Estamos na página listar.html, buscando arquivos...");
+
+        // Referência para a "pasta" inteira de arquivos
+        const arquivosRef = db.ref('arquivos');
+
+        // Busca os dados UMA VEZ. (Usamos 'once' aqui, 
+        // '.on()' ficaria atualizando em tempo real)
+        arquivosRef.once('value', (snapshot) => {
+            
+            const dados = snapshot.val(); // Pega todos os dados
+            
+            // Limpa a mensagem "Carregando..."
+            containerDaLista.innerHTML = ""; 
+
+            if (dados) {
+                console.log("Total de arquivos encontrados:", Object.keys(dados).length);
+
+                // Passa por cada arquivo encontrado
+                // 'key' é o ID único (ex: -NqX...abc)
+                // 'dados[key]' é o objeto (nome, localizacao, tipo)
+                Object.keys(dados).forEach(key => {
+                    const arquivo = dados[key];
+
+                    // Cria o HTML para este item da lista
+                    // Usamos a classe 'item-lista-arquivo' (vamos criar o CSS para ela)
+                    const itemHtml = `
+                        <div class="item-lista-arquivo">
+                            <div class="item-info">
+                                <strong>Nome:</strong> ${arquivo.nome} <br>
+                                <strong>Local:</strong> ${arquivo.localizacao}
+                            </div>
+                            <div class="item-link">
+                                <a href="arquivo.html?id=${key}" class="btn-detalhes">
+                                    Ver Detalhes
+                                </a>
+                            </div>
+                        </div>
+                    `;
+                    
+                    // Adiciona o HTML deste item dentro do container
+                    containerDaLista.innerHTML += itemHtml;
+                });
+
+            } else {
+                // Se não encontrar nenhum arquivo
+                console.log("Nenhum arquivo encontrado.");
+                containerDaLista.innerHTML = "<p>Nenhum arquivo cadastrado no sistema ainda.</p>";
+            }
+
+        }).catch((error) => {
+            console.error("Erro ao buscar arquivos:", error);
+            containerDaLista.innerHTML = "<p style='color: red;'>Erro ao carregar a lista. Tente novamente.</p>";
+        });
+    }
+});

@@ -156,3 +156,47 @@
     border-bottom: 2px solid #6f42c1;
     padding-bottom: 5px;
 }
+
+
+/* ======================================================= */
+/* ESTILOS DA LISTAGEM DE ARQUIVOS (listar.html)  */
+/* ======================================================= */
+
+/* O item individual da lista */
+.item-lista-arquivo {
+    display: flex; /* Coloca as infos de um lado, o botão do outro */
+    justify-content: space-between; /* Espaço entre eles */
+    align-items: center;
+    background-color: #333;
+    padding: 15px 20px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    border-left: 5px solid #6f42c1; /* Detalhe roxo */
+}
+
+/* Div da esquerda (Nome e Local) */
+.item-lista-arquivo .item-info {
+    font-size: 15px;
+    line-height: 1.5;
+}
+
+.item-lista-arquivo .item-info strong {
+    color: #ccc;
+}
+
+/* Div da direita (Botão) */
+.item-lista-arquivo .item-link a.btn-detalhes {
+    display: inline-block;
+    padding: 8px 15px;
+    background-color: #6f42c1;
+    color: #ffffff;
+    text-decoration: none;
+    border-radius: 4px;
+    font-weight: bold;
+    font-size: 14px;
+    transition: background-color 0.2s;
+}
+
+.item-lista-arquivo .item-link a.btn-detalhes:hover {
+    background-color: #5a37a0; /* Roxo mais escuro */
+}
