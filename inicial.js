@@ -3,7 +3,7 @@ const firebaseConfig = {
   authDomain: "architech-vitor-tcc.firebaseapp.com",
 
   // ADICIONE ESTA LINHA COM A URL CORRETA DA IMAGEM 124 ADD
-  databaseURL: "https://architech-e92b4-default-rtdb.firebaseio.com",
+  databaseURL: "https://architeck-e92b4-default-rtdb.firebaseio.com/",
 
   projectId: "architech-vitor-tcc",
   storageBucket: "architech-vitor-tcc.appspot.com",
