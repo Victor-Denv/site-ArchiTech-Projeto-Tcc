@@ -103,88 +103,84 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// =======================================================
+/// =======================================================
 //     LÓGICA DO FORMULÁRIO DE AUTOMAÇÃO
 // =======================================================
 
-// Verifica se estamos na página que contém o formulário
-// (Isso evita erros em outras páginas, como a login.html)
-if (document.getElementById('btnSalvarArquivo')) {
+// ESPERA O HTML INTEIRO CARREGAR PRIMEIRO!
+document.addEventListener('DOMContentLoaded', function() {
 
-    // 1. Pega os elementos do HTML
+    // Agora que o HTML carregou, procuramos o botão
     const btnSalvar = document.getElementById('btnSalvarArquivo');
-    const nomeArquivoInput = document.getElementById('nomeArquivo');
-    const localizacaoInput = document.getElementById('localizacaoArquivo');
-    const tipoArquivoInput = document.getElementById('tipoArquivo');
-    const qrcodeDiv = document.getElementById('qrcode');
 
-    // 2. Cria um "ouvinte" para o clique no botão
-    btnSalvar.addEventListener('click', function() {
-        
-        // 3. Pega os valores digitados pelo usuário
-        const nome = nomeArquivoInput.value;
-        const local = localizacaoInput.value;
-        const tipo = tipoArquivoInput.value;
+    // Verifica se o botão REALMENTE existe nesta página
+    if (btnSalvar) {
 
-        // Validação simples: impede salvar se campos estiverem vazios
-        if (!nome || !local) {
-            alert("Por favor, preencha o Nome e a Localização!");
-            return; // Para a execução
-        }
+        // 1. Pega o resto dos elementos do HTML
+        const nomeArquivoInput = document.getElementById('nomeArquivo');
+        const localizacaoInput = document.getElementById('localizacaoArquivo');
+        const tipoArquivoInput = document.getElementById('tipoArquivo');
+        const qrcodeDiv = document.getElementById('qrcode');
 
-        console.log("Salvando no Firestore:", nome, local, tipo);
-        btnSalvar.innerText = "Salvando..."; // Feedback visual no botão
-        btnSalvar.disabled = true; // Desabilita o botão para evitar cliques duplos
+        // 2. Cria o "ouvinte" para o clique no botão
+        btnSalvar.addEventListener('click', function() {
+            
+            // 3. Pega os valores digitados pelo usuário
+            const nome = nomeArquivoInput.value;
+            const local = localizacaoInput.value;
+            const tipo = tipoArquivoInput.value;
 
-        // 4. Manda os dados para o Firestore
-        // Ele vai criar uma coleção chamada "arquivos" (se não existir)
-        db.collection("arquivos").add({
-            nome: nome,
-            localizacao: local,
-            tipo: tipo,
-            dataCadastro: firebase.firestore.FieldValue.serverTimestamp() // Salva a data atual
-        })
-        .then((docRef) => {
-            // 5. DEU CERTO! O Firestore salvou e devolveu um ID
-            console.log("Documento salvo com ID: ", docRef.id);
+            // Validação simples: impede salvar se campos estiverem vazios
+            if (!nome || !local) {
+                alert("Por favor, preencha o Nome e a Localização!");
+                return; // Para a execução
+            }
+
+            // AVISA NO CONSOLE que o clique funcionou
+            console.log("Botão clicado! Salvando no Firestore:", nome, local, tipo);
             
-            // Limpa o formulário
-            nomeArquivoInput.value = "";
-            localizacaoInput.value = "";
-            
-            // 6. GERA O QR CODE
-            
-            // Limpa qualquer QR code antigo que estava ali
-            qrcodeDiv.innerHTML = ""; 
-            
-            // Define a URL para qual o QR code vai apontar
-            // (Vamos criar essa página 'arquivo.html' depois)
-            const urlParaQR = `https://site-archi-tech-projeto-tcc.vercel.app/arquivo.html?id=${docRef.id}`;
-            
-            // Cria o QR Code!
-            new QRCode(qrcodeDiv, {
-                text: urlParaQR,
-                width: 150,
-                height: 150,
-                colorDark : "#000000",
-                colorLight : "#ffffff",
-                correctLevel : QRCode.CorrectLevel.H
+            btnSalvar.innerText = "Salvando..."; // Feedback visual no botão
+            btnSalvar.disabled = true; // Desabilita o botão
+
+            // 4. Manda os dados para o Firestore
+            db.collection("arquivos").add({
+                nome: nome,
+                localizacao: local,
+                tipo: tipo,
+                dataCadastro: firebase.firestore.FieldValue.serverTimestamp()
+            })
+            .then((docRef) => {
+                // 5. DEU CERTO! O Firestore salvou e devolveu um ID
+                console.log("Documento salvo com ID: ", docRef.id);
+                
+                nomeArquivoInput.value = "";
+                localizacaoInput.value = "";
+                
+                // 6. GERA O QR CODE
+                qrcodeDiv.innerHTML = ""; // Limpa o QR code antigo
+                
+                const urlParaQR = `https://site-archi-tech-projeto-tcc.vercel.app/arquivo.html?id=${docRef.id}`;
+                
+                new QRCode(qrcodeDiv, {
+                    text: urlParaQR,
+                    width: 150,
+                    height: 150
+                });
+                
+                alert("Arquivo salvo com sucesso! Imprima o QR Code.");
+                btnSalvar.innerText = "Salvar e Gerar QR Code";
+                btnSalvar.disabled = false;
+
+            })
+            .catch((error) => {
+                // 7. DEU ERRO!
+                console.error("Erro ao salvar documento: ", error);
+                alert("Ocorreu um erro ao salvar. Tente novamente.");
+                btnSalvar.innerText = "Salvar e Gerar QR Code";
+                btnSalvar.disabled = false;
             });
-            
-            alert("Arquivo salvo com sucesso! Imprima o QR Code.");
-            btnSalvar.innerText = "Salvar e Gerar QR Code"; // Restaura o texto
-            btnSalvar.disabled = false; // Habilita o botão de novo
-
-        })
-        .catch((error) => {
-            // 7. DEU ERRO!
-            console.error("Erro ao salvar documento: ", error);
-            alert("Ocorreu um erro ao salvar. Tente novamente.");
-            btnSalvar.innerText = "Salvar e Gerar QR Code";
-            btnSalvar.disabled = false;
         });
 
-        // NOTA: O upload do arquivo (PDF/JPG) é um passo mais complexo
-        // Vamos fazer isso funcionar primeiro, depois adicionamos o upload.
-    });
-}
+    } // Fim do 'if (btnSalvar)'
+
+}); // Fim do 'DOMContentLoaded'
