@@ -4,14 +4,18 @@
 
 // Sua configuração do Firebase (copie e cole do site do Firebase)
 const firebaseConfig = {
-    apiKey: "COLE_SUA_API_KEY_COMPLETA_AQUI", // Pegue da tela do Firebase
-    authDomain: "architech-vitor-tcc.firebaseapp.com",
-    projectId: "architech-vitor-tcc",
-    storageBucket: "architech-vitor-tcc.appspot.com",
-    messagingSenderId: "COLE_SEU_MESSAGING_SENDER_ID_COMPLETO_AQUI", // Pegue da tela do Firebase
-    appId: "COLE_SEU_APP_ID_COMPLETO_AQUI", // Pegue da tela do Firebase
-    measurementId: "G-Q77B66GZ03"
-};
+  apiKey: "AIzaSyD... (sua chave)",
+  authDomain: "architech-vitor-tcc.firebaseapp.com",
+
+  // ADICIONE ESTA LINHA COM A URL CORRETA DA IMAGEM 124
+  databaseURL: "https://architech-e92b4-default-rtdb.firebaseio.com",
+
+  projectId: "architech-vitor-tcc",
+  storageBucket: "architech-vitor-tcc.appspot.com",
+  messagingSenderId: "17923...",
+  appId: "1:17923...",
+  measurementId: "G-Q77B66GZ03"
+}
 
 // Inicializa o Firebase
 firebase.initializeApp(firebaseConfig);
