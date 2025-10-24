@@ -23,32 +23,34 @@ const storage = firebase.storage();
 console.log("Firebase Conectado com SUCESSO a partir do inicial.js!"); 
 
 
-// ----- O RESTO DO SEU CÓDIGO DO 'inicial.js' VEM DEPOIS DAQUI -----
-// ...
-// ...
-// --- SCRIPT DA TELA DE CARREGAMENTO ---
+//----- SCRIPT DA TELA DE CARREGAMENTO (COM CORREÇÃO) -----
 window.addEventListener('load', () => {
-    const splashScreen = document.getElementById('splash-screen');
-    const mainContent = document.getElementById('main-content');
+    const splashScreen = document.getElementById("tela");
+    const mainContent = document.getElementById("main-content");
 
-    // Define o tempo que a splash screen ficará visível (em milissegundos)
-    const splashDuration = 2500; // 2.5 segundos
+    // SÓ RODA ESSE CÓDIGO SE A SPLASH SCREEN E O CONTEÚDO EXISTIREM NA PÁGINA
+    if (splashScreen && mainContent) {
 
-    setTimeout(() => {
-        // Adiciona a classe para iniciar a transição de desaparecimento
-        splashScreen.classList.add('hidden');
+        // Define o tempo que a splash screen ficará visível (em milissegundos)
+        const splashScreenTime = 2500; // 2.5 segundos
 
-        // Mostra o conteúdo principal após a transição da splash screen
-        splashScreen.addEventListener('transitionend', () => {
-            // Garante que a splash seja removida do DOM após a animação
-            if (splashScreen) {
-                splashScreen.remove(); 
-            }
-            mainContent.style.display = 'grid'; // Usa 'grid' como no seu CSS original
-        }, { once: true }); // O evento só será executado uma vez
+        setTimeout(() => {
+            // Adiciona a classe para iniciar a transição de desaparecimento
+            splashScreen.classList.add("hidden");
 
-    }, splashDuration);
+            // Mostra o conteúdo principal após a transição da splash screen
+            splashScreen.addEventListener("transitionend", () => {
+                // Garante que a splash seja removida do DOM após a animação
+                if (splashScreen) {
+                    splashScreen.remove();
+                }
+                mainContent.style.display = "grid"; // Use 'grid' como no seu CSS original
+            }, { once: true }); // O evento só será executado uma vez
+        }, splashScreenTime);
+
+    } // FIM DA VERIFICAÇÃO 'if'
 });
+//----- FIM DO SCRIPT DA TELA DE CARREGAMENTO -----
 
 
 // --- SCRIPT ORIGINAL DA PÁGINA ---
