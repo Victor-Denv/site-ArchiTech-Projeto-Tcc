@@ -17,7 +17,7 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 
 // Deixa o banco de dados (db) e o storage prontos para usar
-const db = firebase.firestore();
+
 const storage = firebase.storage();
 
 console.log("Firebase Conectado com SUCESSO a partir do inicial.js!"); 
@@ -32,7 +32,7 @@ window.addEventListener('load', () => {
     if (splashScreen && mainContent) {
 
         // Define o tempo que a splash screen ficará visível (em milissegundos)
-        const splashScreenTime = 1000; // 2.5 segundos
+        const splashScreenTime = 1000; 
 
         setTimeout(() => {
             // Adiciona a classe para iniciar a transição de desaparecimento
@@ -105,9 +105,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-/// =======================================================
-//     LÓGICA DO FORMULÁRIO DE AUTOMAÇÃO
 // =======================================================
+//     LÓGICA DO FORMULÁRIO (USANDO REALTIME DATABASE)
+// =======================================================
+
+// A linha 'const storage = ...' deve estar no topo do seu arquivo
+// Se você apagou, coloque esta linha lá em cima:
+// const storage = firebase.storage();
+
+// MUDA o banco de dados para o Realtime Database
+// Coloque esta linha lá em cima, onde estava o const db antigo
+const db = firebase.database();
 
 // ESPERA O HTML INTEIRO CARREGAR PRIMEIRO!
 document.addEventListener('DOMContentLoaded', function() {
@@ -118,7 +126,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Verifica se o botão REALMENTE existe nesta página
     if (btnSalvar) {
 
-        // 1. Pega o resto dos elementos do HTML
+        // 1. Pega o resto dos elementos
         const nomeArquivoInput = document.getElementById('nomeArquivo');
         const localizacaoInput = document.getElementById('localizacaoArquivo');
         const tipoArquivoInput = document.getElementById('tipoArquivo');
@@ -127,41 +135,43 @@ document.addEventListener('DOMContentLoaded', function() {
         // 2. Cria o "ouvinte" para o clique no botão
         btnSalvar.addEventListener('click', function() {
             
-            // 3. Pega os valores digitados pelo usuário
+            // 3. Pega os valores
             const nome = nomeArquivoInput.value;
             const local = localizacaoInput.value;
             const tipo = tipoArquivoInput.value;
 
-            // Validação simples: impede salvar se campos estiverem vazios
             if (!nome || !local) {
                 alert("Por favor, preencha o Nome e a Localização!");
-                return; // Para a execução
+                return; 
             }
 
-            // AVISA NO CONSOLE que o clique funcionou
-            console.log("Botão clicado! Salvando no Firestore:", nome, local, tipo);
+            console.log("Salvando no REALTIME DATABASE:", nome, local, tipo);
             
-            btnSalvar.innerText = "Salvando..."; // Feedback visual no botão
-            btnSalvar.disabled = true; // Desabilita o botão
+            btnSalvar.innerText = "Salvando...";
+            btnSalvar.disabled = true;
 
-            // 4. Manda os dados para o Firestore
-            db.collection("arquivos").add({
+            // 4. Manda os dados para o Realtime Database
+            // O código aqui é um pouco diferente: .ref() e .push()
+            const arquivosRef = db.ref('arquivos'); // Cria uma "pasta" chamada "arquivos"
+            arquivosRef.push({
                 nome: nome,
                 localizacao: local,
                 tipo: tipo,
-                dataCadastro: firebase.firestore.FieldValue.serverTimestamp()
+                dataCadastro: firebase.database.ServerValue.TIMESTAMP // Salva a data atual
             })
-            .then((docRef) => {
-                // 5. DEU CERTO! O Firestore salvou e devolveu um ID
-                console.log("Documento salvo com ID: ", docRef.id);
+            .then((snapshot) => {
+                // 5. DEU CERTO! O Realtime DB salvou e devolveu um ID
+                const docId = snapshot.key; // Pega o ID único
+                console.log("Documento salvo com ID: ", docId);
                 
                 nomeArquivoInput.value = "";
                 localizacaoInput.value = "";
                 
                 // 6. GERA O QR CODE
-                qrcodeDiv.innerHTML = ""; // Limpa o QR code antigo
+                qrcodeDiv.innerHTML = ""; 
                 
-                const urlParaQR = `https://site-archi-tech-projeto-tcc.vercel.app/arquivo.html?id=${docRef.id}`;
+                // ATENÇÃO: A URL AQUI VAI SER PARA 'arquivo.html'
+                const urlParaQR = `https://site-archi-tech-projeto-tcc.vercel.app/arquivo.html?id=${docId}`;
                 
                 new QRCode(qrcodeDiv, {
                     text: urlParaQR,
