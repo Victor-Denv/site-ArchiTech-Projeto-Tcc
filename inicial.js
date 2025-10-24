@@ -32,7 +32,7 @@ window.addEventListener('load', () => {
     if (splashScreen && mainContent) {
 
         // Define o tempo que a splash screen ficará visível (em milissegundos)
-        const splashScreenTime = 2500; // 2.5 segundos
+        const splashScreenTime = 1000; // 2.5 segundos
 
         setTimeout(() => {
             // Adiciona a classe para iniciar a transição de desaparecimento
