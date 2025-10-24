@@ -25,7 +25,7 @@ console.log("Firebase Conectado com SUCESSO a partir do inicial.js!");
 
 //----- SCRIPT DA TELA DE CARREGAMENTO (COM CORREÇÃO) -----
 window.addEventListener('load', () => {
-    const splashScreen = document.getElementById("tela");
+    const splashScreen = document.getElementById("splash-screen");
     const mainContent = document.getElementById("main-content");
 
     // SÓ RODA ESSE CÓDIGO SE A SPLASH SCREEN E O CONTEÚDO EXISTIREM NA PÁGINA
