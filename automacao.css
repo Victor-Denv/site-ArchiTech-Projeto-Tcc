@@ -93,3 +93,66 @@
     min-height: 150px;
     box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
 }
+/* ======================================================= */
+/* ESTILOS DAS ABAS DE NAVEGAÇÃO          */
+/* ======================================================= */
+
+.abas-container {
+    margin: 20px 20px 0 20px;
+    padding-left: 10px;
+    border-bottom: 2px solid #6f42c1; /* Linha roxa */
+}
+
+.abas-container a {
+    text-decoration: none;
+}
+
+/* Estilo base dos botões/abas */
+.abas-container button {
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 15px;
+    border-radius: 5px 5px 0 0;
+    margin-bottom: -2px; /* Faz "colar" na borda */
+}
+
+/* Botão ATIVO (Roxo) */
+.abas-container .aba-ativa {
+    background-color: #6f42c1;
+    color: white;
+}
+
+/* Botão INATIVO (Cinza/Escuro) */
+.abas-container .aba-inativa {
+    background-color: #333;
+    color: #aaa;
+    transition: background-color 0.2s;
+}
+
+.abas-container .aba-inativa:hover {
+    background-color: #444;
+    color: #fff;
+}
+
+/* Conteúdo que fica abaixo das abas */
+.abas-conteudo {
+    /* Remove a borda de cima para "colar" nas abas */
+    margin-top: 0 !important; 
+    border-radius: 0 8px 8px 8px !important;
+}
+
+/* CSS para a página de LISTAGEM (que vamos usar depois) */
+#listaDeArquivos {
+    background-color: #2a2a3a;
+    color: #f0f0f0;
+    padding: 25px;
+    margin: 0 20px 20px 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+#listaDeArquivos h2 {
+    color: #ffffff;
+    border-bottom: 2px solid #6f42c1;
+    padding-bottom: 5px;
+}

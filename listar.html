@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Listar Arquivos - Automação</title>
+    <link rel="stylesheet" href="automacao.css">
+</head>
+<body>
+
+    <div class="abas-container">
+        
+        <a href="automacao.html">
+            <button class="aba-inativa">
+                + Adicionar Novo Arquivo
+            </button>
+        </a>
+        
+        <button class="aba-ativa">
+            Ver Arquivos Cadastrados
+        </button>
+    </div>
+
+    <div id="listaDeArquivos" class="abas-conteudo">
+        <h2>Arquivos Cadastrados no Sistema</h2>
+        <p>Aqui você verá a lista de todos os arquivos e suas localizações.</p>
+        
+        <div id="containerDaLista">
+            <p>Carregando lista de arquivos...</p>
+        </div>
+    </div> 
+
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-storage-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script> 
+    <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
+    <script src="./inicial.js"></script>
+</body>
+</html>
