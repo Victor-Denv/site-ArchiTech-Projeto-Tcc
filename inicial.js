@@ -1,16 +1,13 @@
 const firebaseConfig = {
-  apiKey: "AIzaSyD",
-  authDomain: "architech-vitor-tcc.firebaseapp.com",
-
-  // ADICIONE ESTA LINHA COM A URL CORRETA DA IMAGEM 124 ADD
-  databaseURL: "https://architeck-e92b4-default-rtdb.firebaseio.com/",
-
-  projectId: "architech-vitor-tcc",
-  storageBucket: "architech-vitor-tcc.appspot.com",
-  messagingSenderId: "17923...",
-  appId: "1:17923...",
-  measurementId: "G-Q77B66GZ03"
-}
+  apiKey: "AIzaSyCPym-OjXGXY7IhA1u3DDPIOPi5tECDhR8",
+  authDomain: "architeck-e92b4.firebaseapp.com",
+  databaseURL: "https://architeck-e92b4-default-rtdb.firebaseio.com",
+  projectId: "architeck-e92b4",
+  storageBucket: "architeck-e92b4.firebasestorage.app",
+  messagingSenderId: "97992394607",
+  appId: "1:97992394607:web:130d060bdfff02d8474a9a",
+  measurementId: "G-N7T7B468Z9"
+};
 
 // Inicializa o Firebase
 firebase.initializeApp(firebaseConfig);
