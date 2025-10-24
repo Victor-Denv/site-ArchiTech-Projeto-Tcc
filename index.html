@@ -18,8 +18,9 @@
                 <i class="fa-solid fa-layer-group"></i>
                 <h1>ARCHITECH</h1>
             </div>
-            <h2>Acesse sua conta</h2>
-            <p class="subtitle">Bem-vindo de volta! Por favor, insira seus dados.</p>
+            
+            <h2 id="form-title">Acesse sua conta</h2>
+            <p class="subtitle" id="subtitle-text">Bem-vindo de volta! Por favor, insira seus dados.</p>
 
             <form id="login-form">
                 <div class="input-group">
@@ -39,14 +40,20 @@
                     <a href="#" class="forgot-password">Esqueceu a senha?</a>
                 </div>
 
-                <button type="submit" class="btn-login">Entrar</button>
+                <button type="button" class="btn-login" id="btn-login">Entrar</button>
             </form>
             
+            <div id="auth-error" style="color: red; text-align: center; margin-top: 10px; min-height: 1.2em;"></div>
+
             <div class="signup-link">
-                <p>Não tem uma conta? <a href="#">Cadastre-se</a></p>
+                <p>Não tem uma conta? <a href="#" id="signup-link">Cadastre-se</a></p>
             </div>
         </div>
     </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+    
     <script src="login.js"></script>
 </body>
 </html>
