@@ -5,13 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Cadastrar Arquivo | ARCHITECH</title>
-
     <link rel="icon" type="image/png" href="Design sem nome (5).png">
-
     <link rel="stylesheet" href="inicial.css">
-
     <link rel="stylesheet" href="automacao.css">
-
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -46,11 +42,9 @@
 
         <main class="conteudo-principal">
             <div class="abas-container" style="margin: 20px 20px 0 20px; border-bottom: 2px solid #6f42c1; padding-bottom: 10px; padding-left: 10px;">
-
                 <button class="aba-ativa" style="padding: 10px 20px; background: #6f42c1; color: white; border: none; cursor: pointer; border-radius: 5px 5px 0 0; font-weight: bold; font-size: 15px; margin-bottom: -2px;">
                     + Adicionar Novo Arquivo
                 </button>
-
                 <a href="listar.html" style="text-decoration: none;">
                     <button class="aba-inativa" style="padding: 10px 20px; background: #333; color: #aaa; border: none; cursor: pointer; border-radius: 5px 5px 0 0; font-weight: bold; font-size: 15px; margin-bottom: -2px;">
                         Ver Arquivos Cadastrados
@@ -63,17 +57,17 @@
                 <p style="font-size: 14px; color: #b0b0b0; margin-bottom: 20px;">Preencha os dados para registrar o arquivo físico e gerar um QR Code de rastreio.</p>
 
                 <div style="margin-bottom: 15px;">
-                    <label for="nomeArquivo" style="display: block; font-weight: bold; font-size: 14px; margin-bottom: 5px; color: #d0d0d0;">Nome do Arquivo:</label><br>
+                    <label for="nomeArquivo">Nome do Arquivo:</label><br>
                     <input type="text" id="nomeArquivo" placeholder="Ex: Contrato Cliente X 2025" style="width: 100%; padding: 10px; font-size: 14px; background-color: #1e1e2d; color: #f0f0f0; border: 1px solid #444; border-radius: 5px; box-sizing: border-box;">
                 </div>
 
                 <div style="margin-bottom: 15px;">
-                    <label for="localizacaoArquivo" style="display: block; font-weight: bold; font-size: 14px; margin-bottom: 5px; color: #d0d0d0;">Localização Física:</label><br>
+                    <label for="localizacaoArquivo">Localização Física:</label><br>
                     <input type="text" id="localizacaoArquivo" placeholder="Ex: Prateleira A, Gaveta 3" style="width: 100%; padding: 10px; font-size: 14px; background-color: #1e1e2d; color: #f0f0f0; border: 1px solid #444; border-radius: 5px; box-sizing: border-box;">
                 </div>
 
                 <div style="margin-bottom: 15px;">
-                    <label for="tipoArquivo" style="display: block; font-weight: bold; font-size: 14px; margin-bottom: 5px; color: #d0d0d0;">Tipo de Arquivo:</label><br>
+                    <label for="tipoArquivo">Tipo de Arquivo:</label><br>
                     <select id="tipoArquivo" style="width: 100%; padding: 10px; font-size: 14px; background-color: #1e1e2d; color: #f0f0f0; border: 1px solid #444; border-radius: 5px; box-sizing: border-box;">
                         <option value="documento">Documento (PDF)</option>
                         <option value="imagem">Imagem (JPG/PNG)</option>
@@ -83,8 +77,8 @@
                 </div>
 
                 <div style="margin-bottom: 15px;">
-                    <label for="arquivoUpload" style="display: block; font-weight: bold; font-size: 14px; margin-bottom: 5px; color: #d0d0d0;">Anexar Imagem para Leitura (JPG/PNG):</label><br>
-                    <input type="file" id="arquivoUpload" accept="image/png, image/jpeg" style="color: #b0b0b0; font-size: 13px; margin-top: 5px;">
+                    <label for="arquivoUpload" style="display: block; font-weight: bold; font-size: 14px; margin-bottom: 5px; color: #d0d0d0;">Anexar Imagem ou PDF para Leitura:</label><br>
+                    <input type="file" id="arquivoUpload" accept="image/png, image/jpeg, application/pdf" style="color: #b0b0b0; font-size: 13px; margin-top: 5px;">
 
                     <button type="button" id="btnProcessarIA" style="padding: 5px 10px; font-size: 12px; margin-left: 10px; background-color: #ffc107; color: black; border:none; border-radius: 3px; cursor:pointer;">
                         <i class="fa-solid fa-brain"></i> Processar com IA
@@ -92,8 +86,8 @@
                     <span id="iaStatus" style="font-size: 12px; margin-left: 10px; color: #ffc107;"></span>
 
                     <div style="margin-top: 10px;">
-                        <label for="textoExtraidoIA" style="display: block; font-weight: bold; font-size: 14px; margin-bottom: 5px; color: #d0d0d0;">Texto Extraído pela IA:</label><br>
-                        <textarea id="textoExtraidoIA" rows="5" placeholder="Clique em 'Processar com IA' após anexar a imagem..." readonly style="width: 100%; padding: 10px; font-size: 12px; background-color: #1e1e2d; color: #ccc; border: 1px solid #444; border-radius: 5px; box-sizing: border-box;"></textarea>
+                        <label for="textoExtraidoIA">Texto Extraído pela IA:</label><br>
+                        <textarea id="textoExtraidoIA" rows="5" placeholder="Clique em 'Processar com IA' após anexar o arquivo..." readonly style="width: 100%; padding: 10px; font-size: 12px; background-color: #1e1e2d; color: #ccc; border: 1px solid #444; border-radius: 5px; box-sizing: border-box;"></textarea>
                     </div>
                 </div>
 
@@ -107,14 +101,13 @@
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
-
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
-
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
-
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-storage-compat.js"></script>
 
     <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
+
+    <script src="//mozilla.github.io/pdf.js/build/pdf.mjs" type="module"></script>
 
     <script src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js'></script>
 
