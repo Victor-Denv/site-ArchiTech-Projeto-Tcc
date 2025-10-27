@@ -1,71 +1,41 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Automação De documentos</title>
-    <link rel="stylesheet" href="automacao.css">
+    
+    <title>Cadastrar Arquivo | ARCHITECH</title>
+    
     <link rel="icon" type="image/png" href="Design sem nome (5).png">
+    
+    <link rel="stylesheet" href="inicial.css"> 
+    
+    <link rel="stylesheet" href="automacao.css"> 
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
-
 <body>
-    <div class="abas-container">
 
-    <button class="aba-ativa">
-        + Adicionar Novo Arquivo
-    </button>
-
-    <a href="listar.html">
-        <button class="aba-inativa">
-            Ver Arquivos Cadastrados
-        </button>
-    </a>
-</div>
-   <div id="formularioCadastro" class="abas-conteudo">
-    <h2>Cadastrar Novo Arquivo</h2>
-    <p>Preencha os dados para registrar o arquivo físico e gerar um QR Code de rastreio.</p>
-    
-    <div>
-        <label for="nomeArquivo">Nome do Arquivo:</label><br>
-        <input type="text" id="nomeArquivo" placeholder="Ex: Contrato Cliente X 2025">
-    </div>
-    
-    <div>
-        <label for="localizacaoArquivo">Localização Física:</label><br>
-        <input type="text" id="localizacaoArquivo" placeholder="Ex: Prateleira A, Gaveta 3">
-    </div>
-    
-    <div>
-        <label for="tipoArquivo">Tipo de Arquivo:</label><br>
-        <select id="tipoArquivo">
-            <option value="documento">Documento (PDF)</option>
-            <option value="imagem">Imagem (JPG/PNG)</option>
-            <option value="certificacao">Certificação</option>
-            <option value="outro">Outro</option>
-        </select>
-    </div>
-    
-    <div>
-        <label for="arquivoUpload">Anexar o arquivo (opcional):</label><br>
-        <input type="file" id="arquivoUpload">
-    </div>
-    
-    <button id="btnSalvarArquivo">
-        Salvar e Gerar QR Code
-    </button>
-
-    <div id="qrcode"></div>
-</div> 
-
-
-<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-storage-compat.js"></script>
-    
-    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script> 
-
-    <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
-
-    <script src="./inicial.js"></script>
-</body>
-</html>
+    <div class="painel-container" id="main-content">
+        <aside class="barra-lateral-esquerda">
+            <div class="logotipo">
+                <i class="fa-solid fa-layer-group"></i>
+                <h1>ARCHITECH</h1>
+            </div>
+            <nav class="menu-navegacao">
+                <ul>
+                    <li><a href="inicial.html"><i class="fa-solid fa-house"></i> Início</a></li>
+                    <li><a href="#"><i class="fa-solid fa-chart-pie"></i> Relatório de gestão</a></li>
+                    <li class="ativo"><a href="automacao.html"><i class="fa-solid fa-robot"></i> Automação de documentos</a></li>
+                    <li><a href="#"><i class="fa-solid fa-message"></i> Mensagem</a></li>
+                    <li><a href="#"><i class="fa-solid fa-shield-halved"></i> Segurança e Compliance</a></li>
+                    <li><a href="configuracoes.html"><i class="fa-solid fa-gear"></i> Configuração</a></li>
+                </ul>
+            </nav>
+            <div class="rodape-barra-lateral">
+                <ul>
+                      <li><a href="#"><i class="fa-solid fa-user"></i> Conta</a></li>
+                      <li><a href="#" id="btn-logout"><i class="fa-solid fa-right-from-bracket"></i> Sair</a>

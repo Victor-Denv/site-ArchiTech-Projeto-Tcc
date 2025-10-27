@@ -15,9 +15,33 @@ firebase.initializeApp(firebaseConfig);
 
 // Deixa o banco de dados (db) e o storage prontos para usar
 const storage = firebase.storage();
-const db = firebase.database(); 
+const db = firebase.database();
+// **** NOVO: INICIALIZA O SERVIÇO DE AUTENTICAÇÃO ****
+const auth = firebase.auth();
 
 console.log("Firebase Conectado com SUCESSO a partir do inicial.js!");
+
+// =======================================================
+//     O "SEGURANÇA" (PROTETOR DE PÁGINA)
+// =======================================================
+// (Este código roda em TODAS as páginas que carregam o 'inicial.js')
+
+auth.onAuthStateChanged(function(user) {
+    if (user) {
+        // --- O USUÁRIO ESTÁ LOGADO ---
+        console.log("Usuário está LOGADO:", user.email);
+        // O usuário está logado, então ele pode ver a página.
+        // Não precisamos fazer nada.
+        
+    } else {
+        // --- O USUÁRIO NÃO ESTÁ LOGADO ---
+        console.log("Usuário NÃO está logado. Redirecionando para o login...");
+        
+        // Chuta o usuário de volta para a página de login
+        // (Vamos usar 'index.html' que é o seu login)
+        window.location.href = "index.html"; 
+    }
+});
 
 
 //----- SCRIPT DA TELA DE CARREGAMENTO (COM CORREÇÃO) -----

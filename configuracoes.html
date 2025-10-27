@@ -3,18 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Architech - Configurações</title>
-    <link rel="stylesheet" href="inicial.css">
-    <link rel="stylesheet" href="configuracoes.css">
+
+    <title>Configurações | ARCHITECH</title>
+
     <link rel="icon" type="image/png" href="Design sem nome (5).png">
-    
+
+    <link rel="stylesheet" href="inicial.css">
+
+    <link rel="stylesheet" href="configuracoes.css">
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body>
-    <div class="painel-container">
+    <div class="painel-container" id="main-content">
         <aside class="barra-lateral-esquerda">
             <div class="logotipo">
                 <i class="fa-solid fa-layer-group"></i>
@@ -24,7 +28,7 @@
                 <ul>
                     <li><a href="inicial.html"><i class="fa-solid fa-house"></i> Início</a></li>
                     <li><a href="#"><i class="fa-solid fa-chart-pie"></i> Relatório de gestão</a></li>
-                    <li><a href="#"><i class="fa-solid fa-robot"></i> Automação de documentos</a></li>
+                    <li><a href="automacao.html"><i class="fa-solid fa-robot"></i> Automação de documentos</a></li>
                     <li><a href="#"><i class="fa-solid fa-message"></i> Mensagem</a></li>
                     <li><a href="#"><i class="fa-solid fa-shield-halved"></i> Segurança e Compliance</a></li>
                     <li class="ativo"><a href="configuracoes.html"><i class="fa-solid fa-gear"></i> Configuração</a></li>
@@ -32,9 +36,9 @@
             </nav>
             <div class="rodape-barra-lateral">
                 <ul>
-                    <li><a href="#"><i class="fa-solid fa-user"></i> Conta</a></li>
-                    <li><a href="#"><i class="fa-solid fa-right-from-bracket"></i> Sair</a></li>
-                    <li><a href="#"><i class="fa-solid fa-circle-question"></i> Ajuda</a></li>
+                      <li><a href="#"><i class="fa-solid fa-user"></i> Conta</a></li>
+                      <li><a href="#" id="btn-logout"><i class="fa-solid fa-right-from-bracket"></i> Sair</a></li>
+                      <li><a href="#"><i class="fa-solid fa-circle-question"></i> Ajuda</a></li>
                 </ul>
             </div>
         </aside>
@@ -50,7 +54,7 @@
                     <i class="fa-solid fa-bell"></i>
                 </div>
             </header>
-            
+
             <h1>Configurações</h1>
 
             <div class="settings-container">
@@ -91,10 +95,10 @@
                             <label for="bio">Biografia</label>
                             <textarea id="bio" rows="3">Arquivista na Architech, especialista em digitalização e compliance de documentos.</textarea>
                         </div>
-                        
+
                         <div class="form-group">
-                             <label for="pronome">Pronomes</label>
-                             <input type="text" id="pronome" placeholder="Ex: ela/dela">
+                                <label for="pronome">Pronomes</label>
+                                <input type="text" id="pronome" placeholder="Ex: ela/dela">
                         </div>
 
                         <div class="form-group">
@@ -108,15 +112,11 @@
             </div>
         </main>
 
-        <aside class="barra-lateral-direita">
-            <div class="secao-perfil">
-                <img src="https://avatars.githubusercontent.com/u/178439100?s=400&u=9b5e3c5b1fdcc3794f31dc3385b9bc8d8a16c681&v=4" alt="Foto Minha">
-                <div class="info-perfil">
-                    <h4>Vitor Da Silva</h4>
-                    <span>Arquivista</span>
-                </div>
-            </div>
-        </aside> 
-    </div>
+        </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script> <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
+    <script src="./inicial.js"></script>
+
 </body>
 </html>
