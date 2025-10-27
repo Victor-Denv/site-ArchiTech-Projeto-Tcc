@@ -155,3 +155,123 @@
 .btn-save:hover {
     transform: scale(1.05);
 }
+
+/* ======================================================= */
+/* ESTILOS RESPONSIVOS PARA CELULARES (Telas até 600px) */
+/* ======================================================= */
+@media (max-width: 600px) {
+
+    /* --- AJUSTES GERAIS --- */
+    body {
+        font-size: 14px; /* Opcional: Diminuir um pouco a fonte base */
+    }
+
+    /* --- Esconder Menus Laterais (Exemplo) --- */
+    /* Você pode ajustar isso se quiser um menu diferente no mobile */
+    .barra-lateral-esquerda,
+    .barra-lateral-direita {
+        display: none; /* Esconde as barras laterais */
+    }
+
+    /* --- Ajustar Container Principal --- */
+    .painel-container {
+        display: block; /* Tira o display grid/flex, faz o conteúdo ocupar tudo */
+    }
+
+    /* --- Ajustar Conteúdo Principal --- */
+    .conteudo-principal {
+        width: 100%; /* Ocupa toda a largura */
+        padding: 10px; /* Reduz o espaçamento interno */
+        margin: 0; /* Remove margens laterais, se houver */
+        box-sizing: border-box; /* Garante que padding não estoure a largura */
+    }
+
+    /* --- Ajustar Cabeçalho (se houver) --- */
+    .cabecalho-principal {
+        /* Talvez precise ajustar itens do cabeçalho aqui */
+        padding: 10px;
+    }
+    .barra-pesquisa input {
+        width: 150px; /* Exemplo: diminuir barra de pesquisa */
+    }
+
+    /* --- Ajustar Formulários (Ex: automacao.html, arquivo.html) --- */
+    #formularioCadastro, 
+    #listaDeArquivos {
+        margin: 10px; /* Reduz margens externas */
+        padding: 15px; /* Reduz padding interno */
+    }
+    #formularioCadastro h2,
+    #listaDeArquivos h2 {
+        font-size: 1.5em; /* Diminui título */
+    }
+    #formularioCadastro button,
+    #listaDeArquivos button,
+    .item-lista-arquivo a.btn-detalhes {
+        padding: 10px 15px; /* Diminui tamanho dos botões */
+        font-size: 14px;
+    }
+    #qrcode, #qrcodeDetalhes {
+        /* Ajustar tamanho do QR Code se necessário */
+        width: 100px !important; 
+        height: 100px !important;
+        min-width: 100px;
+        min-height: 100px;
+    }
+    #qrcode img, #qrcodeDetalhes img,
+    #qrcode canvas, #qrcodeDetalhes canvas {
+        /* Força a imagem/canvas do QR Code a respeitar o tamanho */
+         width: 100px !important;
+         height: 100px !important;
+    }
+
+
+    /* --- Ajustar Lista (listar.html) --- */
+    .item-lista-arquivo {
+        flex-direction: column; /* Coloca info e botão um embaixo do outro */
+        align-items: flex-start; /* Alinha no começo */
+        padding: 10px;
+    }
+    .item-lista-arquivo .item-link {
+        margin-top: 10px; /* Espaço entre info e botão */
+    }
+
+    /* --- Ajustar Abas (automacao.html, listar.html) --- */
+    .abas-container {
+        margin: 10px 10px 0 10px;
+    }
+    .abas-container button {
+        padding: 8px 12px;
+        font-size: 13px;
+    }
+
+    /* --- Adicione mais ajustes conforme necessário --- */
+    /* Ex: .grade-cartoes (da inicial.html) */
+    .grade-cartoes {
+        grid-template-columns: 1fr 1fr; /* 2 colunas no celular? */
+        gap: 10px; /* Diminui espaço */
+    }
+    .item-cartao span {
+        font-size: 12px;
+    }
+    
+    /* Ex: Página de Configurações */
+    .settings-container {
+        flex-direction: column; /* Menu de config em cima, conteúdo embaixo */
+    }
+    .settings-menu {
+        width: 100%;
+        margin-bottom: 15px;
+    }
+    .settings-content {
+        width: 100%;
+    }
+    .profile-section {
+        flex-direction: column-reverse; /* Detalhes em cima, foto embaixo */
+        align-items: center;
+    }
+    .profile-pic-area {
+        margin-bottom: 15px;
+    }
+
+}
