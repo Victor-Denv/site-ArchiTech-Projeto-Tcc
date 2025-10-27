@@ -231,7 +231,7 @@ document.addEventListener('DOMContentLoaded', function() {
 // =======================================================
 //     LÓGICA DA PÁGINA 'arquivo.html' (COM CORREÇÃO PARA CELULAR)
 // =======================================================
-document.addEventListener('DOMContentLoaded', function() {
+window.addEventListener('load', function() { // <-- MUDANÇA AQUI {
     const nomeDisplay = document.getElementById('nomeArquivoDisplay');
     
     if (nomeDisplay) {
