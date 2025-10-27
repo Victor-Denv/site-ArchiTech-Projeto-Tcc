@@ -147,7 +147,7 @@ window.addEventListener('load', function() {
                                 for (let i = 1; i <= numPages; i++) {
                                     iaStatus.innerText = `Processando página ${i} de ${numPages}...`;
                                     const page = await pdfDoc.getPage(i);
-                                    const viewport = page.getViewport({ scale: 1.5 });
+                                    const viewport = page.getViewport({ scale: 1.0 });
 
                                     const canvas = document.createElement('canvas');
                                     const context = canvas.getContext('2d');
