@@ -103,8 +103,10 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // =======================================================
-//     LÓGICA DA PÁGINA 'automacao.html' (COM UPLOAD)
+//     LÓGICA DO FORMULÁRIO (COM UPLOAD EM BASE64)
 // =======================================================
+
+// Espera o HTML carregar
 document.addEventListener('DOMContentLoaded', function() {
 
     const btnSalvar = document.getElementById('btnSalvarArquivo');
@@ -141,30 +143,31 @@ document.addEventListener('DOMContentLoaded', function() {
             // 4. VERIFICA SE TEM ARQUIVO PARA UPLOAD
             if (file) {
                 // SE TEM ARQUIVO:
-                console.log("Fazendo upload do arquivo:", file.name);
-                btnSalvar.innerText = "Enviando arquivo...";
+                console.log("Convertendo arquivo para Base64...", file.name);
+                btnSalvar.innerText = "Processando arquivo...";
                 
-                // **** CORREÇÃO DO 'J' ****
-                // O 'J' que estava sobrando foi removido daqui
-                const storageRef = storage.ref('arquivos_anexados/' + Date.now() + '_' + file.name);
+                // **** ESTA É A MUDANÇA (A 'GAMBIARRA') ****
+                // Vamos usar um 'FileReader' para ler o arquivo como um "Data URL" (Base64)
+                const reader = new FileReader();
+                reader.readAsDataURL(file); // Converte o arquivo em texto
                 
-                // Faz o upload
-                storageRef.put(file)
-                    .then(snapshot => {
-                        console.log("Arquivo enviado com sucesso!");
-                        btnSalvar.innerText = "Pegando URL...";
-                        return snapshot.ref.getDownloadURL();
-                    })
-                    .then(downloadURL => {
-                        console.log("URL do arquivo:", downloadURL);
-                        salvarNoBanco(nome, local, tipo, downloadURL);
-                    })
-                    .catch(error => {
-                        console.error("Erro no upload do arquivo:", error);
-                        alert("Erro ao enviar o arquivo. Tente novamente.");
-                        btnSalvar.innerText = "Salvar e Gerar QR Code";
-                        btnSalvar.disabled = false;
-                    });
+                // Quando a leitura terminar...
+                reader.onload = function() {
+                    const base64String = reader.result; // Este é o texto gigante!
+                    console.log("Arquivo convertido! Salvando no banco...");
+                    
+                    // AGORA SALVA TUDO NO BANCO DE DADOS (com o texto Base64)
+                    salvarNoBanco(nome, local, tipo, base64String); 
+                };
+                
+                // Se der erro na leitura...
+                reader.onerror = function(error) {
+                    console.error("Erro ao ler o arquivo:", error);
+                    alert("Erro ao processar o arquivo. Tente um arquivo menor.");
+                    btnSalvar.innerText = "Salvar e Gerar QR Code";
+                    btnSalvar.disabled = false;
+                };
+                // **** FIM DA MUDANÇA ****
                 
             } else {
                 // SE NÃO TEM ARQUIVO:
@@ -174,9 +177,10 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         // 5. FUNÇÃO AUXILIAR PARA SALVAR NO BANCO
-        function salvarNoBanco(nome, local, tipo, downloadURL) {
+        // (Esta função continua a mesma, ela só salva o que receber)
+        function salvarNoBanco(nome, local, tipo, anexoString) {
             
-            console.log("Salvando no REALTIME DATABASE:", nome, local, tipo, downloadURL);
+            console.log("Salvando no REALTIME DATABASE...");
             btnSalvar.innerText = "Salvando dados...";
 
             const arquivosRef = db.ref('arquivos');
@@ -185,7 +189,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 localizacao: local,
                 tipo: tipo,
                 dataCadastro: firebase.database.ServerValue.TIMESTAMP,
-                anexoUrl: downloadURL // Salva a URL do arquivo (ou null)
+                anexoUrl: anexoString // Salva o texto Base64 (ou null)
             })
             .then((snapshot) => {
                 const docId = snapshot.key;
