@@ -15,9 +15,11 @@ firebase.initializeApp(firebaseConfig);
 
 // Deixa o banco de dados (db) e o storage prontos para usar
 const storage = firebase.storage();
-const db = firebase.database(); // ADICIONEI ESTA LINHA (ESTAVA FALTANDO)
 
-console.log("Firebase Conectado com SUCESSO a partir do inicial.js!"); 
+// **** ADICIONE ESTA LINHA ****
+const db = firebase.database(); 
+
+console.log("Firebase Conectado com SUCESSO a partir do inicial.js!");
 
 
 //----- SCRIPT DA TELA DE CARREGAMENTO (COM CORREÇÃO) -----
