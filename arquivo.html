@@ -41,4 +41,55 @@
         </aside>
 
         <main class="conteudo-principal">
-            <div id="formularioCadastro" class="abas-conteudo" style="border-radius: 8px !  
+            <div id="formularioCadastro" class="abas-conteudo" style="border-radius: 8px !important; margin: 20px; background-color: #2a2a3a; color:#f0f0f0; padding: 25px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);">
+
+                <h2>Detalhes do Arquivo</h2>
+                <p style="font-size: 14px; color: #b0b0b0; margin-bottom: 20px;">Informações do arquivo físico e atualização de local.</p>
+
+                <div style="border-bottom: 1px solid #444; padding-bottom: 15px;">
+                    <h3 style="color: #6f42c1;">Informações Salvas</h3>
+                    <p><strong>Nome:</strong> <span id="nomeArquivoDisplay">Carregando...</span></p>
+                    <p><strong>Tipo:</strong> <span id="tipoArquivoDisplay">Carregando...</span></p>
+                    <p><strong>Data de Cadastro:</strong> <span id="dataCadastroDisplay">Carregando...</span></p>
+                    <p style="font-size: 1.2em; font-weight: bold;">
+                        <strong>LOCALIZAÇÃO ATUAL:</strong>
+                        <span id="localizacaoAtualDisplay" style="color: #00ff00;">Carregando...</span>
+                    </p>
+                    <div id="anexoContainer"></div>
+
+                    <p style="margin-top: 15px;">
+                        <strong>QR Code de Rastreio:</strong>
+                    </p>
+                    <div id="qrcodeDetalhes" style="margin-top: 5px; padding: 10px; background-color: #ffffff; border-radius: 5px; display: inline-block; min-width: 128px; min-height: 128px;">
+                        </div>
+                    </div>
+
+                <div style="margin-top: 20px;">
+                     <h3 style="color: #6f42c1;">Atualizar Localização Física</h3>
+                     <p style="font-size: 14px; color: #b0b0b0; margin-bottom: 20px;">Moveu o arquivo? Salve a nova localização aqui.</p>
+                     <div>
+                         <label for="novaLocalizacaoInput" style="display: block; font-weight: bold; font-size: 14px; margin-bottom: 5px; color: #d0d0d0;">Nova Localização:</label><br>
+                         <input type="text" id="novaLocalizacaoInput" placeholder="Ex: Mesa do Gerente, Gaveta 2" style="width: 100%; padding: 10px; font-size: 14px; background-color: #1e1e2d; color: #f0f0f0; border: 1px solid #444; border-radius: 5px; box-sizing: border-box;">
+                     </div>
+
+                     <button id="btnAtualizarLocal" style="padding: 12px 25px; font-size: 16px; font-weight: bold; color: #ffffff; background-color: #6f42c1; border: none; border-radius: 5px; cursor: pointer; transition: background-color 0.3s ease; margin-top: 10px;">
+                         Salvar Nova Localização
+                     </button>
+
+                     <button id="btnIrParaCadastro" style="padding: 12px 25px; font-size: 16px; font-weight: bold; color: #ffffff; background-color: #28a745; border: none; border-radius: 5px; cursor: pointer; transition: background-color 0.3s ease; margin-top: 10px; margin-left: 10px;">
+                         + Adicionar Novo Arquivo
+                     </button>
+                 </div>
+            </div>
+            </main>
+        </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-storage-compat.js"></script>
+    <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
+    <script src="./inicial.js"></script>
+
+</body>
+</html>
