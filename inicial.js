@@ -1,4 +1,4 @@
-// Forcando o deploy do login.js v2
+// Comentário apenas para forçar novo deploy
 const firebaseConfig = {
   apiKey: "AIzaSyCPym-OjXGXY7IhA1u3DDPIOPi5tECDhR8",
   authDomain: "architeck-e92b4.firebaseapp.com",
@@ -16,7 +16,6 @@ firebase.initializeApp(firebaseConfig);
 // Deixa o banco de dados (db) e o storage prontos para usar
 const storage = firebase.storage();
 const db = firebase.database();
-// **** NOVO: INICIALIZA O SERVIÇO DE AUTENTICAÇÃO ****
 const auth = firebase.auth();
 
 console.log("Firebase Conectado com SUCESSO a partir do inicial.js!");
@@ -24,39 +23,33 @@ console.log("Firebase Conectado com SUCESSO a partir do inicial.js!");
 // =======================================================
 //     O "SEGURANÇA" (PROTETOR DE PÁGINA)
 // =======================================================
-// (Este código roda em TODAS as páginas que carregam o 'inicial.js')
-
 auth.onAuthStateChanged(function(user) {
+    const isLoginPage = window.location.pathname.endsWith('/') || window.location.pathname.endsWith('index.html') || window.location.pathname.endsWith('login.html');
     if (user) {
-        // --- O USUÁRIO ESTÁ LOGADO ---
         console.log("Usuário está LOGADO:", user.email);
-        // O usuário está logado, então ele pode ver a página.
-        // Não precisamos fazer nada.
-        
+        if (isLoginPage) {
+            console.log("Usuário logado na página de login. Redirecionando para inicial.html...");
+            window.location.href = "inicial.html";
+        }
     } else {
-        // --- O USUÁRIO NÃO ESTÁ LOGADO ---
-        console.log("Usuário NÃO está logado. Redirecionando para o login...");
-        
-        // Chuta o usuário de volta para a página de login
-        // (Vamos usar 'index.html' que é o seu login)
-        window.location.href = "index.html"; 
+        if (!isLoginPage) {
+            console.log("Usuário NÃO está logado. Redirecionando para o login...");
+            window.location.href = "index.html";
+        }
     }
 });
 
 
-//----- SCRIPT DA TELA DE CARREGAMENTO (COM CORREÇÃO) -----
+//----- SCRIPT DA TELA DE CARREGAMENTO -----
 window.addEventListener('load', () => {
     const splashScreen = document.getElementById("splash-screen");
     const mainContent = document.getElementById("main-content");
-
     if (splashScreen && mainContent) {
-        const splashScreenTime = 1000; 
+        const splashScreenTime = 1000;
         setTimeout(() => {
             splashScreen.classList.add("hidden");
             splashScreen.addEventListener("transitionend", () => {
-                if (splashScreen) {
-                    splashScreen.remove();
-                }
+                if (splashScreen) { splashScreen.remove(); }
                 mainContent.style.display = "grid";
             }, { once: true });
         }, splashScreenTime);
@@ -66,7 +59,8 @@ window.addEventListener('load', () => {
 
 
 // --- SCRIPT ORIGINAL DA PÁGINA (inicial.html) ---
-document.addEventListener('DOMContentLoaded', () => {
+// **** CORREÇÃO AQUI: de 'DOMContentLoaded' para 'load' ****
+window.addEventListener('load', () => {
     const saudacaoTitulo = document.querySelector('.banner-destaque h2');
     if (saudacaoTitulo) {
         const horaAtual = new Date().getHours();
@@ -97,61 +91,151 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // =======================================================
-//     LÓGICA DA PÁGINA 'automacao.html' (COM UPLOAD EM BASE64)
+//     LÓGICA DA PÁGINA 'automacao.html' (COM IA PARA PDF E IMAGEM - MÉTODO BLOB FINAL)
 // =======================================================
-document.addEventListener('DOMContentLoaded', function() {
+window.addEventListener('load', function() {
     const btnSalvar = document.getElementById('btnSalvarArquivo');
 
     if (btnSalvar) {
-        // ... (elementos do formulário) ...
+        // Pega os elementos
         const nomeArquivoInput = document.getElementById('nomeArquivo');
         const localizacaoInput = document.getElementById('localizacaoArquivo');
         const tipoArquivoInput = document.getElementById('tipoArquivo');
         const qrcodeDiv = document.getElementById('qrcode');
         const arquivoUploadInput = document.getElementById('arquivoUpload');
+        const btnProcessarIA = document.getElementById('btnProcessarIA');
+        const textoExtraidoIA = document.getElementById('textoExtraidoIA');
+        const iaStatus = document.getElementById('iaStatus');
 
+        // **** CÓDIGO DO BOTÃO "PROCESSAR COM IA" (MÉTODO BLOB) ****
+        if (btnProcessarIA) {
+            // Importa o pdf.js como módulo
+            import('//mozilla.github.io/pdf.js/build/pdf.mjs').then(async (pdfjsLib) => {
+                // Configuração essencial para o pdf.js
+                 pdfjsLib.GlobalWorkerOptions.workerSrc = `//mozilla.github.io/pdf.js/build/pdf.worker.mjs`;
+
+                btnProcessarIA.addEventListener('click', async function() {
+                    const file = arquivoUploadInput.files[0];
+                    if (!file) {
+                        alert("Por favor, anexe uma imagem (JPG/PNG) ou PDF primeiro.");
+                        return;
+                    }
+
+                    console.log("Iniciando processamento...");
+                    iaStatus.innerText = "Preparando IA...";
+                    btnProcessarIA.disabled = true;
+                    textoExtraidoIA.value = "";
+
+                    try {
+                        // Configuração Tesseract (com caminhos)
+                        const workerPath = 'https://cdn.jsdelivr.net/npm/tesseract.js@v5.0.0/dist/worker.min.js';
+                        const langPath = 'https://tessdata.projectnaptha.com/4.0.0';
+                        const worker = await Tesseract.createWorker('por', 1, {
+                            workerPath: workerPath,
+                            langPath: langPath,
+                            gzip: false,
+                            logger: m => {
+                                 console.log(m);
+                                if(m.status === 'recognizing text') {
+                                   iaStatus.innerText = `Lendo ${m.progress === 1 ? 'concluído' : `(${Math.round(m.progress * 100)}%)`}...`;
+                                } else if (m.status === 'loading language traineddata') {
+                                    iaStatus.innerText = `Baixando idioma (${Math.round(m.progress * 100)}%)...`;
+                                } else {
+                                    iaStatus.innerText = m.status;
+                                }
+                             },
+                        });
+
+                        if (file.type.startsWith("image/")) {
+                            // --- SE FOR IMAGEM ---
+                            iaStatus.innerText = "Lendo imagem...";
+                            const { data: { text } } = await worker.recognize(file);
+                            textoExtraidoIA.value = text;
+                            iaStatus.innerText = "Leitura concluída!";
+
+                        } else if (file.type === "application/pdf") {
+                            // --- SE FOR PDF (COM MÉTODO BLOB) ---
+                            iaStatus.innerText = "Carregando PDF...";
+                            const fileReader = new FileReader();
+                            fileReader.readAsArrayBuffer(file);
+
+                            fileReader.onload = async function() {
+                                const pdfData = new Uint8Array(this.result);
+                                const pdfDoc = await pdfjsLib.getDocument({ data: pdfData }).promise;
+                                const numPages = pdfDoc.numPages;
+                                let textoCompleto = "";
+
+                                for (let i = 1; i <= numPages; i++) {
+                                    iaStatus.innerText = `Processando página ${i} de ${numPages}...`;
+                                    const page = await pdfDoc.getPage(i);
+                                    const viewport = page.getViewport({ scale: 1.0 }); // Mantém escala 1.0
+
+                                    const canvas = document.createElement('canvas');
+                                    const context = canvas.getContext('2d');
+                                    canvas.height = viewport.height;
+                                    canvas.width = viewport.width;
+                                    await page.render({ canvasContext: context, viewport: viewport }).promise;
+
+                                    // **** USA O MÉTODO BLOB ****
+                                    const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+                                    if (!blob) { throw new Error(`Falha ao converter canvas para Blob na página ${i}`); }
+
+                                    iaStatus.innerText = `Lendo texto da página ${i}...`;
+                                    // Manda o Blob para o Tesseract
+                                    const { data: { text } } = await worker.recognize(blob); // Passa o Blob
+                                    textoCompleto += text + "\n\n--- Fim da Página " + i + " ---\n\n";
+                                }
+                                textoExtraidoIA.value = textoCompleto;
+                                iaStatus.innerText = "Leitura do PDF concluída!";
+                            };
+                            fileReader.onerror = function(error) { throw new Error("Erro ao ler o arquivo PDF."); }
+                        } else {
+                            alert("Formato não suportado. Use JPG, PNG ou PDF.");
+                            iaStatus.innerText = "";
+                            btnProcessarIA.disabled = false; // Resetar botão
+                            return;
+                        }
+                        await worker.terminate();
+                    } catch (error) {
+                        console.error("Erro no processamento:", error);
+                        iaStatus.innerText = "Erro durante o processamento.";
+                        alert("Ocorreu um erro ao processar o arquivo. Verifique o console para detalhes.");
+                         // Resetar botão mesmo em caso de erro
+                    } finally {
+                         btnProcessarIA.disabled = false;
+                    }
+                });
+            }).catch(error => {
+                console.error("Erro ao carregar pdf.js:", error);
+                iaStatus.innerText = "Erro ao carregar biblioteca PDF.";
+                if (btnProcessarIA) btnProcessarIA.disabled = true;
+                alert("Não foi possível carregar a funcionalidade de leitura de PDF. Verifique sua conexão.");
+            });
+        }
+        // **** FIM DO CÓDIGO DO BOTÃO "PROCESSAR COM IA" ****
+
+        // Lógica do Botão "Salvar e Gerar QR Code"
         btnSalvar.addEventListener('click', function() {
             const nome = nomeArquivoInput.value;
             const local = localizacaoInput.value;
             const tipo = tipoArquivoInput.value;
-            const file = arquivoUploadInput.files[0]; 
+            const textoIA = textoExtraidoIA.value;
 
             if (!nome || !local) {
                 alert("Por favor, preencha o Nome e a Localização!");
-                return; 
+                return;
             }
 
             console.log("Iniciando processo de salvar...");
             btnSalvar.innerText = "Salvando...";
             btnSalvar.disabled = true;
 
-            if (file) {
-                console.log("Convertendo arquivo para Base64...", file.name);
-                btnSalvar.innerText = "Processando arquivo...";
-                
-                const reader = new FileReader();
-                reader.readAsDataURL(file);
-                
-                reader.onload = function() {
-                    const base64String = reader.result;
-                    console.log("Arquivo convertido! Salvando no banco...");
-                    salvarNoBanco(nome, local, tipo, base64String); 
-                };
-                
-                reader.onerror = function(error) {
-                    console.error("Erro ao ler o arquivo:", error);
-                    alert("Erro ao processar o arquivo. Tente um arquivo menor.");
-                    btnSalvar.innerText = "Salvar e Gerar QR Code";
-                    btnSalvar.disabled = false;
-                };
-            } else {
-                console.log("Nenhum arquivo anexado. Salvando só os dados.");
-                salvarNoBanco(nome, local, tipo, null);
-            }
+            salvarNoBanco(nome, local, tipo, textoIA);
         });
 
-        function salvarNoBanco(nome, local, tipo, anexoString) {
-            console.log("Salvando no REALTIME DATABASE...");
+        // FUNÇÃO AUXILIAR PARA SALVAR NO BANCO
+        function salvarNoBanco(nome, local, tipo, textoIA) {
+            console.log("Salvando no REALTIME DATABASE (com texto da IA)...");
             btnSalvar.innerText = "Salvando dados...";
 
             const arquivosRef = db.ref('arquivos');
@@ -160,28 +244,30 @@ document.addEventListener('DOMContentLoaded', function() {
                 localizacao: local,
                 tipo: tipo,
                 dataCadastro: firebase.database.ServerValue.TIMESTAMP,
-                anexoUrl: anexoString 
+                anexoUrl: null, // Não salvamos mais anexo
+                textoExtraido: textoIA || null
             })
             .then((snapshot) => {
                 const docId = snapshot.key;
                 console.log("Documento salvo com ID: ", docId);
-                
+
                 nomeArquivoInput.value = "";
                 localizacaoInput.value = "";
-                arquivoUploadInput.value = null; 
-                
-                qrcodeDiv.innerHTML = ""; 
+                arquivoUploadInput.value = null;
+                textoExtraidoIA.value = "";
+                iaStatus.innerText = "";
+
+                qrcodeDiv.innerHTML = "";
                 const urlParaQR = `https://site-archi-tech-projeto-tcc.vercel.app/arquivo.html?id=${docId}`;
-                
+
                 new QRCode(qrcodeDiv, { text: urlParaQR, width: 150, height: 150 });
-                
+
                 alert("Arquivo salvo com sucesso! Imprima o QR Code.");
                 btnSalvar.innerText = "Salvar e Gerar QR Code";
                 btnSalvar.disabled = false;
             })
             .catch((error) => {
                 console.error("Erro ao salvar documento: ", error);
-                alert("Ocorreu um erro ao salvar. Tente novamente.");
                 btnSalvar.innerText = "Salvar e Gerar QR Code";
                 btnSalvar.disabled = false;
             });
@@ -195,14 +281,19 @@ document.addEventListener('DOMContentLoaded', function() {
 document.addEventListener('DOMContentLoaded', function() {
     const containerDaLista = document.getElementById('containerDaLista');
     if (containerDaLista) {
-        console.log("Estamos na página listar.html, buscando arquivos...");
+        console.log("DEBUG: Entrou na lógica da página listar.html.");
         const arquivosRef = db.ref('arquivos');
+        console.log("DEBUG: Tentando buscar dados em /arquivos...");
         arquivosRef.once('value', (snapshot) => {
-            const dados = snapshot.val(); 
-            containerDaLista.innerHTML = ""; 
+            console.log("DEBUG: Busca no Firebase concluída.");
+            const dados = snapshot.val();
+            console.log("DEBUG: Dados recebidos:", dados);
+            containerDaLista.innerHTML = "";
             if (dados) {
+                console.log("DEBUG: Dados encontrados. Montando lista...");
                 Object.keys(dados).forEach(key => {
                     const arquivo = dados[key];
+                    // console.log("DEBUG: Adicionando item:", key, arquivo.nome);
                     const itemHtml = `
                         <div class="item-lista-arquivo">
                             <div class="item-info">
@@ -218,40 +309,68 @@ document.addEventListener('DOMContentLoaded', function() {
                     `;
                     containerDaLista.innerHTML += itemHtml;
                 });
+                console.log("DEBUG: Lista montada com sucesso!");
             } else {
+                console.log("DEBUG: Nenhum dado encontrado no Firebase.");
                 containerDaLista.innerHTML = "<p>Nenhum arquivo cadastrado no sistema ainda.</p>";
             }
         }).catch((error) => {
-            console.error("Erro ao buscar arquivos:", error);
+            console.error("DEBUG: Erro ao buscar arquivos:", error);
             containerDaLista.innerHTML = "<p style='color: red;'>Erro ao carregar a lista.</p>";
         });
     }
 });
 
 // =======================================================
-//     LÓGICA DA PÁGINA 'arquivo.html' (COM CORREÇÃO PARA CELULAR)
+//     LÓGICA DA PÁGINA 'arquivo.html' (COM QR CODE e CORREÇÃO CELULAR)
 // =======================================================
-window.addEventListener('load', function() { // <-- MUDANÇA AQUI {
+// **** MUDANÇA AQUI: de 'DOMContentLoaded' para 'load' ****
+window.addEventListener('load', function() {
     const nomeDisplay = document.getElementById('nomeArquivoDisplay');
-    
-    if (nomeDisplay) {
+
+    if (nomeDisplay) { // Estamos na página arquivo.html
         console.log("Estamos na página arquivo.html, procurando ID...");
         const params = new URLSearchParams(window.location.search);
         const arquivoId = params.get('id');
 
         if (!arquivoId) {
+            console.error("Nenhum ID de arquivo encontrado na URL!");
             document.getElementById('formularioCadastro').innerHTML = "<h2>Erro: ID não encontrado na URL.</h2>";
             return;
         }
+        console.log("ID encontrado:", arquivoId);
+
+        // **** CÓDIGO QUE GERA O QR CODE ****
+        const qrcodeDetalhesDiv = document.getElementById('qrcodeDetalhes');
+        if (qrcodeDetalhesDiv) {
+            const urlAtual = window.location.href;
+            qrcodeDetalhesDiv.innerHTML = "";
+            try {
+                new QRCode(qrcodeDetalhesDiv, {
+                    text: urlAtual,
+                    width: 128,
+                    height: 128,
+                    colorDark : "#000000",
+                    colorLight : "#ffffff",
+                    correctLevel : QRCode.CorrectLevel.H
+                });
+                console.log("QR Code gerado para:", urlAtual);
+            } catch (error) {
+                console.error("Erro ao gerar QR Code:", error);
+                if(qrcodeDetalhesDiv) qrcodeDetalhesDiv.innerHTML = "<p style='color:red; font-size:10px;'>Erro ao gerar QR Code.</p>";
+            }
+        } else {
+             console.error("DEBUG: Div 'qrcodeDetalhes' NÃO encontrada no HTML!");
+        }
+        // **** FIM DO CÓDIGO DO QR CODE ****
 
         const arquivoRef = db.ref('arquivos/' + arquivoId);
-        
+
+        // BUSCAR OS DADOS
         arquivoRef.on('value', (snapshot) => {
             const data = snapshot.val();
             const anexoContainer = document.getElementById('anexoContainer');
-            if(anexoContainer) {
-                anexoContainer.innerHTML = ""; 
-            }
+            if(anexoContainer) anexoContainer.innerHTML = "";
 
             if (data) {
                 console.log("Dados recebidos:", data);
@@ -261,24 +380,17 @@ window.addEventListener('load', function() { // <-- MUDANÇA AQUI {
                 const dataCadastro = new Date(data.dataCadastro);
                 document.getElementById('dataCadastroDisplay').innerText = dataCadastro.toLocaleString('pt-BR');
 
-                // **** ESTA É A CORREÇÃO PARA CELULAR ****
-                if (data.anexoUrl && anexoContainer) {
+                // CORREÇÃO PARA CELULAR (Baixar Anexo)
+                if (data.anexoUrl && anexoContainer) { // anexoUrl agora é Base64
                     console.log("Anexo encontrado. Preparando para download.");
-                    
                     let nomeDoArquivo = data.nome || "anexo";
-                    
-                    if (data.anexoUrl.startsWith("data:image/jpeg")) {
-                        nomeDoArquivo += ".jpg";
-                    } else if (data.anexoUrl.startsWith("data:image/png")) {
-                        nomeDoArquivo += ".png";
-                    } else if (data.anexoUrl.startsWith("data:application/pdf")) {
-                        nomeDoArquivo += ".pdf";
-                    }
+                    if (data.anexoUrl.startsWith("data:image/jpeg")) { nomeDoArquivo += ".jpg"; }
+                    else if (data.anexoUrl.startsWith("data:image/png")) { nomeDoArquivo += ".png"; }
+                    else if (data.anexoUrl.startsWith("data:application/pdf")) { nomeDoArquivo += ".pdf"; }
 
                     anexoContainer.innerHTML = `
                         <p style="margin-top: 15px;">
                             <strong>Anexo:</strong>
-                            
                             <a href="${data.anexoUrl}" download="${nomeDoArquivo}" class="item-link" style="display: inline-block; margin-left: 10px;">
                                 <button class="btn-detalhes" style="background-color: #007bff;">
                                     Baixar Anexo
@@ -287,6 +399,19 @@ window.addEventListener('load', function() { // <-- MUDANÇA AQUI {
                         </p>
                     `;
                 }
+
+                 // **** NOVO: MOSTRAR TEXTO DA IA ****
+                 const textoIADisplay = document.getElementById('textoExtraidoIADisplay'); // Precisamos criar essa div no HTML
+                 if (textoIADisplay) {
+                     if (data.textoExtraido) {
+                         textoIADisplay.innerText = data.textoExtraido;
+                         textoIADisplay.parentElement.style.display = 'block'; // Mostra a seção
+                     } else {
+                         textoIADisplay.parentElement.style.display = 'none'; // Esconde se não houver texto
+                     }
+                 }
+                 // **** FIM DO NOVO ****
+
 
             } else {
                 console.error("Nenhum dado encontrado para este ID.");
@@ -297,32 +422,42 @@ window.addEventListener('load', function() { // <-- MUDANÇA AQUI {
         // Botão de ATUALIZAR LOCALIZAÇÃO
         const btnAtualizar = document.getElementById('btnAtualizarLocal');
         const novaLocalizacaoInput = document.getElementById('novaLocalizacaoInput');
-
-        btnAtualizar.addEventListener('click', function() {
-            const novaLocalizacao = novaLocalizacaoInput.value;
-            if (!novaLocalizacao) {
-                alert("Por favor, digite a nova localização.");
-                return;
-            }
-            console.log("Atualizando localização para:", novaLocalizacao);
-            btnAtualizar.innerText = "Salvando...";
-            arquivoRef.update({ localizacao: novaLocalizacao })
-            .then(() => {
-                alert("Localização atualizada com sucesso!");
-                novaLocalizacaoInput.value = "";
-                btnAtualizar.innerText = "Salvar Nova Localização";
-            })
-            .catch((error) => {
-                console.error("Erro ao atualizar:", error);
-                btnAtualizar.innerText = "Salvar Nova Localização";
+        if(btnAtualizar && novaLocalizacaoInput){ // Verificação
+            btnAtualizar.addEventListener('click', function() {
+                const novaLocalizacao = novaLocalizacaoInput.value;
+                if (!novaLocalizacao) { /* ... */ return; }
+                btnAtualizar.innerText = "Salvando...";
+                arquivoRef.update({ localizacao: novaLocalizacao })
+                .then(() => { /* ... */ })
+                .catch((error) => { /* ... */ });
             });
-        });
-        
+        }
+
         // Botão "ADICIONAR NOVO"
         const btnIrParaCadastro = document.getElementById('btnIrParaCadastro');
-        btnIrParaCadastro.addEventListener('click', function() {
-            console.log("Indo para a página de automação...");
-            window.location.href = "automacao.html";
+        if(btnIrParaCadastro){ // Verificação
+            btnIrParaCadastro.addEventListener('click', function() {
+                window.location.href = "automacao.html";
+            });
+        }
+    }
+});
+
+// =======================================================
+//     LÓGICA DO BOTÃO "SAIR" (LOGOUT)
+// =======================================================
+document.addEventListener('DOMContentLoaded', function() {
+    const btnLogout = document.getElementById('btn-logout');
+    if (btnLogout) {
+        btnLogout.addEventListener('click', function(e) {
+            e.preventDefault();
+            console.log("Usuário clicou em Sair...");
+            auth.signOut().then(() => {
+                console.log("Logout feito com sucesso.");
+                window.location.href = "index.html";
+            }).catch((error) => {
+                console.error("Erro no logout:", error);
+            });
         });
     }
 });
