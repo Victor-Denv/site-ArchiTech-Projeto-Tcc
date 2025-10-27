@@ -159,22 +159,35 @@
                     </li>
                 </ul>
             </section>
+<section class="secao-mensagem">
+    <div class="cabecalho-secao">
+        <h4>Message</h4>
+        <i class="fa-solid fa-ellipsis"></i> 
+    </div>
 
-            <section class="secao-mensagem">
-                <div class="cabecalho-secao">
-                    <h4>Message</h4>
-                    <i class="fa-solid fa-ellipsis"></i>
-                </div>
-                <div class="preview-mensagem">
-                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQNO5i6ilJ6kUGDHCKqCJaN4xKIwlDIHLvvZw&s">
-                    <div class="conteudo-mensagem">
-                        <div class="cabecalho-mensagem">
-                            <strong>DataLia</strong>
-                        </div>
-                        <p>Oi, eu sou a DataLia, sua assistente IA de CAD. Como posso te ajudar hoje?</p>
-                    </div>
-                </div>
-            </section>
+    <div class="preview-mensagem" id="previewChat" style="cursor: pointer;"> 
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQNO5i6ilJ6kUGDHCKqCJaN4xKIwlDIHLvvZw&s" alt="Avatar DataLia">
+        <div class="conteudo-mensagem">
+            <div class="cabecalho-mensagem">
+                <strong>DataLia</strong>
+            </div>
+            <p>Oi, eu sou a DataLia, sua assistente IA. Como posso te ajudar hoje?</p>
+        </div>
+    </div>
+
+    <div class="chat-janela" id="chatJanela" style="display: none;"> 
+        <div class="chat-cabecalho">
+            <span>Chat com DataLia</span>
+            <button id="fecharChatBtn" title="Fechar Chat">&times;</button> </div>
+        <div class="chat-corpo" id="chatCorpo">
+            <div class="mensagem ia">Olá! Como posso ajudar? 👋</div>
+        </div>
+        <div class="chat-input">
+            <input type="text" id="chatInput" placeholder="Digite sua mensagem...">
+            <button id="enviarChatBtn" title="Enviar Mensagem"><i class="fa-solid fa-paper-plane"></i></button>
+        </div>
+    </div>
+</section>
 
         </aside> 
     </div> 

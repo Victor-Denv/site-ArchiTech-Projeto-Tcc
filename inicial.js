@@ -461,3 +461,43 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+// =======================================================
+//     LÓGICA PARA ABRIR/FECHAR O CHATBOT DATALIA
+// =======================================================
+document.addEventListener('DOMContentLoaded', function() {
+    
+    const previewChat = document.getElementById('previewChat');
+    const chatJanela = document.getElementById('chatJanela');
+    const fecharChatBtn = document.getElementById('fecharChatBtn');
+
+    // Verifica se os elementos do chat existem nesta página (inicial.html)
+    if (previewChat && chatJanela && fecharChatBtn) {
+        
+        console.log("DEBUG: Elementos do Chat encontrados.");
+
+        // Função para abrir/fechar
+        function toggleChat(e) {
+            // Previne o comportamento padrão do link '#' se ele existir
+            if(e) e.preventDefault(); 
+            
+            if (chatJanela.style.display === 'none' || chatJanela.style.display === '') {
+                console.log("DEBUG: Abrindo chat...");
+                chatJanela.style.display = 'block';
+                previewChat.style.display = 'none'; // Esconde o preview
+            } else {
+                console.log("DEBUG: Fechando chat...");
+                chatJanela.style.display = 'none';
+                previewChat.style.display = 'block'; // Mostra o preview de volta
+            }
+        }
+
+        // Adiciona evento de clique no preview
+        previewChat.addEventListener('click', toggleChat);
+
+        // Adiciona evento de clique no botão de fechar
+        fecharChatBtn.addEventListener('click', toggleChat);
+    } else {
+        // console.log("DEBUG: Elementos do Chat NÃO encontrados nesta página.");
+    }
+});
