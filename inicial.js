@@ -501,3 +501,123 @@ document.addEventListener('DOMContentLoaded', function() {
         // console.log("DEBUG: Elementos do Chat NÃO encontrados nesta página.");
     }
 });
+
+// =======================================================
+//     LÓGICA DO CHATBOT DATALIA (CONECTADO AO GEMINI)
+// =======================================================
+document.addEventListener('DOMContentLoaded', async function() { // Adiciona 'async' aqui
+
+    const chatInput = document.getElementById('chatInput');
+    const enviarChatBtn = document.getElementById('enviarChatBtn');
+    const chatCorpo = document.getElementById('chatCorpo');
+
+    // Verifica se os elementos do chat existem nesta página
+    if (chatInput && enviarChatBtn && chatCorpo) {
+
+        console.log("DEBUG: Lógica do Chatbot Gemini iniciada.");
+
+        // **** COLE SUA API KEY AQUI ****
+        const API_KEY = "AIzaSyDmrqBe2d5vHpYH95a9Zb-YAdL4Tl0TTrc"; 
+        // **** COLE SUA API KEY AQUI ****
+
+        // Tenta importar o SDK do Gemini (que foi carregado no HTML)
+        let genAI;
+        try {
+             // O SDK é carregado globalmente pelo script no HTML, 
+             // mas precisamos acessá-lo. A forma pode variar um pouco.
+             // Tentativa comum:
+             if (window.google && window.google.generativeai) {
+                 genAI = new window.google.generativeai.GoogleGenerativeAI(API_KEY);
+             } else {
+                 // Tenta outra forma se a de cima falhar (pode acontecer com unpkg)
+                 // Assumindo que ele cria um objeto global 'genai'
+                  if (window.genai) {
+                     genAI = new window.genai.GoogleGenerativeAI(API_KEY);
+                  } else {
+                     // Última tentativa se importado como módulo no escopo global
+                     // Isso é menos provável com unpkg
+                     // const { GoogleGenerativeAI } = await import('https://unpkg.com/@google/generative-ai');
+                     // genAI = new GoogleGenerativeAI(API_KEY);
+                     throw new Error("SDK do Google Generative AI não encontrado.");
+                  }
+             }
+             console.log("DEBUG: SDK Gemini carregado e inicializado.");
+        } catch (error) {
+            console.error("Erro ao carregar ou inicializar o SDK do Gemini:", error);
+            // Mostra um erro no chat se o SDK falhar
+            adicionarMensagem("Erro: Não foi possível carregar a IA. Verifique o console.", "ia");
+            enviarChatBtn.disabled = true; // Desabilita o envio
+            chatInput.disabled = true;
+            return; // Para a execução
+        }
+        
+
+        // Escolhe o modelo de IA (gemini-pro é bom para chat)
+        const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+
+        // Função para adicionar mensagens na tela do chat
+        function adicionarMensagem(texto, tipo = "ia", isLoading = false) {
+            const divMensagem = document.createElement('div');
+            divMensagem.classList.add('mensagem', tipo);
+            if (isLoading) {
+                 divMensagem.classList.add('loading'); // Adiciona classe para animação
+                 divMensagem.id = 'loading-message'; // ID para remover depois
+            }
+            divMensagem.innerText = texto;
+            chatCorpo.appendChild(divMensagem);
+            // Rola para a última mensagem
+            chatCorpo.scrollTop = chatCorpo.scrollHeight; 
+        }
+
+        // Função principal para enviar mensagem e obter resposta
+        async function enviarMensagem() {
+            const mensagemUsuario = chatInput.value.trim();
+            if (mensagemUsuario === "" || !genAI) return; // Não envia vazio ou se SDK falhou
+
+            // 1. Mostra a mensagem do usuário na tela
+            adicionarMensagem(mensagemUsuario, "usuario");
+            chatInput.value = ""; // Limpa o campo de input
+            enviarChatBtn.disabled = true; // Desabilita enquanto espera
+
+            // 2. Mostra "Digitando..."
+            adicionarMensagem("Digitando", "ia", true);
+
+            try {
+                // 3. Envia a mensagem para a API do Gemini
+                console.log("DEBUG: Enviando para Gemini:", mensagemUsuario);
+                const result = await model.generateContent(mensagemUsuario);
+                const response = await result.response;
+                const textoResposta = response.text();
+                console.log("DEBUG: Resposta do Gemini:", textoResposta);
+
+                // 4. Remove o "Digitando..."
+                const loadingMsg = document.getElementById('loading-message');
+                if (loadingMsg) loadingMsg.remove();
+
+                // 5. Mostra a resposta da IA
+                adicionarMensagem(textoResposta, "ia");
+
+            } catch (error) {
+                console.error("Erro ao gerar conteúdo:", error);
+                 // Remove o "Digitando..."
+                const loadingMsg = document.getElementById('loading-message');
+                if (loadingMsg) loadingMsg.remove();
+                // Mostra mensagem de erro
+                adicionarMensagem("Desculpe, ocorreu um erro ao processar sua mensagem.", "ia");
+            } finally {
+                enviarChatBtn.disabled = false; // Reabilita o botão
+                chatInput.focus(); // Coloca o cursor de volta no input
+            }
+        }
+
+        // Adiciona evento de clique no botão Enviar
+        enviarChatBtn.addEventListener('click', enviarMensagem);
+
+        // Adiciona evento para enviar com a tecla Enter
+        chatInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                enviarMensagem();
+            }
+        });
+    }
+});
