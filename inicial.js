@@ -14,8 +14,8 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 
 // Deixa o banco de dados (db) e o storage prontos para usar
-
 const storage = firebase.storage();
+const db = firebase.database(); // ADICIONEI ESTA LINHA (ESTAVA FALTANDO)
 
 console.log("Firebase Conectado com SUCESSO a partir do inicial.js!"); 
 
@@ -50,7 +50,7 @@ window.addEventListener('load', () => {
 //----- FIM DO SCRIPT DA TELA DE CARREGAMENTO -----
 
 
-// --- SCRIPT ORIGINAL DA PÁGINA ---
+// --- SCRIPT ORIGINAL DA PÁGINA (inicial.html) ---
 document.addEventListener('DOMContentLoaded', () => {
     const saudacaoTitulo = document.querySelector('.banner-destaque h2');
     if (saudacaoTitulo) {
@@ -103,31 +103,22 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // =======================================================
-//     LÓGICA DO FORMULÁRIO (USANDO REALTIME DATABASE)
+//     LÓGICA DA PÁGINA 'automacao.html' (COM UPLOAD)
 // =======================================================
-
-// A linha 'const storage = ...' deve estar no topo do seu arquivo
-// Se você apagou, coloque esta linha lá em cima:
-// const storage = firebase.storage();
-
-// MUDA o banco de dados para o Realtime Database
-// Coloque esta linha lá em cima, onde estava o const db antigo
-const db = firebase.database();
-
-// ESPERA O HTML INTEIRO CARREGAR PRIMEIRO!
 document.addEventListener('DOMContentLoaded', function() {
 
-    // Agora que o HTML carregou, procuramos o botão
     const btnSalvar = document.getElementById('btnSalvarArquivo');
 
-    // Verifica se o botão REALMENTE existe nesta página
+    // Verifica se estamos na página de automação
     if (btnSalvar) {
 
-        // 1. Pega o resto dos elementos
+        // 1. Pega os elementos do HTML
         const nomeArquivoInput = document.getElementById('nomeArquivo');
         const localizacaoInput = document.getElementById('localizacaoArquivo');
         const tipoArquivoInput = document.getElementById('tipoArquivo');
         const qrcodeDiv = document.getElementById('qrcode');
+        const arquivoUploadInput = document.getElementById('arquivoUpload');
+
 
         // 2. Cria o "ouvinte" para o clique no botão
         btnSalvar.addEventListener('click', function() {
@@ -136,38 +127,75 @@ document.addEventListener('DOMContentLoaded', function() {
             const nome = nomeArquivoInput.value;
             const local = localizacaoInput.value;
             const tipo = tipoArquivoInput.value;
+            const file = arquivoUploadInput.files[0]; 
 
             if (!nome || !local) {
                 alert("Por favor, preencha o Nome e a Localização!");
                 return; 
             }
 
-            console.log("Salvando no REALTIME DATABASE:", nome, local, tipo);
-            
+            console.log("Iniciando processo de salvar...");
             btnSalvar.innerText = "Salvando...";
             btnSalvar.disabled = true;
 
-            // 4. Manda os dados para o Realtime Database
-            // O código aqui é um pouco diferente: .ref() e .push()
-            const arquivosRef = db.ref('arquivos'); // Cria uma "pasta" chamada "arquivos"
+            // 4. VERIFICA SE TEM ARQUIVO PARA UPLOAD
+            if (file) {
+                // SE TEM ARQUIVO:
+                console.log("Fazendo upload do arquivo:", file.name);
+                btnSalvar.innerText = "Enviando arquivo...";
+                
+                // **** CORREÇÃO DO 'J' ****
+                // O 'J' que estava sobrando foi removido daqui
+                const storageRef = storage.ref('arquivos_anexados/' + Date.now() + '_' + file.name);
+                
+                // Faz o upload
+                storageRef.put(file)
+                    .then(snapshot => {
+                        console.log("Arquivo enviado com sucesso!");
+                        btnSalvar.innerText = "Pegando URL...";
+                        return snapshot.ref.getDownloadURL();
+                    })
+                    .then(downloadURL => {
+                        console.log("URL do arquivo:", downloadURL);
+                        salvarNoBanco(nome, local, tipo, downloadURL);
+                    })
+                    .catch(error => {
+                        console.error("Erro no upload do arquivo:", error);
+                        alert("Erro ao enviar o arquivo. Tente novamente.");
+                        btnSalvar.innerText = "Salvar e Gerar QR Code";
+                        btnSalvar.disabled = false;
+                    });
+                
+            } else {
+                // SE NÃO TEM ARQUIVO:
+                console.log("Nenhum arquivo anexado. Salvando só os dados.");
+                salvarNoBanco(nome, local, tipo, null);
+            }
+        });
+
+        // 5. FUNÇÃO AUXILIAR PARA SALVAR NO BANCO
+        function salvarNoBanco(nome, local, tipo, downloadURL) {
+            
+            console.log("Salvando no REALTIME DATABASE:", nome, local, tipo, downloadURL);
+            btnSalvar.innerText = "Salvando dados...";
+
+            const arquivosRef = db.ref('arquivos');
             arquivosRef.push({
                 nome: nome,
                 localizacao: local,
                 tipo: tipo,
-                dataCadastro: firebase.database.ServerValue.TIMESTAMP // Salva a data atual
+                dataCadastro: firebase.database.ServerValue.TIMESTAMP,
+                anexoUrl: downloadURL // Salva a URL do arquivo (ou null)
             })
             .then((snapshot) => {
-                // 5. DEU CERTO! O Realtime DB salvou e devolveu um ID
-                const docId = snapshot.key; // Pega o ID único
+                const docId = snapshot.key;
                 console.log("Documento salvo com ID: ", docId);
                 
                 nomeArquivoInput.value = "";
                 localizacaoInput.value = "";
+                arquivoUploadInput.value = null; 
                 
-                // 6. GERA O QR CODE
                 qrcodeDiv.innerHTML = ""; 
-                
-                // ATENÇÃO: A URL AQUI VAI SER PARA 'arquivo.html'
                 const urlParaQR = `https://site-archi-tech-projeto-tcc.vercel.app/arquivo.html?id=${docId}`;
                 
                 new QRCode(qrcodeDiv, {
@@ -179,22 +207,21 @@ document.addEventListener('DOMContentLoaded', function() {
                 alert("Arquivo salvo com sucesso! Imprima o QR Code.");
                 btnSalvar.innerText = "Salvar e Gerar QR Code";
                 btnSalvar.disabled = false;
-
             })
             .catch((error) => {
-                // 7. DEU ERRO!
                 console.error("Erro ao salvar documento: ", error);
                 alert("Ocorreu um erro ao salvar. Tente novamente.");
                 btnSalvar.innerText = "Salvar e Gerar QR Code";
                 btnSalvar.disabled = false;
             });
-        });
-
+        }
+        
     } // Fim do 'if (btnSalvar)'
+});
 
-}); // Fim do 'DOMContentLoaded'
-
-
+// =======================================================
+//     LÓGICA DA PÁGINA 'listar.html'
+// =======================================================
 document.addEventListener('DOMContentLoaded', function() {
     
     // Procura o container da lista (que só existe na 'listar.html')
@@ -203,29 +230,18 @@ document.addEventListener('DOMContentLoaded', function() {
     if (containerDaLista) {
         console.log("Estamos na página listar.html, buscando arquivos...");
 
-        // Referência para a "pasta" inteira de arquivos
         const arquivosRef = db.ref('arquivos');
 
-        // Busca os dados UMA VEZ. (Usamos 'once' aqui, 
-        // '.on()' ficaria atualizando em tempo real)
         arquivosRef.once('value', (snapshot) => {
             
-            const dados = snapshot.val(); // Pega todos os dados
-            
-            // Limpa a mensagem "Carregando..."
+            const dados = snapshot.val(); 
             containerDaLista.innerHTML = ""; 
 
             if (dados) {
                 console.log("Total de arquivos encontrados:", Object.keys(dados).length);
 
-                // Passa por cada arquivo encontrado
-                // 'key' é o ID único (ex: -NqX...abc)
-                // 'dados[key]' é o objeto (nome, localizacao, tipo)
                 Object.keys(dados).forEach(key => {
                     const arquivo = dados[key];
-
-                    // Cria o HTML para este item da lista
-                    // Usamos a classe 'item-lista-arquivo' (vamos criar o CSS para ela)
                     const itemHtml = `
                         <div class="item-lista-arquivo">
                             <div class="item-info">
@@ -239,13 +255,10 @@ document.addEventListener('DOMContentLoaded', function() {
                             </div>
                         </div>
                     `;
-                    
-                    // Adiciona o HTML deste item dentro do container
                     containerDaLista.innerHTML += itemHtml;
                 });
 
             } else {
-                // Se não encontrar nenhum arquivo
                 console.log("Nenhum arquivo encontrado.");
                 containerDaLista.innerHTML = "<p>Nenhum arquivo cadastrado no sistema ainda.</p>";
             }
@@ -257,7 +270,9 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-
+// =======================================================
+//     LÓGICA DA PÁGINA 'arquivo.html' (BLOCO CORRIGIDO)
+// =======================================================
 document.addEventListener('DOMContentLoaded', function() {
     
     // Procura os elementos da página 'arquivo.html'
@@ -270,7 +285,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // 1. LER O ID DA URL
         const params = new URLSearchParams(window.location.search);
-        const arquivoId = params.get('id'); // Pega o ID (ex: 'ABC123XYZ')
+        const arquivoId = params.get('id');
 
         if (!arquivoId) {
             console.error("Nenhum ID de arquivo encontrado na URL!");
@@ -282,31 +297,46 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Referência para este arquivo específico no banco de dados
         const arquivoRef = db.ref('arquivos/' + arquivoId);
-        
-        // Elementos que vamos preencher
-        const localDisplay = document.getElementById('localizacaoAtualDisplay');
-        const tipoDisplay = document.getElementById('tipoArquivoDisplay');
-        const dataDisplay = document.getElementById('dataCadastroDisplay');
 
         // 2. BUSCAR OS DADOS NO REALTIME DATABASE (EM TEMPO REAL)
         arquivoRef.on('value', (snapshot) => {
             const data = snapshot.val();
             
+            // Pega o container do anexo (que criamos no HTML)
+            const anexoContainer = document.getElementById('anexoContainer');
+            if(anexoContainer) {
+                anexoContainer.innerHTML = ""; // Limpa ele primeiro
+            }
+
             if (data) {
                 console.log("Dados recebidos:", data);
-                // Coloca os dados nos campos <span id="...">
+                // Coloca os dados nos campos
                 nomeDisplay.innerText = data.nome;
-                localDisplay.innerText = data.localizacao; // A localização atual
-                tipoDisplay.innerText = data.tipo;
-                
-                // Formata a data
+                document.getElementById('localizacaoAtualDisplay').innerText = data.localizacao;
+                document.getElementById('tipoArquivoDisplay').innerText = data.tipo;
                 const dataCadastro = new Date(data.dataCadastro);
-                dataDisplay.innerText = dataCadastro.toLocaleString('pt-BR');
+                document.getElementById('dataCadastroDisplay').innerText = dataCadastro.toLocaleString('pt-BR');
+
+                // **** ESTA É A PARTE CORRIGIDA ****
+                // **** VERIFICA SE TEM ANEXO ****
+                if (data.anexoUrl && anexoContainer) {
+                    console.log("Anexo encontrado:", data.anexoUrl);
+                    // Cria um botão de download
+                    anexoContainer.innerHTML = `
+                        <p style="margin-top: 15px;">
+                            <strong>Anexo:</strong>
+                            <a href="${data.anexoUrl}" target="_blank" class="item-link" style="display: inline-block; margin-left: 10px;">
+                                <button class="btn-detalhes" style="background-color: #007bff;">
+                                    Ver/Baixar Anexo
+                                </button>
+                            </a>
+                        </p>
+                    `;
+                }
 
             } else {
                 console.error("Nenhum dado encontrado para este ID.");
                 nomeDisplay.innerText = "Arquivo não encontrado.";
-                localDisplay.innerText = "N/A";
             }
         });
 
@@ -316,16 +346,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
         btnAtualizar.addEventListener('click', function() {
             const novaLocalizacao = novaLocalizacaoInput.value;
-
             if (!novaLocalizacao) {
                 alert("Por favor, digite a nova localização.");
                 return;
             }
-
             console.log("Atualizando localização para:", novaLocalizacao);
             btnAtualizar.innerText = "Salvando...";
-
-            // ATUALIZA o campo 'localizacao' no banco de dados
             arquivoRef.update({
                 localizacao: novaLocalizacao
             })
@@ -346,7 +372,6 @@ document.addEventListener('DOMContentLoaded', function() {
         
         btnIrParaCadastro.addEventListener('click', function() {
             console.log("Indo para a página de automação...");
-            // Redireciona o usuário para a página de cadastro
             window.location.href = "automacao.html";
         });
         
