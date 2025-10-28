@@ -1,4 +1,4 @@
-// Comentário para forçar deploy v14 - FINAL CORRIGIDO
+// Comentário para forçar deploy v15 - TESTE LOADING RADICAL
 const firebaseConfig = {
   apiKey: "AIzaSyCPym-OjXGXY7IhA1u3DDPIOPi5tECDhR8", // COLE SUA CHAVE REAL AQUI
   authDomain: "architeck-e92b4.firebaseapp.com",
@@ -12,13 +12,13 @@ const firebaseConfig = {
 
 // Inicializa o Firebase
 firebase.initializeApp(firebaseConfig);
-const storage = firebase.storage();
-const db = firebase.database();
-const auth = firebase.auth();
+const storage = firebase.storage(); // Mantém definição
+const db = firebase.database();     // Mantém definição
+const auth = firebase.auth();       // Mantém definição
 console.log("Firebase Conectado com SUCESSO a partir do inicial.js!");
 
 // =======================================================
-//     O "SEGURANÇA" (PROTETOR DE PÁGINA)
+//     O "SEGURANÇA" (PROTETOR DE PÁGINA) - MANTÉM ATIVO
 // =======================================================
 auth.onAuthStateChanged(function(user) {
     const isLoginPage = window.location.pathname.endsWith('/') || window.location.pathname.endsWith('index.html') || window.location.pathname.endsWith('login.html');
@@ -30,151 +30,77 @@ auth.onAuthStateChanged(function(user) {
     }
 });
 
-//----- SCRIPT DA TELA DE CARREGAMENTO (Usa window.load - ESSENCIAL) -----
+
+//----- SCRIPT DA TELA DE CARREGAMENTO (Usa window.load) - MANTÉM ATIVO -----
 window.addEventListener('load', () => {
-    console.log("DEBUG: Evento window.load disparado (para Splash).");
+    console.log("DEBUG: Evento window.load disparado (para Splash)."); // Log
     const splashScreen = document.getElementById("splash-screen");
     const mainContent = document.getElementById("main-content");
-    // ... (código da tela de loading continua igual) ...
-    if (splashScreen && mainContent) { /* ... */ }
-    else if (mainContent) { mainContent.style.display = "grid"; }
+    if (splashScreen && mainContent) {
+        const splashScreenTime = 1000;
+        setTimeout(() => {
+            if (splashScreen) {
+                console.log("DEBUG: Escondendo Splash Screen..."); // Log
+                splashScreen.classList.add("hidden");
+                splashScreen.addEventListener("transitionend", () => {
+                    if (splashScreen) { splashScreen.remove(); }
+                    if (mainContent) mainContent.style.display = "grid";
+                    console.log("DEBUG: Splash Screen removida, conteúdo visível."); // Log
+                }, { once: true });
+            } else if(mainContent) { mainContent.style.display = "grid"; }
+        }, splashScreenTime);
+    } else if (mainContent){
+         mainContent.style.display = "grid"; // Se não tem splash, mostra direto
+         console.log("DEBUG: Splash não encontrada, mostrando conteúdo direto."); // Log
+    } else {
+         console.log("DEBUG: Nem Splash nem Main Content encontrados no load."); // Log de erro
+    }
 });
 //----- FIM DO SCRIPT DA TELA DE CARREGAMENTO -----
 
-// --- SCRIPT ORIGINAL DA PÁGINA (inicial.html) ---
-// **** Usando window.load como estava funcionando antes ****
-window.addEventListener('load', () => {
-    console.log("DEBUG: window.load disparado (para Scripts da inicial.html).");
-    // ... (código da saudação, menu, etc. continua igual) ...
+
+/* // --- SCRIPT ORIGINAL DA PÁGINA (inicial.html) --- COMENTADO
+document.addEventListener('DOMContentLoaded', () => {
+    // ... (código da saudação, menu, etc.) ...
 });
+*/
 
+/* // =======================================================
+//     LÓGICA DA PÁGINA 'automacao.html' - COMENTADO
 // =======================================================
-//     LÓGICA DA PÁGINA 'automacao.html' (IA SÓ PARA IMAGEM)
-// =======================================================
-// **** Usando DOMContentLoaded ****
 document.addEventListener('DOMContentLoaded', function() {
-    const btnSalvar = document.getElementById('btnSalvarArquivo');
-    if (btnSalvar) { // Só roda na automacao.html
-        console.log("DEBUG: Iniciando lógica da página automacao.html (DOMContentLoaded).");
-        // ... (Pega elementos, Lógica Botão IA, Lógica Botão Salvar, Função salvarNoBanco) ...
-    }
+    // ... (código da IA, salvar, etc.) ...
 });
+*/
 
-
+/* // =======================================================
+//     LÓGICA DA PÁGINA 'listar.html' - COMENTADO
 // =======================================================
-//     LÓGICA DA PÁGINA 'listar.html'
-// =======================================================
-// **** Usando DOMContentLoaded ****
 document.addEventListener('DOMContentLoaded', function() {
-    const containerDaLista = document.getElementById('containerDaLista');
-    if (containerDaLista) {
-        console.log("DEBUG: Iniciando lógica da página listar.html (DOMContentLoaded).");
-        // ... (código para montar lista) ...
-    }
+    // ... (código da lista) ...
 });
+*/
 
+/* // =======================================================
+//     LÓGICA DA PÁGINA 'arquivo.html' - COMENTADO
 // =======================================================
-//     LÓGICA DA PÁGINA 'arquivo.html' (COM QR CODE e TEXTO IA)
-// =======================================================
-// **** Usando DOMContentLoaded ****
 document.addEventListener('DOMContentLoaded', function() {
-    const nomeDisplay = document.getElementById('nomeArquivoDisplay');
-    if (nomeDisplay) { // Estamos na página arquivo.html
-        console.log("DEBUG: Iniciando lógica da página arquivo.html (DOMContentLoaded).");
-        // ... (código pegar ID, Gerar QR Code Real, Busca Dados, Botões Atualizar/Adicionar Novo) ...
-    }
+    // ... (código detalhes, QR Code, etc.) ...
 });
+*/
 
+/* // =======================================================
+//     LÓGICA COMPLETA DO CHATBOT DATALIA - COMENTADO
 // =======================================================
-//     LÓGICA COMPLETA DO CHATBOT DATALIA (SEMPRE VISÍVEL)
-// =======================================================
-// **** Usando DOMContentLoaded ****
 document.addEventListener('DOMContentLoaded', function() {
-    // --- Elementos do Chat ---
-    const chatInput = document.getElementById('chatInput');
-    const enviarChatBtn = document.getElementById('enviarChatBtn');
-    const chatCorpo = document.getElementById('chatCorpo');
-    const chatJanela = document.getElementById('chatJanela');
-
-    if (chatJanela && chatInput && enviarChatBtn && chatCorpo) {
-        console.log("DEBUG: Elementos do Chat encontrados (DOMContentLoaded). Iniciando lógica Gemini.");
-
-        // --- Lógica da Conexão Gemini ---
-        const API_KEY = "AIzaSy...(sua chave completa)..."; // COLE SUA CHAVE AQUI!!!
-        console.log("DEBUG: Usando API Key começando com:", API_KEY.substring(0, 8) + "...");
-
-        let genAI;
-        let model;
-
-        async function initializeGemini() { /* ... (código continua igual) ... */ }
-        function adicionarMensagem(texto, tipo = "ia", isLoading = false) { /* ... (código continua igual) ... */ }
-
-        // **** FUNÇÃO enviarMensagem COM LOGS DETALHADOS ****
-        async function enviarMensagem() {
-            console.log("DEBUG: Função enviarMensagem INICIADA!"); // Log
-            const mensagemUsuario = chatInput.value.trim();
-            if (mensagemUsuario === "" || !model) { /* ... (verificação e logs) ... */ return; }
-            adicionarMensagem(mensagemUsuario, "usuario");
-            chatInput.value = "";
-            enviarChatBtn.disabled = true;
-            adicionarMensagem("Digitando", "ia", true);
-            try {
-                console.log("DEBUG: PREPARANDO para enviar para Gemini:", mensagemUsuario); // Log
-                const result = await model.generateContent(mensagemUsuario);
-                console.log("DEBUG: Resposta BRUTA do Gemini recebida:", result); // Log
-                const response = await result.response;
-                if (!response) throw new Error("Resposta da API vazia.");
-                console.log("DEBUG: Tentando extrair texto da resposta..."); // Log
-                const textoResposta = response.text();
-                console.log("DEBUG: Texto da resposta extraído:", textoResposta.substring(0, 50) + "..."); // Log
-                const loadingMsg = document.getElementById('loading-message');
-                if (loadingMsg) loadingMsg.remove();
-                adicionarMensagem(textoResposta, "ia");
-            } catch (error) {
-                 console.error("DEBUG: ERRO CAPTURADO no bloco catch:", error); // Log
-                 console.error("DEBUG: Mensagem de erro específica:", error.message); // Log
-                 const loadingMsg = document.getElementById('loading-message');
-                 if (loadingMsg) loadingMsg.remove();
-                 adicionarMensagem("Desculpe, ocorreu um erro.", "ia");
-            } finally {
-                 console.log("DEBUG: Bloco finally executado, reabilitando botão."); // Log
-                 enviarChatBtn.disabled = false;
-                 if(chatInput) chatInput.focus();
-            }
-        }
-        // **** FIM DA FUNÇÃO enviarMensagem ****
-
-
-        // Inicialização e Event Listeners
-        chatInput.placeholder = "Inicializando IA...";
-        chatInput.disabled = true;
-        enviarChatBtn.disabled = true;
-        initializeGemini().then(() => { /* ... */ });
-
-        // **** LISTENER COM LOG ****
-        enviarChatBtn.addEventListener('click', function() {
-            console.log("DEBUG: Botão ENVIAR foi CLICADO!"); // Log
-            enviarMensagem(); // Chama a função
-        });
-        chatInput.addEventListener('keypress', function(e) { if (e.key === 'Enter') enviarMensagem(); });
-        console.log("DEBUG: Event listeners de envio adicionados.");
-
-    } else {
-        console.log("DEBUG: Elementos do Chat NÃO encontrados nesta página.");
-    }
-}); // Fim do DOMContentLoaded para o Chatbot
-
-
-// =======================================================
-//     LÓGICA DO BOTÃO "SAIR" (LOGOUT)
-// =======================================================
-// **** Usando DOMContentLoaded ****
-document.addEventListener('DOMContentLoaded', function() {
-    const btnLogout = document.getElementById('btn-logout');
-    if (btnLogout) {
-        console.log("DEBUG: Botão Logout encontrado.");
-        btnLogout.addEventListener('click', function(e) { /* ... (código do logout) ... */ });
-    } else {
-         console.log("DEBUG: Botão Logout NÃO encontrado.");
-    }
+    // ... (código chatbot, Gemini API) ...
 });
+*/
+
+/* // =======================================================
+//     LÓGICA DO BOTÃO "SAIR" (LOGOUT) - COMENTADO
+// =======================================================
+document.addEventListener('DOMContentLoaded', function() {
+    // ... (código logout) ...
+});
+*/
