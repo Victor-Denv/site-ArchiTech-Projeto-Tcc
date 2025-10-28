@@ -10,7 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="icon" type="image/png" href="Design sem nome (5).png">
-    <link rel="stylesheet" href="inicial.css">
+    <link rel="stylesheet" href="automacao.css"> 
 </head>
 <body>
 
@@ -21,7 +21,6 @@
             <div class="loader"></div>
         </div>
     </div>
-
     <div class="painel-container" id="main-content" style="display: none;">
         <aside class="barra-lateral-esquerda">
             <div class="logotipo">
@@ -40,9 +39,9 @@
             </nav>
             <div class="rodape-barra-lateral">
                 <ul>
-                    <li><a href="#"><i class="fa-solid fa-user"></i> Conta</a></li>
-                    <li><a href="#" id="btn-logout"><i class="fa-solid fa-right-from-bracket"></i> Sair</a></li>
-                    <li><a href="#"><i class="fa-solid fa-circle-question"></i> Ajuda</a></li>
+                      <li><a href="#"><i class="fa-solid fa-user"></i> Conta</a></li>
+                      <li><a href="#" id="btn-logout"><i class="fa-solid fa-right-from-bracket"></i> Sair</a></li>
+                      <li><a href="#"><i class="fa-solid fa-circle-question"></i> Ajuda</a></li>
                 </ul>
             </div>
         </aside>
@@ -60,27 +59,76 @@
             </header>
 
             <section class="banner-destaque">
-                 <h2>Arquivista, veja algumas das atualizações do nosso acervo enquanto você esteve fora...</h2>
-                 <button class="botao-principal">Saiba mais</button>
+                <h2>Arquivista, veja algumas das atualizações do nosso acervo enquanto você esteve fora...</h2>
+                <button class="botao-principal">Saiba mais</button>
             </section>
 
             <section class="acesso-rapido">
-                 <div class="cabecalho-secao"> /* ... */ </div>
-                 <div class="grade-cartoes"> /* ... */ </div>
+                 <div class="cabecalho-secao">
+                     <h3>Acesso rápido</h3>
+                     <a href="#" class="botao-ver-tudo">ver tudo</a>
+                 </div>
+                 <div class="grade-cartoes">
+                     <div class="item-cartao cartao-ativo"><i class="fa-solid fa-building-columns"></i><span>O arquivo</span></div>
+                     <div class="item-cartao"><i class="fa-solid fa-user-tie"></i><span>A arquivista</span></div>
+                     <div class="item-cartao"><i class="fa-solid fa-calendar-days"></i><span>Visitas agendadas</span></div>
+                     <div class="item-cartao"><i class="fa-solid fa-chart-line"></i><span>Painel de controle</span></div>
+                     <div class="item-cartao"><i class="fa-solid fa-lock"></i><span>Segurança da Informação</span></div>
+                 </div>
             </section>
 
             <section class="outras-unidades">
-                 <div class="cabecalho-secao"> /* ... */ </div>
-                 <div class="espaco-mapa"> /* ... */ </div>
+                 <div class="cabecalho-secao">
+                     <h3>Outras unidades de arquivo</h3>
+                     <a href="#" class="botao-ver-tudo">ver tudo</a>
+                 </div>
+                 <div class="espaco-mapa">
+                     <p>Mapa interativo aqui</p>
+                 </div>
             </section>
         </main>
 
         <aside class="barra-lateral-direita">
-            <div class="secao-perfil"> /* ... (Perfil do Usuário) ... */ </div>
-            <section class="secao-agenda"> /* ... (Agenda) ... */ </section>
-            <section class="atividades-disponiveis"> /* ... (Atividades) ... */ </section>
+            <div class="secao-perfil">
+                <img src="https://avatars.githubusercontent.com/u/178439100?s=400&u=9b5e3c5b1fdcc3794f31dc3385b9bc8d8a16c681&v=4">
+                <div class="info-perfil">
+                    <h4>Vitor Da Silva</h4>
+                    <span>Arquivista</span>
+                </div>
+            </div>
 
-            </aside>
+            <section class="secao-agenda">
+                 <div class="cabecalho-secao"> /* ... (Conteúdo da Agenda) ... */ </div>
+                 <div class="datas-agenda"> /* ... (Conteúdo da Agenda) ... */ </div>
+            </section>
+
+            <section class="atividades-disponiveis">
+                 <div class="cabecalho-secao"> /* ... (Conteúdo das Atividades) ... */ </div>
+                 <ul> /* ... (Conteúdo das Atividades) ... */ </ul>
+            </section>
+
+            <section class="secao-mensagem">
+                <div class="cabecalho-secao">
+                    <h4>Chat com DataLia</h4>
+                    <i class="fa-solid fa-ellipsis" style="display: none;"></i>
+                </div>
+
+                <div class="chat-janela" id="chatJanela">
+                    <div class="chat-cabecalho">
+                        <span>Assistente IA</span>
+                         <button id="fecharChatBtn" title="Fechar Chat" style="display: none;">&times;</button>
+                    </div>
+                    <div class="chat-corpo" id="chatCorpo">
+                        <div class="mensagem ia">Olá! Como posso ajudar? 👋</div>
+                    </div>
+                    <div class="chat-input">
+                        <input type="text" id="chatInput" placeholder="Digite sua mensagem...">
+                        <button id="enviarChatBtn" title="Enviar Mensagem"><i class="fa-solid fa-paper-plane"></i></button>
+                    </div>
+                </div>
+                </section>
+
+        </aside>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
@@ -88,7 +136,10 @@
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-storage-compat.js"></script>
     <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
-    <script src="inicial.js"></script>
+    
+    <script type="module" src="https://esm.run/@google/generative-ai"></script>
+
+    <script src="./inicial.js"></script>
 
 </body>
 </html>
