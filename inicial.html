@@ -10,201 +10,60 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="icon" type="image/png" href="Design sem nome (5).png">
+    <link rel="stylesheet" href="automacao.css">
 </head>
 <body>
 
     <div id="splash-screen">
-        <div class="splash-content">
-            <i class="fa-solid fa-layer-group"></i>
-            <h1>ARCHITECH</h1>
-            <div class="loader"></div>
-        </div>
+        <div class="splash-content"> /* ... (Conteúdo do Splash) ... */ </div>
     </div>
+
     <div class="painel-container" id="main-content" style="display: none;">
         <aside class="barra-lateral-esquerda">
-            <div class="logotipo">
-                <i class="fa-solid fa-layer-group"></i>
-                <h1>ARCHITECH</h1>
-            </div>
-            <nav class="menu-navegacao">
-                <ul>
-                    <li class="ativo"><a href="#"><i class="fa-solid fa-house"></i> Início</a></li>
-                    <li><a href="#"><i class="fa-solid fa-chart-pie"></i> Relatório de gestão</a></li>
-                    <li><a href="automacao.html"><i class="fa-solid fa-robot"></i> Automação de documentos</a></li>
-                    <li><a href="#"><i class="fa-solid fa-message"></i> Mensagem</a></li>
-                    <li><a href="#"><i class="fa-solid fa-shield-halved"></i> Segurança e Compliance</a></li>
-                    <li><a href="configuracoes.html"><i class="fa-solid fa-gear"></i> Configuração</a></li>
-                </ul>
-            </nav>
-            <div class="rodape-barra-lateral">
-                <ul>
-                      <li><a href="#"><i class="fa-solid fa-user"></i> Conta</a></li>
-                     <li><a href="#" id="btn-logout"><i class="fa-solid fa-right-from-bracket"></i> Sair</a></li>
-                      <li><a href="#"><i class="fa-solid fa-circle-question"></i> Ajuda</a></li>
-                </ul>
-            </div>
+             /* ... (Logotipo, Menu Navegação, Rodapé com btn-logout) ... */
         </aside>
 
         <main class="conteudo-principal">
-            <header class="cabecalho-principal">
-                <div class="barra-pesquisa">
-                    <i class="fa-solid fa-search"></i>
-                    <input type="text" placeholder="Pesquisar">
-                </div>
-                <div class="icones-cabecalho">
-                    <i class="fa-solid fa-sliders"></i>
-                    <i class="fa-solid fa-bell"></i>
-                </div>
-            </header>
-
-            <section class="banner-destaque">
-                <h2>Arquivista, veja algumas das atualizações do nosso acervo enquanto você esteve fora...</h2>
-                <button class="botao-principal">Saiba mais</button>
-            </section>
-
-            <section class="acesso-rapido">
-                <div class="cabecalho-secao">
-                    <h3>Acesso rápido</h3>
-                    <a href="#" class="botao-ver-tudo">ver tudo</a>
-                </div>
-                <div class="grade-cartoes">
-                    <div class="item-cartao cartao-ativo">
-                        <i class="fa-solid fa-building-columns"></i>
-                        <span>O arquivo</span>
-                    </div>
-                    <div class="item-cartao">
-                        <i class="fa-solid fa-user-tie"></i>
-                        <span>A arquivista</span>
-                    </div>
-                    <div class="item-cartao">
-                        <i class="fa-solid fa-calendar-days"></i>
-                        <span>Visitas agendadas</span>
-                    </div>
-                    <div class="item-cartao">
-                        <i class="fa-solid fa-chart-line"></i>
-                        <span>Painel de controle</span>
-                    </div>
-                    <div class="item-cartao">
-                        <i class="fa-solid fa-lock"></i>
-                        <span>Segurança da Informação</span>
-                    </div>
-                </div>
-            </section>
-
-            <section class="outras-unidades">
-                 <div class="cabecalho-secao">
-                    <h3>Outras unidades de arquivo</h3>
-                    <a href="#" class="botao-ver-tudo">ver tudo</a>
-                </div>
-                <div class="espaco-mapa">
-                    <p>Mapa interativo aqui</p>
-                </div>
-            </section>
+             /* ... (Cabeçalho, Banner, Acesso Rápido, Outras Unidades) ... */
         </main>
 
         <aside class="barra-lateral-direita">
-            <div class="secao-perfil">
-                <img src="https://avatars.githubusercontent.com/u/178439100?s=400&u=9b5e3c5b1fdcc3794f31dc3385b9bc8d8a16c681&v=4">
-                <div class="info-perfil">
-                    <h4>Vitor Da Silva</h4>
-                    <span>Arquivista</span>
-                </div>
-            </div>
+            <div class="secao-perfil"> /* ... (Perfil do Usuário) ... */ </div>
+            <section class="secao-agenda"> /* ... (Agenda) ... */ </section>
+            <section class="atividades-disponiveis"> /* ... (Atividades) ... */ </section>
 
-            <section class="secao-agenda">
+            <section class="secao-mensagem">
                 <div class="cabecalho-secao">
-                    <h4>Agenda</h4>
-                    <i class="fa-solid fa-ellipsis"></i>
+                    <h4>Chat com DataLia</h4>
+                    <i class="fa-solid fa-ellipsis" style="display: none;"></i>
                 </div>
-                <div class="datas-agenda">
-                    <div class="cartao-data">
-                        <span>2024</span>
-                        <strong>20</strong>
-                        <span>Julho</span>
+
+                <div class="chat-janela" id="chatJanela">
+                    <div class="chat-cabecalho">
+                        <span>Assistente IA</span>
+                        <button id="fecharChatBtn" title="Fechar Chat" style="display: none;">&times;</button>
                     </div>
-                     <div class="cartao-data">
-                        <span>2025</span>
-                        <strong>18</strong>
-                        <span>Agosto</span>
+                    <div class="chat-corpo" id="chatCorpo">
+                        <div class="mensagem ia">Olá! Como posso ajudar? 👋</div>
+                    </div>
+                    <div class="chat-input">
+                        <input type="text" id="chatInput" placeholder="Digite sua mensagem...">
+                        <button id="enviarChatBtn" title="Enviar Mensagem"><i class="fa-solid fa-paper-plane"></i></button>
                     </div>
                 </div>
-            </section>
-
-            <section class="atividades-disponiveis">
-                 <div class="cabecalho-secao">
-                    <h4>Atividades disponíveis</h4>
-                    <i class="fa-solid fa-ellipsis"></i>
-                </div>
-                <ul>
-                    <li class="item-atividade destacado">
-                        <div class="fundo-icone"><i class="fa-solid fa-book-open"></i></div>
-                        <div class="info-atividade">
-                            <strong>Curso de Restauração</strong>
-                            <span>Profa Dra Alice Duha</span>
-                        </div>
-                    </li>
-                    <li class="item-atividade">
-                        <div class="fundo-icone"><i class="fa-solid fa-landmark"></i></div>
-                        <div class="info-atividade">
-                            <strong>Conhecendo o Arquivo</strong>
-                            <span>Arq. Louise Anunciação</span>
-                        </div>
-                    </li>
-                    <li class="item-atividade">
-                        <div class="fundo-icone"><i class="fa-solid fa-heart-pulse"></i></div>
-                        <div class="info-atividade">
-                            <strong>O que são arquivos de saúde?</strong>
-                            <span>Prof Ilara Moraes</span>
-                        </div>
-                    </li>
-                </ul>
-            </section>
-<section class="secao-mensagem">
-    <div class="cabecalho-secao">
-        <h4>Chat com DataLia</h4>
-        <i class="fa-solid fa-ellipsis" style="display: none;"></i> </div>
-
-    <div class="chat-janela" id="chatJanela">
-        <div class="chat-cabecalho">
-            <span>Assistente IA</span>
-             <button id="fecharChatBtn" title="Fechar Chat" style="display: none;">&times;</button>
-        </div>
-        <div class="chat-corpo" id="chatCorpo">
-            <div class="mensagem ia">Olá! Como posso ajudar? 👋</div>
-        </div>
-        <div class="chat-input">
-            <input type="text" id="chatInput" placeholder="Digite sua mensagem...">
-            <button id="enviarChatBtn" title="Enviar Mensagem"><i class="fa-solid fa-paper-plane"></i></button>
-        </div>
+                </section>
+            </aside>
     </div>
-</section>
-</section>
-    <div class="chat-janela" id="chatJanela" style="display: none;"> 
-        <div class="chat-cabecalho">
-            <span>Chat com DataLia</span>
-            <button id="fecharChatBtn" title="Fechar Chat">&times;</button> </div>
-        <div class="chat-corpo" id="chatCorpo">
-            <div class="mensagem ia">Olá! Como posso ajudar? 👋</div>
-        </div>
-        <div class="chat-input">
-            <input type="text" id="chatInput" placeholder="Digite sua mensagem...">
-            <button id="enviarChatBtn" title="Enviar Mensagem"><i class="fa-solid fa-paper-plane"></i></button>
-        </div>
-    </div>
-</section>
 
-        </aside> 
-    </div> 
-    
-<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-storage-compat.js"></script>
-
     <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
 
-    
+    <script type="module" src="https://esm.run/@google/generative-ai"></script>
 
     <script src="./inicial.js"></script>
+
 </body>
 </html>
