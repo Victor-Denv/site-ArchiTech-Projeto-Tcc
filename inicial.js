@@ -161,7 +161,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const chatCorpo = document.getElementById('chatCorpo');
 
     if (chatInput && enviarChatBtn && chatCorpo) {
-        const API_KEY = "AIzaSy...(sua chave completa)..."; // COLE SUA CHAVE AQUI
+        const API_KEY = "AIzaSyDmrqBe2d5vHpYH95a9Zb-YAdL4Tl0TTrc"; // COLE SUA CHAVE AQUI
         console.log("DEBUG: Usando API Key começando com:", API_KEY.substring(0, 8) + "...");
 
         let genAI;
