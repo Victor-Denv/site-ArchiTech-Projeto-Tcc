@@ -125,7 +125,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (chatJanela && chatInput && enviarChatBtn && chatCorpo) {
         console.log("DEBUG: Elementos do Chat encontrados. Iniciando lógica Gemini (DOMContentLoaded).");
         // --- Lógica da Conexão Gemini ---
-        const API_KEY = "AIzaSy...(sua chave completa)..."; // COLE SUA CHAVE AQUI!!!
+        const API_KEY = "AIzaSyDmrqBe2d5vHpYH95a9Zb-YAdL4Tl0TTrc"; // COLE SUA CHAVE AQUI!!!
         // ... (resto do código do chatbot: initializeGemini, adicionarMensagem, enviarMensagem, listeners) ...
     } else {
         console.log("DEBUG: Elementos do Chat NÃO encontrados nesta página.");
