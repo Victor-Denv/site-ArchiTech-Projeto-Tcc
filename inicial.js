@@ -535,8 +535,9 @@ document.addEventListener('DOMContentLoaded', function() { // Pode manter DOMCon
                  }
 
                  genAI = new GoogleGenerativeAI(API_KEY);
-                 model = genAI.getGenerativeModel({ model: "gemini-pro" });
-                 console.log("DEBUG: SDK Gemini carregado e inicializado via import().");
+                
+                model = genAI.getGenerativeModel({ model: "gemini-1.0-pro-latest" });
+                console.log("DEBUG: SDK Gemini carregado e inicializado via import().");
                  
                  // Habilita input/botão APÓS carregar com sucesso
                  chatInput.disabled = false;
