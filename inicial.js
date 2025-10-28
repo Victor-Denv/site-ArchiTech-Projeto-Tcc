@@ -367,7 +367,7 @@ window.addEventListener('load', function() {
         console.log("DEBUG: Elementos do Chat (sempre visível) encontrados. Iniciando lógica Gemini.");
 
         // --- Lógica da Conexão Gemini ---
-        const API_KEY = "AIzaSy...(sua chave completa)..."; // COLE SUA CHAVE AQUI!!!
+        const API_KEY = "AIzaSyDmrqBe2d5vHpYH95a9Zb-YAdL4Tl0TTrc"; // COLE SUA CHAVE AQUI!!!
         // ... (resto do código da IA: initializeGemini, adicionarMensagem, enviarMensagem, listeners de envio) ...
 
     } else {
