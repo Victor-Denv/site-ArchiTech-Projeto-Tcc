@@ -1,4 +1,4 @@
-// Comentário para forçar deploy v7
+// Comentário para forçar deploy v8
 const firebaseConfig = {
   apiKey: "AIzaSyCPym-OjXGXY7IhA1u3DDPIOPi5tECDhR8", // COLE SUA CHAVE REAL AQUI
   authDomain: "architeck-e92b4.firebaseapp.com",
@@ -18,67 +18,42 @@ const auth = firebase.auth();
 console.log("Firebase Conectado com SUCESSO a partir do inicial.js!");
 
 // =======================================================
-//     O "SEGURANÇA" (PROTETOR DE PÁGINA) - Roda imediatamente
+//     O "SEGURANÇA" (PROTETOR DE PÁGINA)
 // =======================================================
 auth.onAuthStateChanged(function(user) { /* ... (código segurança continua igual) ... */ });
 
-//----- SCRIPT DA TELA DE CARREGAMENTO (Usa window.load) -----
+//----- SCRIPT DA TELA DE CARREGAMENTO (Usa window.load - ESSENCIAL) -----
 window.addEventListener('load', () => {
-    console.log("DEBUG: Evento window.load disparado (para Splash)."); // Log
+    console.log("DEBUG: Evento window.load disparado (para Splash).");
     const splashScreen = document.getElementById("splash-screen");
     const mainContent = document.getElementById("main-content");
-    if (splashScreen && mainContent) {
-        const splashScreenTime = 1000;
-        setTimeout(() => {
-            if (splashScreen) {
-                console.log("DEBUG: Escondendo Splash Screen..."); // Log
-                splashScreen.classList.add("hidden");
-                splashScreen.addEventListener("transitionend", () => {
-                    if (splashScreen) { splashScreen.remove(); }
-                    if (mainContent) mainContent.style.display = "grid";
-                    console.log("DEBUG: Splash Screen removida, conteúdo visível."); // Log
-                }, { once: true });
-            } else if(mainContent) { mainContent.style.display = "grid"; }
-        }, splashScreenTime);
-    } else if (mainContent){
-         mainContent.style.display = "grid"; // Se não tem splash, mostra direto
-         console.log("DEBUG: Splash não encontrada, mostrando conteúdo direto."); // Log
-    } else {
-         console.log("DEBUG: Nem Splash nem Main Content encontrados no load."); // Log de erro
-    }
+    // ... (código da tela de loading continua igual) ...
 });
 //----- FIM DO SCRIPT DA TELA DE CARREGAMENTO -----
 
 // --- SCRIPT ORIGINAL DA PÁGINA (inicial.html) ---
-// **** VOLTOU PARA DOMContentLoaded ****
+// **** Usando DOMContentLoaded aqui está OK ****
 document.addEventListener('DOMContentLoaded', () => {
-    console.log("DEBUG: DOMContentLoaded disparado (para Scripts da inicial.html)."); // Log
-    const saudacaoTitulo = document.querySelector('.banner-destaque h2');
-    if (saudacaoTitulo) { /* ... (código da saudação) ... */ }
-    const menuItens = document.querySelectorAll('.menu-navegacao ul li');
-    if (menuItens) { /* ... (código do menu) ... */ }
-    // ... (outros scripts da inicial.html) ...
+    console.log("DEBUG: DOMContentLoaded disparado (para Scripts da inicial.html).");
+    // ... (código da saudação, menu, etc. continua igual) ...
 });
 
 // =======================================================
 //     LÓGICA DA PÁGINA 'automacao.html' (IA SÓ PARA IMAGEM)
 // =======================================================
-// **** VOLTOU PARA DOMContentLoaded ****
-document.addEventListener('DOMContentLoaded', function() {
+// **** Usando window.load aqui é mais seguro por causa da IA ****
+window.addEventListener('load', function() {
     const btnSalvar = document.getElementById('btnSalvarArquivo');
     if (btnSalvar) { // Só roda na automacao.html
-        console.log("DEBUG: Iniciando lógica da página automacao.html."); // Log
+        console.log("DEBUG: Iniciando lógica da página automacao.html (window.load).");
         // ... (Pega elementos: nomeArquivoInput, ..., iaStatus) ...
         const btnProcessarIA = document.getElementById('btnProcessarIA');
         // Lógica Botão IA (SÓ IMAGEM)
-        if (btnProcessarIA) {
-            console.log("DEBUG: Botão Processar IA encontrado."); // Log
-            btnProcessarIA.addEventListener('click', async function() { /* ... (código IA Tesseract para imagem) ... */ });
-        } else { console.log("DEBUG: Botão Processar IA NÃO encontrado."); }
+        if (btnProcessarIA) { /* ... (código IA Tesseract para imagem continua igual) ... */ }
         // Lógica Botão Salvar
-        btnSalvar.addEventListener('click', function() { /* ... (código salvar com textoIA) ... */ });
+        btnSalvar.addEventListener('click', function() { /* ... (código salvar com textoIA continua igual) ... */ });
         // Função salvarNoBanco
-        function salvarNoBanco(nome, local, tipo, textoIA) { /* ... (código salvar no DB) ... */ }
+        function salvarNoBanco(nome, local, tipo, textoIA) { /* ... (código salvar no DB continua igual) ... */ }
     }
 });
 
@@ -86,13 +61,13 @@ document.addEventListener('DOMContentLoaded', function() {
 // =======================================================
 //     LÓGICA DA PÁGINA 'listar.html'
 // =======================================================
-// **** Usando DOMContentLoaded ****
+// **** Usando DOMContentLoaded aqui está OK ****
 document.addEventListener('DOMContentLoaded', function() {
     const containerDaLista = document.getElementById('containerDaLista');
     if (containerDaLista) {
-        console.log("DEBUG: Iniciando lógica da página listar.html.");
+        console.log("DEBUG: Iniciando lógica da página listar.html (DOMContentLoaded).");
         const arquivosRef = db.ref('arquivos');
-        arquivosRef.once('value', (snapshot) => { /* ... (código para montar lista) ... */ })
+        arquivosRef.once('value', (snapshot) => { /* ... (código para montar lista continua igual) ... */ })
         .catch((error) => { /* ... (tratamento erro lista) ... */ });
     }
 });
@@ -100,45 +75,24 @@ document.addEventListener('DOMContentLoaded', function() {
 // =======================================================
 //     LÓGICA DA PÁGINA 'arquivo.html' (COM QR CODE e TEXTO IA)
 // =======================================================
-// **** Usando DOMContentLoaded ****
-document.addEventListener('DOMContentLoaded', function() {
+// **** Usando window.load aqui é mais seguro por causa do QR Code e busca de dados ****
+window.addEventListener('load', function() {
     const nomeDisplay = document.getElementById('nomeArquivoDisplay');
     if (nomeDisplay) { // Estamos na página arquivo.html
-        console.log("DEBUG: Iniciando lógica da página arquivo.html.");
+        console.log("DEBUG: Iniciando lógica da página arquivo.html (window.load).");
         // ... (código pegar ID) ...
-        const params = new URLSearchParams(window.location.search);
-        const arquivoId = params.get('id');
-        if (!arquivoId) { /* ... (erro ID) ... */ return; }
-        console.log("ID encontrado:", arquivoId);
-
         // Gera QR Code
         const qrcodeDetalhesDiv = document.getElementById('qrcodeDetalhes');
-        if (qrcodeDetalhesDiv) {
-             const urlAtual = window.location.href;
-             qrcodeDetalhesDiv.innerHTML = "";
-             try {
-                 new QRCode(qrcodeDetalhesDiv, { text: urlAtual, width: 128, height: 128 });
-                 console.log("QR Code gerado para:", urlAtual);
-             } catch (error) { console.error("Erro ao gerar QR Code:", error); }
-        } else { console.error("DEBUG: Div 'qrcodeDetalhes' NÃO encontrada!"); }
-
-        const arquivoRef = db.ref('arquivos/' + arquivoId);
-        // Busca Dados (inclui anexo Base64 e texto IA)
-        arquivoRef.on('value', (snapshot) => { /* ... (código mostrar dados continua igual) ... */ });
-        // Botão Atualizar Localização
-        const btnAtualizar = document.getElementById('btnAtualizarLocal');
-        if(btnAtualizar) { btnAtualizar.addEventListener('click', function() { /* ... */ }); }
-        // Botão "+ Adicionar Novo Arquivo"
-        const btnIrParaCadastro = document.getElementById('btnIrParaCadastro');
-        if(btnIrParaCadastro) { btnIrParaCadastro.addEventListener('click', function() { /* ... */ }); }
+        if (qrcodeDetalhesDiv) { /* ... (código gerar QR Code real) ... */ }
+        // ... (Busca Dados, Botão Atualizar, Botão Adicionar Novo) ...
     }
 });
 
 // =======================================================
 //     LÓGICA COMPLETA DO CHATBOT DATALIA (SEMPRE VISÍVEL)
 // =======================================================
-// **** Usando DOMContentLoaded ****
-document.addEventListener('DOMContentLoaded', function() {
+// **** Usando window.load aqui é ESSENCIAL ****
+window.addEventListener('load', function() {
     // --- Elementos do Chat ---
     const chatInput = document.getElementById('chatInput');
     const enviarChatBtn = document.getElementById('enviarChatBtn');
@@ -146,10 +100,38 @@ document.addEventListener('DOMContentLoaded', function() {
     const chatJanela = document.getElementById('chatJanela');
 
     if (chatJanela && chatInput && enviarChatBtn && chatCorpo) {
-        console.log("DEBUG: Elementos do Chat encontrados. Iniciando lógica Gemini.");
+        console.log("DEBUG: Elementos do Chat encontrados. Iniciando lógica Gemini (window.load).");
+
         // --- Lógica da Conexão Gemini ---
-        const API_KEY = "AIzaSyDmrqBe2d5vHpYH95a9Zb-YAdL4Tl0TTrc"; // COLE SUA CHAVE AQUI!!!
-        // ... (resto do código do chatbot continua igual) ...
+        const API_KEY = "AIzaSy...(sua chave completa)..."; // COLE SUA CHAVE AQUI!!!
+        console.log("DEBUG: Usando API Key começando com:", API_KEY.substring(0, 8) + "...");
+
+        let genAI;
+        let model;
+
+        async function initializeGemini() { /* ... (código continua igual) ... */ }
+        function adicionarMensagem(texto, tipo = "ia", isLoading = false) { /* ... (código continua igual) ... */ }
+        async function enviarMensagem() {
+             // **** Adicionando LOG aqui ****
+             console.log("DEBUG: Função enviarMensagem FOI CHAMADA!");
+             const mensagemUsuario = chatInput.value.trim();
+             // ... (resto da função continua igual) ...
+         }
+
+        // Inicialização e Event Listeners
+        chatInput.placeholder = "Inicializando IA...";
+        chatInput.disabled = true;
+        enviarChatBtn.disabled = true;
+        initializeGemini().then(() => { /* ... */ });
+
+        // **** Adicionando LOG aqui ****
+        enviarChatBtn.addEventListener('click', function() {
+            console.log("DEBUG: Botão ENVIAR foi CLICADO!");
+            enviarMensagem(); // Chama a função
+        });
+        chatInput.addEventListener('keypress', function(e) { if (e.key === 'Enter') enviarMensagem(); });
+        console.log("DEBUG: Event listeners de envio adicionados.");
+
     } else {
         console.log("DEBUG: Elementos do Chat NÃO encontrados nesta página.");
     }
@@ -158,13 +140,13 @@ document.addEventListener('DOMContentLoaded', function() {
 // =======================================================
 //     LÓGICA DO BOTÃO "SAIR" (LOGOUT)
 // =======================================================
-// **** Usando DOMContentLoaded ****
+// **** Usando DOMContentLoaded aqui está OK ****
 document.addEventListener('DOMContentLoaded', function() {
     const btnLogout = document.getElementById('btn-logout');
     if (btnLogout) {
         console.log("DEBUG: Botão Logout encontrado.");
         btnLogout.addEventListener('click', function(e) { /* ... (código do logout continua igual) ... */ });
     } else {
-         console.log("DEBUG: Botão Logout NÃO encontrado nesta página.");
+         console.log("DEBUG: Botão Logout NÃO encontrado.");
     }
 });
