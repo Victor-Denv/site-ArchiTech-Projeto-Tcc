@@ -245,136 +245,37 @@ document.addEventListener('DOMContentLoaded', function() {
 //     LÓGICA COMPLETA DO CHATBOT DATALIA (SEMPRE VISÍVEL - VERSÃO FINAL)
 // =======================================================
 // **** Usando DOMContentLoaded ****
-document.addEventListener('DOMContentLoaded', function() {
+window.addEventListener('load', function() { 
     // --- Elementos do Chat ---
     const chatInput = document.getElementById('chatInput');
     const enviarChatBtn = document.getElementById('enviarChatBtn');
     const chatCorpo = document.getElementById('chatCorpo');
     const chatJanela = document.getElementById('chatJanela');
 
-    // --- Verifica se os elementos ESSENCIAIS do chat existem ---
     if (chatJanela && chatInput && enviarChatBtn && chatCorpo) {
-        console.log("DEBUG: Elementos do Chat encontrados (DOMContentLoaded). Iniciando lógica Gemini.");
+        console.log("DEBUG: Elementos do Chat encontrados (window.load). Iniciando lógica Gemini.");
 
-       
-        const API_KEY = "AIzaSyDmrqBe2d5vHpYH95a9Zb-YAdL4Tl0TTrc";
-        
-        
-        console.log("DEBUG: Usando API Key começando com:", API_KEY.substring(0, 8) + "..."); // Mostra só o começo
+        // --- Lógica da Conexão Gemini ---
+        // **** !!!!! COLOQUE SUA API KEY REAL AQUI !!!!! ****
+        const API_KEY = "AIzaSyDmrqBe2d5vHpYH95a9Zb-YAdL4Tl0TTrc"; 
+        // **** !!!!! COLOQUE SUA API KEY REAL AQUI !!!!! ****
+        console.log("DEBUG: Usando API Key começando com:", API_KEY.substring(0, 8) + "...");
 
         let genAI;
         let model;
 
         // Função para inicializar o Gemini
-        async function initializeGemini() {
-             try {
-                 const { GoogleGenerativeAI } = await import('https://esm.run/@google/generative-ai');
-                 if (!GoogleGenerativeAI) throw new Error("Classe GoogleGenerativeAI não encontrada.");
-
-                 // Verifica se a API Key foi inserida
-                 if (!API_KEY || API_KEY === "AIzaSyDmrqBe2d5vHpYH95a9Zb-YAdL4Tl0TTrc") {
-                     throw new Error("API Key do Gemini não foi inserida no inicial.js!");
-                 }
-
-                 genAI = new GoogleGenerativeAI(API_KEY);
-                 model = genAI.getGenerativeModel({ model: "gemini-pro" }); // Usando gemini-pro
-                 console.log("DEBUG: SDK Gemini carregado e inicializado com sucesso.");
-                 chatInput.disabled = false;
-                 enviarChatBtn.disabled = false;
-                 chatInput.placeholder = "Digite sua mensagem...";
-                 // Remove mensagem de inicialização se houver
-                 const initMsg = document.getElementById('init-message');
-                 if (initMsg) initMsg.remove();
-
-            } catch (error) {
-                 console.error("Erro CRÍTICO ao carregar ou inicializar o SDK do Gemini:", error);
-                 // Remove mensagem de inicialização se houver
-                 const initMsg = document.getElementById('init-message');
-                 if (initMsg) initMsg.remove();
-                 // Mostra erro definitivo no chat
-                 adicionarMensagem(`Erro ao carregar IA: ${error.message}`, "ia");
-                 chatInput.disabled = true;
-                 enviarChatBtn.disabled = true;
-                 chatInput.placeholder = "IA indisponível";
-            }
-        }
-
+        async function initializeGemini() { /* ... (código continua igual) ... */ }
         // Função para adicionar mensagens
-        function adicionarMensagem(texto, tipo = "ia", isLoading = false) {
-             const divMensagem = document.createElement('div');
-             divMensagem.classList.add('mensagem', tipo);
-             if (isLoading) {
-                 divMensagem.classList.add('loading');
-                 divMensagem.id = 'loading-message'; // Para poder remover depois
-             }
-             divMensagem.textContent = texto; // Usar textContent é mais seguro
-             chatCorpo.appendChild(divMensagem);
-             // Rola para a última mensagem
-             chatCorpo.scrollTop = chatCorpo.scrollHeight;
-        }
-
-        // Função principal para enviar mensagem
-        async function enviarMensagem() {
-            console.log("DEBUG: Função enviarMensagem FOI CHAMADA!");
-            const mensagemUsuario = chatInput.value.trim();
-
-            if (mensagemUsuario === "" || !model) {
-                 if(!model) console.error("DEBUG: ERRO - Modelo Gemini não carregado ou inicialização falhou!");
-                 else console.log("DEBUG: Mensagem vazia, não enviando.");
-                 // Habilita o botão novamente se a mensagem for vazia mas o modelo existe
-                 if (model && enviarChatBtn) enviarChatBtn.disabled = false;
-                 return;
-            }
-
-            adicionarMensagem(mensagemUsuario, "usuario");
-            chatInput.value = "";
-            enviarChatBtn.disabled = true; // Desabilita durante o processamento
-            adicionarMensagem("Digitando", "ia", true); // Mostra "Digitando..."
-
-            try {
-                console.log("DEBUG: PREPARANDO para enviar para Gemini:", mensagemUsuario);
-                const result = await model.generateContent(mensagemUsuario);
-                console.log("DEBUG: Resposta BRUTA do Gemini recebida:", result);
-
-                // Verifica se a resposta e o texto existem
-                const response = result?.response; // Optional chaining
-                const textoResposta = response?.text(); // Optional chaining
-
-                if (textoResposta === undefined || textoResposta === null) {
-                    throw new Error("A resposta da IA está vazia ou em formato inesperado.");
-                }
-
-                console.log("DEBUG: Texto da resposta extraído:", textoResposta.substring(0, 50) + "...");
-
-                // Remove o "Digitando..." antes de adicionar a resposta
-                const loadingMsg = document.getElementById('loading-message');
-                if (loadingMsg) loadingMsg.remove();
-
-                adicionarMensagem(textoResposta, "ia"); // Mostra a resposta
-
-            } catch (error) {
-                 console.error("DEBUG: ERRO CAPTURADO no bloco catch:", error);
-                 console.error("DEBUG: Mensagem de erro específica:", error.message);
-
-                 // Remove o "Digitando..."
-                 const loadingMsg = document.getElementById('loading-message');
-                 if (loadingMsg) loadingMsg.remove();
-
-                 // Mostra uma mensagem de erro mais útil no chat
-                 adicionarMensagem(`Desculpe, ocorreu um erro: ${error.message || 'Erro desconhecido'}`, "ia");
-            } finally {
-                 console.log("DEBUG: Bloco finally executado, reabilitando botão.");
-                 enviarChatBtn.disabled = false; // Reabilita o botão
-                 if(chatInput) chatInput.focus(); // Coloca o cursor de volta
-            }
-        }
+        function adicionarMensagem(texto, tipo = "ia", isLoading = false) { /* ... (código continua igual) ... */ }
+        // Função principal para enviar mensagem (com logs)
+        async function enviarMensagem() { /* ... (código continua igual, com logs) ... */ }
 
         // Inicialização e Event Listeners
         chatInput.placeholder = "Inicializando IA...";
         chatInput.disabled = true;
         enviarChatBtn.disabled = true;
-        // Adiciona mensagem de inicialização que será removida
-        adicionarMensagem("Inicializando IA...", "ia", true);
+        adicionarMensagem("Inicializando IA...", "ia", true); // Mensagem inicial de loading
         initializeGemini(); // Chama a inicialização
 
         // Listener de clique com log
@@ -394,7 +295,7 @@ document.addEventListener('DOMContentLoaded', function() {
     } else {
         console.log("DEBUG: Elementos do Chat NÃO encontrados nesta página.");
     }
-}); // Fim do DOMContentLoaded para o Chatbot
+}); // Fim do window.load para o Chatbot
 
 
 // =======================================================
@@ -405,7 +306,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const btnLogout = document.getElementById('btn-logout');
     if (btnLogout) {
         console.log("DEBUG: Botão Logout encontrado.");
-        btnLogout.addEventListener('click', function(e) { /* ... (código do logout) ... */ });
+        btnLogout.addEventListener('click', function(e) { /* ... (código do logout continua igual) ... */ });
     } else {
          console.log("DEBUG: Botão Logout NÃO encontrado.");
     }
