@@ -59,35 +59,35 @@ window.addEventListener('load', () => {
 //----- FIM DO SCRIPT DA TELA DE CARREGAMENTO -----
 
 
-/* // --- SCRIPT ORIGINAL DA PÁGINA (inicial.html) --- COMENTADO
+// --- SCRIPT ORIGINAL DA PÁGINA (inicial.html) 
 document.addEventListener('DOMContentLoaded', () => {
     // ... (código da saudação, menu, etc.) ...
 });
-*/
 
-/* // =======================================================
+
+ // =======================================================
 //     LÓGICA DA PÁGINA 'automacao.html' - COMENTADO
 // =======================================================
 document.addEventListener('DOMContentLoaded', function() {
     // ... (código da IA, salvar, etc.) ...
 });
-*/
 
-/* // =======================================================
+
+ // =======================================================
 //     LÓGICA DA PÁGINA 'listar.html' - COMENTADO
 // =======================================================
 document.addEventListener('DOMContentLoaded', function() {
     // ... (código da lista) ...
 });
-*/
 
-/* // =======================================================
+
+ // =======================================================
 //     LÓGICA DA PÁGINA 'arquivo.html' - COMENTADO
 // =======================================================
 document.addEventListener('DOMContentLoaded', function() {
     // ... (código detalhes, QR Code, etc.) ...
 });
-*/
+
 
 /* // =======================================================
 //     LÓGICA COMPLETA DO CHATBOT DATALIA - COMENTADO
