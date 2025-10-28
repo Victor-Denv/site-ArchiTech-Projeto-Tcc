@@ -115,7 +115,7 @@ document.addEventListener('DOMContentLoaded', function() {
 //     LÓGICA COMPLETA DO CHATBOT DATALIA (SEMPRE VISÍVEL)
 // =======================================================
 // **** Usando DOMContentLoaded aqui ****
-document.addEventListener('DOMContentLoaded', function() {
+window.addEventListener('load', function() {
     // --- Elementos do Chat ---
     const chatInput = document.getElementById('chatInput');
     const enviarChatBtn = document.getElementById('enviarChatBtn');
