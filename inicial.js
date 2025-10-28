@@ -1,4 +1,4 @@
-// Comentário para forçar deploy v12 - FINAL REORGANIZADO
+// Comentário para forçar deploy v14 - FINAL CORRIGIDO
 const firebaseConfig = {
   apiKey: "AIzaSyCPym-OjXGXY7IhA1u3DDPIOPi5tECDhR8", // COLE SUA CHAVE REAL AQUI
   authDomain: "architeck-e92b4.firebaseapp.com",
@@ -42,9 +42,9 @@ window.addEventListener('load', () => {
 //----- FIM DO SCRIPT DA TELA DE CARREGAMENTO -----
 
 // --- SCRIPT ORIGINAL DA PÁGINA (inicial.html) ---
-// **** Usando DOMContentLoaded ****
-document.addEventListener('DOMContentLoaded', () => {
-    console.log("DEBUG: DOMContentLoaded disparado (para Scripts da inicial.html).");
+// **** Usando window.load como estava funcionando antes ****
+window.addEventListener('load', () => {
+    console.log("DEBUG: window.load disparado (para Scripts da inicial.html).");
     // ... (código da saudação, menu, etc. continua igual) ...
 });
 
@@ -59,6 +59,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // ... (Pega elementos, Lógica Botão IA, Lógica Botão Salvar, Função salvarNoBanco) ...
     }
 });
+
 
 // =======================================================
 //     LÓGICA DA PÁGINA 'listar.html'
@@ -97,13 +98,72 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (chatJanela && chatInput && enviarChatBtn && chatCorpo) {
         console.log("DEBUG: Elementos do Chat encontrados (DOMContentLoaded). Iniciando lógica Gemini.");
+
         // --- Lógica da Conexão Gemini ---
-        const API_KEY = "AIzaSyDmrqBe2d5vHpYH95a9Zb-YAdL4Tl0TTrc"; // COLE SUA CHAVE AQUI!!!
-        // ... (resto do código do chatbot: initializeGemini, adicionarMensagem, enviarMensagem com logs, listeners) ...
+        const API_KEY = "AIzaSy...(sua chave completa)..."; // COLE SUA CHAVE AQUI!!!
+        console.log("DEBUG: Usando API Key começando com:", API_KEY.substring(0, 8) + "...");
+
+        let genAI;
+        let model;
+
+        async function initializeGemini() { /* ... (código continua igual) ... */ }
+        function adicionarMensagem(texto, tipo = "ia", isLoading = false) { /* ... (código continua igual) ... */ }
+
+        // **** FUNÇÃO enviarMensagem COM LOGS DETALHADOS ****
+        async function enviarMensagem() {
+            console.log("DEBUG: Função enviarMensagem INICIADA!"); // Log
+            const mensagemUsuario = chatInput.value.trim();
+            if (mensagemUsuario === "" || !model) { /* ... (verificação e logs) ... */ return; }
+            adicionarMensagem(mensagemUsuario, "usuario");
+            chatInput.value = "";
+            enviarChatBtn.disabled = true;
+            adicionarMensagem("Digitando", "ia", true);
+            try {
+                console.log("DEBUG: PREPARANDO para enviar para Gemini:", mensagemUsuario); // Log
+                const result = await model.generateContent(mensagemUsuario);
+                console.log("DEBUG: Resposta BRUTA do Gemini recebida:", result); // Log
+                const response = await result.response;
+                if (!response) throw new Error("Resposta da API vazia.");
+                console.log("DEBUG: Tentando extrair texto da resposta..."); // Log
+                const textoResposta = response.text();
+                console.log("DEBUG: Texto da resposta extraído:", textoResposta.substring(0, 50) + "..."); // Log
+                const loadingMsg = document.getElementById('loading-message');
+                if (loadingMsg) loadingMsg.remove();
+                adicionarMensagem(textoResposta, "ia");
+            } catch (error) {
+                 console.error("DEBUG: ERRO CAPTURADO no bloco catch:", error); // Log
+                 console.error("DEBUG: Mensagem de erro específica:", error.message); // Log
+                 const loadingMsg = document.getElementById('loading-message');
+                 if (loadingMsg) loadingMsg.remove();
+                 adicionarMensagem("Desculpe, ocorreu um erro.", "ia");
+            } finally {
+                 console.log("DEBUG: Bloco finally executado, reabilitando botão."); // Log
+                 enviarChatBtn.disabled = false;
+                 if(chatInput) chatInput.focus();
+            }
+        }
+        // **** FIM DA FUNÇÃO enviarMensagem ****
+
+
+        // Inicialização e Event Listeners
+        chatInput.placeholder = "Inicializando IA...";
+        chatInput.disabled = true;
+        enviarChatBtn.disabled = true;
+        initializeGemini().then(() => { /* ... */ });
+
+        // **** LISTENER COM LOG ****
+        enviarChatBtn.addEventListener('click', function() {
+            console.log("DEBUG: Botão ENVIAR foi CLICADO!"); // Log
+            enviarMensagem(); // Chama a função
+        });
+        chatInput.addEventListener('keypress', function(e) { if (e.key === 'Enter') enviarMensagem(); });
+        console.log("DEBUG: Event listeners de envio adicionados.");
+
     } else {
         console.log("DEBUG: Elementos do Chat NÃO encontrados nesta página.");
     }
-});
+}); // Fim do DOMContentLoaded para o Chatbot
+
 
 // =======================================================
 //     LÓGICA DO BOTÃO "SAIR" (LOGOUT)
