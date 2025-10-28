@@ -256,10 +256,9 @@ document.addEventListener('DOMContentLoaded', function() {
     if (chatJanela && chatInput && enviarChatBtn && chatCorpo) {
         console.log("DEBUG: Elementos do Chat encontrados (DOMContentLoaded). Iniciando lógica Gemini.");
 
-        // --- Lógica da Conexão Gemini ---
-        // **** !!!!! COLOQUE SUA API KEY REAL E COMPLETA AQUI !!!!! ****
+       
         const API_KEY = "AIzaSyDmrqBe2d5vHpYH95a9Zb-YAdL4Tl0TTrc";
-        // **** !!!!! COLOQUE SUA API KEY REAL E COMPLETA AQUI !!!!! ****
+        
         
         console.log("DEBUG: Usando API Key começando com:", API_KEY.substring(0, 8) + "..."); // Mostra só o começo
 
