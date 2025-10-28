@@ -258,7 +258,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // --- Lógica da Conexão Gemini ---
         // **** !!!!! COLOQUE SUA API KEY REAL E COMPLETA AQUI !!!!! ****
-        const API_KEY = "COLE_SUA_CHAVE_API_COMPLETA_AQUI";
+        const API_KEY = "AIzaSyDmrqBe2d5vHpYH95a9Zb-YAdL4Tl0TTrc";
         // **** !!!!! COLOQUE SUA API KEY REAL E COMPLETA AQUI !!!!! ****
         
         console.log("DEBUG: Usando API Key começando com:", API_KEY.substring(0, 8) + "..."); // Mostra só o começo
@@ -273,7 +273,7 @@ document.addEventListener('DOMContentLoaded', function() {
                  if (!GoogleGenerativeAI) throw new Error("Classe GoogleGenerativeAI não encontrada.");
 
                  // Verifica se a API Key foi inserida
-                 if (!API_KEY || API_KEY === "COLE_SUA_CHAVE_API_COMPLETA_AQUI") {
+                 if (!API_KEY || API_KEY === "AIzaSyDmrqBe2d5vHpYH95a9Zb-YAdL4Tl0TTrc") {
                      throw new Error("API Key do Gemini não foi inserida no inicial.js!");
                  }
 
