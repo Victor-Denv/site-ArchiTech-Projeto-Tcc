@@ -351,27 +351,29 @@ window.addEventListener('load', function() {
 });
 
 // =======================================================
-//     LÓGICA DO CHATBOT DATALIA (CONSOLIDADO E CORRIGIDO)
+//     LÓGICA COMPLETA DO CHATBOT DATALIA (SEMPRE VISÍVEL)
 // =======================================================
-window.addEventListener('load', function() { // Espera TUDO carregar
-    // --- Elementos do Chat ---
-    const previewChat = document.getElementById('previewChat');
-    const chatJanela = document.getElementById('chatJanela');
-    const fecharChatBtn = document.getElementById('fecharChatBtn');
+window.addEventListener('load', function() {
+
+    // --- Elementos do Chat (sem preview e fechar) ---
     const chatInput = document.getElementById('chatInput');
     const enviarChatBtn = document.getElementById('enviarChatBtn');
     const chatCorpo = document.getElementById('chatCorpo');
+    const chatJanela = document.getElementById('chatJanela'); // Pegamos só para garantir que existe
 
-    // --- Verifica se TODOS os elementos do chat existem ---
-    if (previewChat && chatJanela && fecharChatBtn && chatInput && enviarChatBtn && chatCorpo) {
-        console.log("DEBUG: Elementos do Chat encontrados. Iniciando lógica completa.");
+    // --- Verifica se os elementos ESSENCIAIS do chat existem ---
+    if (chatJanela && chatInput && enviarChatBtn && chatCorpo) {
 
-        // --- Lógica de Abrir/Fechar ---
-        function toggleChat(e) { /* ... (código continua igual) ... */ }
-        previewChat.addEventListener('click', toggleChat);
-        fecharChatBtn.addEventListener('click', toggleChat);
-        console.log("DEBUG: Event listeners de abrir/fechar adicionados.");
+        console.log("DEBUG: Elementos do Chat (sempre visível) encontrados. Iniciando lógica Gemini.");
 
+        // --- Lógica da Conexão Gemini ---
+        const API_KEY = "AIzaSy...(sua chave completa)..."; // COLE SUA CHAVE AQUI!!!
+        // ... (resto do código da IA: initializeGemini, adicionarMensagem, enviarMensagem, listeners de envio) ...
+
+    } else {
+        console.log("DEBUG: Elementos do Chat NÃO encontrados nesta página.");
+    }
+}); // Fim do window.load para o Chatbot
         // --- Lógica da Conexão Gemini ---
         const API_KEY = "AIzaSyDmrqBe2d5vHpYH95a9Zb-YAdL4Tl0TTrc"; // COLE SUA CHAVE AQUI
         console.log("DEBUG: Usando API Key começando com:", API_KEY.substring(0, 8) + "...");

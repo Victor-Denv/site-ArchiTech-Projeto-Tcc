@@ -161,20 +161,24 @@
             </section>
 <section class="secao-mensagem">
     <div class="cabecalho-secao">
-        <h4>Message</h4>
-        <i class="fa-solid fa-ellipsis"></i> 
-    </div>
+        <h4>Chat com DataLia</h4>
+        <i class="fa-solid fa-ellipsis" style="display: none;"></i> </div>
 
-    <div class="preview-mensagem" id="previewChat" style="cursor: pointer;"> 
-        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQNO5i6ilJ6kUGDHCKqCJaN4xKIwlDIHLvvZw&s" alt="Avatar DataLia">
-        <div class="conteudo-mensagem">
-            <div class="cabecalho-mensagem">
-                <strong>DataLia</strong>
-            </div>
-            <p>Oi, eu sou a DataLia, sua assistente IA. Como posso te ajudar hoje?</p>
+    <div class="chat-janela" id="chatJanela">
+        <div class="chat-cabecalho">
+            <span>Assistente IA</span>
+             <button id="fecharChatBtn" title="Fechar Chat" style="display: none;">&times;</button>
+        </div>
+        <div class="chat-corpo" id="chatCorpo">
+            <div class="mensagem ia">Olá! Como posso ajudar? 👋</div>
+        </div>
+        <div class="chat-input">
+            <input type="text" id="chatInput" placeholder="Digite sua mensagem...">
+            <button id="enviarChatBtn" title="Enviar Mensagem"><i class="fa-solid fa-paper-plane"></i></button>
         </div>
     </div>
-
+</section>
+</section>
     <div class="chat-janela" id="chatJanela" style="display: none;"> 
         <div class="chat-cabecalho">
             <span>Chat com DataLia</span>
