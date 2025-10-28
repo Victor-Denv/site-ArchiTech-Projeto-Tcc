@@ -155,7 +155,7 @@ window.addEventListener('load', function() {
 // =======================================================
 //     LÓGICA DO CHATBOT DATALIA (COM MODELO CORRIGIDO)
 // =======================================================
-document.addEventListener('DOMContentLoaded', function() {
+    window.addEventListener('load', function() {
     const chatInput = document.getElementById('chatInput');
     const enviarChatBtn = document.getElementById('enviarChatBtn');
     const chatCorpo = document.getElementById('chatCorpo');
