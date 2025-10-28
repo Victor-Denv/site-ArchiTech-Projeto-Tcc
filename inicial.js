@@ -115,23 +115,41 @@ document.addEventListener('DOMContentLoaded', function() {
 //     LÓGICA COMPLETA DO CHATBOT DATALIA (SEMPRE VISÍVEL)
 // =======================================================
 // **** Usando DOMContentLoaded aqui ****
-window.addEventListener('load', function() {
+// =======================================================
+//     LÓGICA COMPLETA DO CHATBOT DATALIA (SEMPRE VISÍVEL)
+// =======================================================
+// **** Usando window.load para garantir que tudo está pronto ****
+window.addEventListener('load', function() { 
     // --- Elementos do Chat ---
     const chatInput = document.getElementById('chatInput');
     const enviarChatBtn = document.getElementById('enviarChatBtn');
     const chatCorpo = document.getElementById('chatCorpo');
-    const chatJanela = document.getElementById('chatJanela');
+    const chatJanela = document.getElementById('chatJanela'); 
 
     if (chatJanela && chatInput && enviarChatBtn && chatCorpo) {
-        console.log("DEBUG: Elementos do Chat encontrados. Iniciando lógica Gemini (DOMContentLoaded).");
-        // --- Lógica da Conexão Gemini ---
-        const API_KEY = "AIzaSyDmrqBe2d5vHpYH95a9Zb-YAdL4Tl0TTrc"; // COLE SUA CHAVE AQUI!!!
-        // ... (resto do código do chatbot: initializeGemini, adicionarMensagem, enviarMensagem, listeners) ...
-    } else {
-        console.log("DEBUG: Elementos do Chat NÃO encontrados nesta página.");
-    }
-});
+        console.log("DEBUG: Elementos do Chat encontrados (window.load). Iniciando lógica Gemini.");
 
+        // --- Lógica da Conexão Gemini ---
+        // ... (API_KEY, initializeGemini, adicionarMensagem...) ...
+
+        async function enviarMensagem() {
+             console.log("DEBUG: Função enviarMensagem FOI CHAMADA!"); // Log
+             // ... (resto da função) ...
+         }
+
+        // Inicialização e Event Listeners
+        // ... (initializeGemini) ...
+        enviarChatBtn.addEventListener('click', function() { // Log no clique
+            console.log("DEBUG: Botão ENVIAR foi CLICADO!"); 
+            enviarMensagem(); 
+        });
+        chatInput.addEventListener('keypress', function(e) { if (e.key === 'Enter') enviarMensagem(); });
+        console.log("DEBUG: Event listeners de envio adicionados.");
+
+    } else {
+        console.log("DEBUG: Elementos do Chat NÃO encontrados nesta página (window.load).");
+    }
+}); // Fim do window.load para o Chatbot
 // =======================================================
 //     LÓGICA DO BOTÃO "SAIR" (LOGOUT)
 // =======================================================
