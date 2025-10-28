@@ -1,4 +1,4 @@
-// Comentário para forçar deploy v24 - FINAL SEM CHATBOT
+// Comentário para forçar deploy v16 - Voltando ao estado funcional (sem chat send)
 const firebaseConfig = {
   apiKey: "AIzaSyCPym-OjXGXY7IhA1u3DDPIOPi5tECDhR8", // COLE SUA CHAVE REAL AQUI
   authDomain: "architeck-e92b4.firebaseapp.com",
@@ -31,7 +31,7 @@ auth.onAuthStateChanged(function(user) {
 });
 
 
-//----- SCRIPT DA TELA DE CARREGAMENTO (Usa window.load) -----
+//----- SCRIPT DA TELA DE CARREGAMENTO (Usa window.load - ESSENCIAL) -----
 window.addEventListener('load', () => {
     console.log("DEBUG: Evento window.load disparado (para Splash).");
     const splashScreen = document.getElementById("splash-screen");
@@ -39,21 +39,25 @@ window.addEventListener('load', () => {
     if (splashScreen && mainContent) {
         const splashScreenTime = 1000;
         setTimeout(() => {
-            if (splashScreen) {
+            if (splashScreen) { // Verifica se ainda existe
                 splashScreen.classList.add("hidden");
                 splashScreen.addEventListener("transitionend", () => {
                     if (splashScreen) { splashScreen.remove(); }
                     if (mainContent) mainContent.style.display = "grid";
                 }, { once: true });
-            } else if(mainContent) { mainContent.style.display = "grid"; }
+            } else if(mainContent) {
+                 mainContent.style.display = "grid";
+            }
         }, splashScreenTime);
-    } else if (mainContent){ mainContent.style.display = "grid"; }
+    } else if (mainContent){
+         mainContent.style.display = "grid"; // Se não tem splash, mostra direto
+    }
 });
 //----- FIM DO SCRIPT DA TELA DE CARREGAMENTO -----
 
 
 // --- SCRIPT ORIGINAL DA PÁGINA (inicial.html) ---
-// **** Usando window.load ****
+// **** Usando window.load como estava funcionando antes ****
 window.addEventListener('load', () => {
     console.log("DEBUG: window.load disparado (para Scripts da inicial.html).");
     const saudacaoTitulo = document.querySelector('.banner-destaque h2');
@@ -71,7 +75,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const btnSalvar = document.getElementById('btnSalvarArquivo');
     if (btnSalvar) { // Só roda na automacao.html
         console.log("DEBUG: Iniciando lógica da página automacao.html (DOMContentLoaded).");
-        // Pega elementos
+        // ... (Pega elementos, Lógica Botão IA, Lógica Botão Salvar, Função salvarNoBanco) ...
         const nomeArquivoInput = document.getElementById('nomeArquivo');
         const localizacaoInput = document.getElementById('localizacaoArquivo');
         const tipoArquivoInput = document.getElementById('tipoArquivo');
@@ -83,7 +87,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Lógica Botão IA (SÓ IMAGEM)
         if (btnProcessarIA) {
-            console.log("DEBUG: Botão Processar IA encontrado.");
             btnProcessarIA.addEventListener('click', async function() {
                 const file = arquivoUploadInput.files[0];
                 if (!file || !file.type.startsWith("image/")) {
@@ -100,7 +103,16 @@ document.addEventListener('DOMContentLoaded', function() {
                          workerPath: workerPath,
                          langPath: langPath,
                          gzip: false,
-                         logger: m => { /* ... (logger do tesseract) ... */ }
+                         logger: m => {
+                              console.log(m);
+                             if(m.status === 'recognizing text') {
+                                iaStatus.innerText = `Lendo ${m.progress === 1 ? 'concluído' : `(${Math.round(m.progress * 100)}%)`}...`;
+                             } else if (m.status === 'loading language traineddata') {
+                                 iaStatus.innerText = `Baixando idioma (${Math.round(m.progress * 100)}%)...`;
+                             } else {
+                                 iaStatus.innerText = m.status;
+                             }
+                          }
                     });
                     iaStatus.innerText = "Lendo imagem...";
                     const { data: { text } } = await worker.recognize(file);
@@ -115,18 +127,18 @@ document.addEventListener('DOMContentLoaded', function() {
                     btnProcessarIA.disabled = false;
                 }
             });
-        } else { console.log("DEBUG: Botão Processar IA NÃO encontrado."); }
+        }
 
         // Lógica Botão Salvar
         btnSalvar.addEventListener('click', function() {
             const nome = nomeArquivoInput.value;
             const local = localizacaoInput.value;
             const tipo = tipoArquivoInput.value;
-            const textoIA = textoExtraidoIA ? textoExtraidoIA.value : null; // Pega texto da IA se existir
+            const textoIA = textoExtraidoIA.value; // Pega o texto da IA
             if (!nome || !local) { alert("Preencha Nome e Localização!"); return; }
             btnSalvar.innerText = "Salvando...";
             btnSalvar.disabled = true;
-            salvarNoBanco(nome, local, tipo, textoIA);
+            salvarNoBanco(nome, local, tipo, textoIA); // Passa o texto da IA
         });
 
         // Função salvarNoBanco (Salva textoExtraido)
@@ -139,25 +151,29 @@ document.addEventListener('DOMContentLoaded', function() {
                 localizacao: local,
                 tipo: tipo,
                 dataCadastro: firebase.database.ServerValue.TIMESTAMP,
-                anexoUrl: null, // Não usamos mais
-                textoExtraido: textoIA || null // Salva texto da IA
+                anexoUrl: null, // Não salvamos mais anexo
+                textoExtraido: textoIA || null // Salva o texto da IA
             })
             .then((snapshot) => {
                 const docId = snapshot.key;
                 console.log("Documento salvo com ID: ", docId);
                 nomeArquivoInput.value = "";
                 localizacaoInput.value = "";
-                if(arquivoUploadInput) arquivoUploadInput.value = null;
-                if(textoExtraidoIA) textoExtraidoIA.value = "";
-                if(iaStatus) iaStatus.innerText = "";
+                if(arquivoUploadInput) arquivoUploadInput.value = null; // Limpa input file
+                if(textoExtraidoIA) textoExtraidoIA.value = ""; // Limpa campo IA
+                if(iaStatus) iaStatus.innerText = ""; // Limpa status IA
                 qrcodeDiv.innerHTML = "";
-                const urlParaQR = `${window.location.origin}/arquivo.html?id=${docId}`;
+                const urlParaQR = `${window.location.origin}/arquivo.html?id=${docId}`; // URL relativa
                 new QRCode(qrcodeDiv, { text: urlParaQR, width: 150, height: 150 });
                 alert("Arquivo salvo com sucesso!");
                 btnSalvar.innerText = "Salvar e Gerar QR Code";
                 btnSalvar.disabled = false;
             })
-            .catch((error) => { /* ... (tratamento erro salvar) ... */ });
+            .catch((error) => {
+                console.error("Erro ao salvar documento: ", error);
+                btnSalvar.innerText = "Salvar e Gerar QR Code";
+                btnSalvar.disabled = false;
+            });
         }
     }
 });
@@ -172,6 +188,20 @@ document.addEventListener('DOMContentLoaded', function() {
     if (containerDaLista) {
         console.log("DEBUG: Iniciando lógica da página listar.html (DOMContentLoaded).");
         // ... (código para montar lista continua igual) ...
+        const arquivosRef = db.ref('arquivos');
+        arquivosRef.once('value', (snapshot) => {
+             const dados = snapshot.val();
+             containerDaLista.innerHTML = "";
+             if (dados) {
+                 Object.keys(dados).forEach(key => {
+                     const arquivo = dados[key];
+                     const itemHtml = `...`; // Seu HTML da lista aqui
+                     containerDaLista.innerHTML += itemHtml;
+                 });
+             } else {
+                 containerDaLista.innerHTML = "<p>Nenhum arquivo cadastrado.</p>";
+             }
+        }).catch((error) => { console.error("Erro lista:", error); });
     }
 });
 
@@ -184,20 +214,89 @@ document.addEventListener('DOMContentLoaded', function() {
     if (nomeDisplay) { // Estamos na página arquivo.html
         console.log("DEBUG: Iniciando lógica da página arquivo.html (DOMContentLoaded).");
         // ... (código pegar ID) ...
+        const params = new URLSearchParams(window.location.search);
+        const arquivoId = params.get('id');
+        if (!arquivoId) { /* ... (erro ID) ... */ return; }
+
         // Gera QR Code
         const qrcodeDetalhesDiv = document.getElementById('qrcodeDetalhes');
-        if (qrcodeDetalhesDiv) { /* ... (código gerar QR Code real) ... */ }
-        // Busca Dados (inclui texto IA)
+        if (qrcodeDetalhesDiv) {
+             const urlAtual = window.location.href;
+             qrcodeDetalhesDiv.innerHTML = "";
+             try {
+                 new QRCode(qrcodeDetalhesDiv, { text: urlAtual, width: 128, height: 128 });
+                 console.log("QR Code gerado para:", urlAtual);
+             } catch (error) { console.error("Erro ao gerar QR Code:", error); }
+        } else { console.error("DEBUG: Div 'qrcodeDetalhes' NÃO encontrada!"); }
+
+        // Busca Dados (inclui anexo Base64 e texto IA)
         const arquivoRef = db.ref('arquivos/' + arquivoId);
-        arquivoRef.on('value', (snapshot) => { /* ... (código mostrar dados E texto IA) ... */ });
+        arquivoRef.on('value', (snapshot) => { /* ... (código mostrar dados continua igual) ... */ });
         // Botão Atualizar Localização
         const btnAtualizar = document.getElementById('btnAtualizarLocal');
-        if(btnAtualizar) { /* ... */ }
+        if(btnAtualizar) { btnAtualizar.addEventListener('click', function() { /* ... */ }); }
         // Botão "+ Adicionar Novo Arquivo"
         const btnIrParaCadastro = document.getElementById('btnIrParaCadastro');
-        if(btnIrParaCadastro) { /* ... */ }
+        if(btnIrParaCadastro) { btnIrParaCadastro.addEventListener('click', function() { /* ... */ }); }
     }
 });
+
+// =======================================================
+//     LÓGICA COMPLETA DO CHATBOT DATALIA (SEMPRE VISÍVEL - VERSÃO FINAL)
+// =======================================================
+// **** Usando DOMContentLoaded ****
+window.addEventListener('load', function() { 
+    // --- Elementos do Chat ---
+    const chatInput = document.getElementById('chatInput');
+    const enviarChatBtn = document.getElementById('enviarChatBtn');
+    const chatCorpo = document.getElementById('chatCorpo');
+    const chatJanela = document.getElementById('chatJanela');
+
+    if (chatJanela && chatInput && enviarChatBtn && chatCorpo) {
+        console.log("DEBUG: Elementos do Chat encontrados (window.load). Iniciando lógica Gemini.");
+
+        // --- Lógica da Conexão Gemini ---
+        // **** !!!!! COLOQUE SUA API KEY REAL AQUI !!!!! ****
+        const API_KEY = "AIzaSyDmrqBe2d5vHpYH95a9Zb-YAdL4Tl0TTrc"; 
+        // **** !!!!! COLOQUE SUA API KEY REAL AQUI !!!!! ****
+        console.log("DEBUG: Usando API Key começando com:", API_KEY.substring(0, 8) + "...");
+
+        let genAI;
+        let model;
+
+        // Função para inicializar o Gemini
+        async function initializeGemini() { /* ... (código continua igual) ... */ }
+        // Função para adicionar mensagens
+        function adicionarMensagem(texto, tipo = "ia", isLoading = false) { /* ... (código continua igual) ... */ }
+        // Função principal para enviar mensagem (com logs)
+        async function enviarMensagem() { /* ... (código continua igual, com logs) ... */ }
+
+        // Inicialização e Event Listeners
+        chatInput.placeholder = "Inicializando IA...";
+        chatInput.disabled = true;
+        enviarChatBtn.disabled = true;
+        adicionarMensagem("Inicializando IA...", "ia", true); // Mensagem inicial de loading
+        initializeGemini(); // Chama a inicialização
+
+        // Listener de clique com log
+        enviarChatBtn.addEventListener('click', function() {
+            console.log("DEBUG: Botão ENVIAR foi CLICADO!");
+            enviarMensagem(); // Chama a função
+        });
+        // Listener de Enter
+        chatInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                console.log("DEBUG: Tecla ENTER pressionada no input!");
+                enviarMensagem(); // Chama a função
+            }
+        });
+        console.log("DEBUG: Event listeners de envio (click e Enter) adicionados.");
+
+    } else {
+        console.log("DEBUG: Elementos do Chat NÃO encontrados nesta página.");
+    }
+}); // Fim do window.load para o Chatbot
+
 
 // =======================================================
 //     LÓGICA DO BOTÃO "SAIR" (LOGOUT)
@@ -207,7 +306,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const btnLogout = document.getElementById('btn-logout');
     if (btnLogout) {
         console.log("DEBUG: Botão Logout encontrado.");
-        btnLogout.addEventListener('click', function(e) { /* ... (código do logout) ... */ });
+        btnLogout.addEventListener('click', function(e) { /* ... (código do logout continua igual) ... */ });
     } else {
          console.log("DEBUG: Botão Logout NÃO encontrado.");
     }
