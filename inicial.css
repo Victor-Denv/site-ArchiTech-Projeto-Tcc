@@ -502,3 +502,132 @@ ul {
 
 }
 
+/* ======================================================= */
+/* ESTILOS DO CHATBOT DATALIA                             */
+/* ======================================================= */
+
+.chat-janela {
+    background-color: #1e1e2d; /* Fundo escuro */
+    border: 1px solid #444;
+    border-radius: 8px;
+    margin-top: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    overflow: hidden; 
+}
+
+.chat-cabecalho {
+    background-color: #2a2a3a;
+    padding: 10px 15px;
+    font-weight: bold;
+    color: #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #444;
+}
+
+#fecharChatBtn {
+    background: none;
+    border: none;
+    color: #aaa;
+    font-size: 24px; /* Aumentar um pouco */
+    line-height: 1; /* Alinhar melhor o 'X' */
+    cursor: pointer;
+    padding: 0 5px; /* Adicionar área de clique */
+}
+#fecharChatBtn:hover {
+    color: #fff;
+}
+
+.chat-corpo {
+    height: 250px; /* Altura da área de mensagens */
+    overflow-y: auto; /* Barra de rolagem se precisar */
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* Espaço entre mensagens */
+}
+
+/* Estilo básico das mensagens */
+.mensagem {
+    padding: 8px 12px;
+    border-radius: 15px;
+    max-width: 80%;
+    word-wrap: break-word; /* Quebra palavras longas */
+    font-size: 14px; /* Ajustar tamanho da fonte */
+    line-height: 1.4;
+}
+
+/* Mensagem da IA (Esquerda) */
+.mensagem.ia {
+    background-color: #3a3a4a;
+    color: #eee;
+    border-bottom-left-radius: 5px; /* Ajustar raio */
+    align-self: flex-start;
+}
+
+/* Mensagem do Usuário (Direita) */
+.mensagem.usuario {
+    background-color: #6f42c1; /* Roxo */
+    color: #fff;
+    border-bottom-right-radius: 5px; /* Ajustar raio */
+    align-self: flex-end;
+}
+
+.chat-input {
+    display: flex;
+    padding: 10px;
+    border-top: 1px solid #444;
+    background-color: #2a2a3a;
+}
+
+#chatInput {
+    flex-grow: 1; 
+    padding: 8px 12px; /* Aumentar padding */
+    border: 1px solid #444;
+    background-color: #1e1e2d;
+    color: #eee;
+    border-radius: 20px;
+    margin-right: 8px; /* Aumentar margem */
+    font-size: 14px;
+}
+#chatInput:focus { /* Estilo quando digita */
+    outline: none;
+    border-color: #6f42c1;
+}
+
+
+#enviarChatBtn {
+    background-color: #6f42c1;
+    color: white;
+    border: none;
+    border-radius: 50%; /* Botão redondo */
+    width: 38px; /* Aumentar um pouco */
+    height: 38px;
+    cursor: pointer;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0; /* Impede que o botão encolha */
+    transition: background-color 0.2s;
+}
+#enviarChatBtn:hover {
+    background-color: #5a37a0;
+}
+#enviarChatBtn:disabled { /* Estilo quando está carregando */
+    background-color: #555;
+    cursor: default;
+}
+
+/* Animação de carregamento (opcional) */
+.mensagem.ia.loading::after {
+    content: '...';
+    display: inline-block;
+    animation: typing 1s infinite;
+}
+@keyframes typing {
+    0% { content: '.'; }
+    33% { content: '..'; }
+    66% { content: '...'; }
+}
