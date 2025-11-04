@@ -1,19 +1,14 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-   <!DOCTYPE html>
-<html lang="pt-BR">
-<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Architech</title>
-    <link rel="stylesheet" href="inicial.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet" href="inicial.css"> <link rel="stylesheet" href="automacao.css"> <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="icon" type="image/png" href="Design sem nome (5).png">
-</head>
 </head>
 <body>
 
@@ -24,7 +19,9 @@
             <div class="loader"></div>
         </div>
     </div>
+
     <div class="painel-container" id="main-content" style="display: none;">
+        
         <aside class="barra-lateral-esquerda">
             <div class="logotipo">
                 <i class="fa-solid fa-layer-group"></i>
@@ -32,7 +29,7 @@
             </div>
             <nav class="menu-navegacao">
                 <ul>
-                    <li class="ativo"><a href="#"><i class="fa-solid fa-house"></i> Início</a></li>
+                    <li class="ativo"><a href="inicial.html"><i class="fa-solid fa-house"></i> Início</a></li>
                     <li><a href="#"><i class="fa-solid fa-chart-pie"></i> Relatório de gestão</a></li>
                     <li><a href="automacao.html"><i class="fa-solid fa-robot"></i> Automação de documentos</a></li>
                     <li><a href="#"><i class="fa-solid fa-message"></i> Mensagem</a></li>
@@ -42,9 +39,9 @@
             </nav>
             <div class="rodape-barra-lateral">
                 <ul>
-                      <li><a href="#"><i class="fa-solid fa-user"></i> Conta</a></li>
-                      <li><a href="#" id="btn-logout"><i class="fa-solid fa-right-from-bracket"></i> Sair</a></li>
-                      <li><a href="#"><i class="fa-solid fa-circle-question"></i> Ajuda</a></li>
+                    <li><a href="#"><i class="fa-solid fa-user"></i> Conta</a></li>
+                    <li><a href="#" id="btn-logout"><i class="fa-solid fa-right-from-bracket"></i> Sair</a></li>
+                    <li><a href="#"><i class="fa-solid fa-circle-question"></i> Ajuda</a></li>
                 </ul>
             </div>
         </aside>
@@ -101,13 +98,20 @@
             </div>
 
             <section class="secao-agenda">
-                 <div class="cabecalho-secao"> /* ... (Conteúdo da Agenda) ... */ </div>
-                 <div class="datas-agenda"> /* ... (Conteúdo da Agenda) ... */ </div>
+                 <div class="cabecalho-secao"><h4>Agenda</h4><i class="fa-solid fa-ellipsis"></i></div>
+                 <div class="datas-agenda">
+                     <div class="cartao-data"><span>2024</span><strong>20</strong><span>Julho</span></div>
+                     <div class="cartao-data"><span>2025</span><strong>18</strong><span>Agosto</span></div>
+                 </div>
             </section>
 
             <section class="atividades-disponiveis">
-                 <div class="cabecalho-secao"> /* ... (Conteúdo das Atividades) ... */ </div>
-                 <ul> /* ... (Conteúdo das Atividades) ... */ </ul>
+                 <div class="cabecalho-secao"><h4>Atividades disponíveis</h4><i class="fa-solid fa-ellipsis"></i></div>
+                 <ul>
+                     <li class="item-atividade destacado">/* ... */</li>
+                     <li class="item-atividade">/* ... */</li>
+                     <li class="item-atividade">/* ... */</li>
+                 </ul>
             </section>
 
             <section class="secao-mensagem">
@@ -115,11 +119,10 @@
                     <h4>Chat com DataLia</h4>
                     <i class="fa-solid fa-ellipsis" style="display: none;"></i>
                 </div>
-
                 <div class="chat-janela" id="chatJanela">
                     <div class="chat-cabecalho">
                         <span>Assistente IA</span>
-                         <button id="fecharChatBtn" title="Fechar Chat" style="display: none;">&times;</button>
+                        <button id="fecharChatBtn" title="Fechar Chat" style="display: none;">&times;</button>
                     </div>
                     <div class="chat-corpo" id="chatCorpo">
                         <div class="mensagem ia">Olá! Como posso ajudar? 👋</div>
@@ -130,16 +133,14 @@
                     </div>
                 </div>
                 </section>
-
+            
         </aside>
-    </div>
-
-    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    </div> <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-storage-compat.js"></script>
     <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
-    
+
     <script type="module" src="https://esm.run/@google/generative-ai"></script>
 
     <script src="./inicial.js"></script>
