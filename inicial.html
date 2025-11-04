@@ -6,9 +6,7 @@
     <title>Architech</title>
 
     <link rel="stylesheet" href="css/inicial.css">
-    <link rel="stylesheet" href="css/automacao.css"> 
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet" href="css/automacao.css"> <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -112,41 +110,27 @@
             <section class="atividades-disponiveis">
                  <div class="cabecalho-secao"><h4>Atividades disponíveis</h4><i class="fa-solid fa-ellipsis"></i></div>
                  <ul>
-                     <li class="item-atividade destacado"><div class="fundo-icone"><i class="fa-solid fa-book-open"></i></div><div class="info-atividade"><strong>Curso de Restauração</strong><span>Profa Dra Alice Duha</span></div></li>
-                     <li class="item-atividade"><div class="fundo-icone"><i class="fa-solid fa-landmark"></i></div><div class="info-atividade"><strong>Conhecendo o Arquivo</strong><span>Arq. Louise Anunciação</span></div></li>
-                     <li class="item-atividade"><div class="fundo-icone"><i class="fa-solid fa-heart-pulse"></i></div><div class="info-atividade"><strong>O que são arquivos de saúde?</strong><span>Prof Ilara Moraes</span></div></li>
+                     <li class="item-atividade destacado">
+                         <div class="fundo-icone"><i class="fa-solid fa-book-open"></i></div>
+                         <div class="info-atividade"><strong>Curso de Restauração</strong><span>Profa Dra Alice Duha</span></div>
+                     </li>
+                     <li class="item-atividade">
+                         <div class="fundo-icone"><i class="fa-solid fa-landmark"></i></div>
+                         <div class="info-atividade"><strong>Conhecendo o Arquivo</strong><span>Arq. Louise Anunciação</span></div>
+                     </li>
+                     <li class="item-atividade">
+                         <div class="fundo-icone"><i class="fa-solid fa-heart-pulse"></i></div>
+                         <div class="info-atividade"><strong>O que são arquivos de saúde?</strong><span>Prof Ilara Moraes</span></div>
+                     </li>
                  </ul>
             </section>
 
-            <section class="secao-mensagem">
-                <div class="cabecalho-secao">
-                    <h4>Chat com DataLia</h4>
-                    <i class="fa-solid fa-ellipsis" style="display: none;"></i>
-                </div>
-                <div class="chat-janela" id="chatJanela">
-                    <div class="chat-cabecalho">
-                        <span>Assistente IA</span>
-                        <button id="fecharChatBtn" title="Fechar Chat" style="display: none;">&times;</button>
-                    </div>
-                    <div class="chat-corpo" id="chatCorpo">
-                        <div class="mensagem ia">Olá! Como posso ajudar? 👋</div>
-                    </div>
-                    <div class="chat-input">
-                        <input type="text" id="chatInput" placeholder="Digite sua mensagem...">
-                        <button id="enviarChatBtn" title="Enviar Mensagem"><i class="fa-solid fa-paper-plane"></i></button>
-                    </div>
-                </div>
-            </section>
-            
-        </aside>
+            </aside>
     </div> <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-storage-compat.js"></script>
     <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
-
-    <script type="module" src="https://esm.run/@google/generative-ai"></script>
-
     <script src="./inicial.js"></script>
 
 </body>
