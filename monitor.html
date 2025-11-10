@@ -52,19 +52,25 @@
                 </div>
             </header>
 
-            <div id="monitorContainer" class="abas-conteudo" style="background-color: #2a2a3a; color:#f0f0f0; padding: 25px; margin: 20px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);">
-                <h2><i class="fa-solid fa-temperature-half"></i> Monitoramento do Acervo</h2>
+           <h2><i class="fa-solid fa-temperature-half"></i> Monitoramento do Acervo</h2>
                 <p style="font-size: 14px; color: #b0b0b0; margin-bottom: 20px;">Leitura em tempo real dos sensores (ESP32) instalados no arquivo.</p>
                 
-                <div style="text-align: center; padding: 40px; background-color: #1e1e2d; border-radius: 8px;">
-                    <h3 style="color: #aaa; font-size: 1.2rem; margin-bottom: 10px;">Temperatura Atual</h3>
-                    
-                    <h1 id="temp-display" style="font-size: 5rem; color: #aaa; margin: 0;">
-                        --
-                    </h1>
-                    <span id="temp-unit" style="color: #aaa; font-size: 2rem;">°C</span>
-                    
-                    <p id="temp-status" style="margin-top: 15px; color: #aaa;">Aguardando dados do sensor...</p>
+                <div style="display: flex; gap: 20px; flex-wrap: wrap; justify-content: space-around;">
+
+                    <div style="flex: 1; min-width: 300px; text-align: center; padding: 40px; background-color: #1e1e2d; border-radius: 8px;">
+                        <h3 style="color: #aaa; font-size: 1.2rem; margin-bottom: 10px;">Sala Principal</h3>
+                        <h1 id="temp-display-sala1" style="font-size: 5rem; color: #aaa; margin: 0;">--</h1>
+                        <span id="temp-unit-sala1" style="color: #aaa; font-size: 2rem;">°C</span>
+                        <p id="temp-status-sala1" style="margin-top: 15px; color: #aaa;">Aguardando dados do sensor...</p>
+                    </div>
+
+                    <div style="flex: 1; min-width: 300px; text-align: center; padding: 40px; background-color: #1e1e2d; border-radius: 8px;">
+                        <h3 style="color: #aaa; font-size: 1.2rem; margin-bottom: 10px;">Sala Secundária</h3>
+                        <h1 id="temp-display-sala2" style="font-size: 5rem; color: #aaa; margin: 0;">--</h1>
+                        <span id="temp-unit-sala2" style="color: #aaa; font-size: 2rem;">°C</span>
+                        <p id="temp-status-sala2" style="margin-top: 15px; color: #aaa;">Aguardando dados do sensor...</p>
+                    </div>
+
                 </div>
             </div>
             </main>

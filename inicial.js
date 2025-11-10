@@ -316,60 +316,76 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // =======================================================
-//     LÓGICA DA PÁGINA 'monitor.html' (LER TEMPERATURA) - NOVO!
+//     LÓGICA DA PÁGINA 'monitor.html' (LER TEMPERATURA) - ATUALIZADO 2 SALAS!
 // =======================================================
 document.addEventListener('DOMContentLoaded', function() {
     
-    // Procura o elemento que só existe na página 'monitor.html'
-    const tempDisplay = document.getElementById('temp-display');
+    // Procura o elemento da SALA 1. Se ele existir, estamos na página monitor.html
+    const tempDisplaySala1 = document.getElementById('temp-display-sala1');
     
-    if (tempDisplay) { // Estamos na página monitor.html
-        console.log("DEBUG: Iniciando lógica da página monitor.html (DOMContentLoaded).");
-        
-        const tempStatus = document.getElementById('temp-status');
-        const tempUnit = document.getElementById('temp-unit'); // Pega a unidade
+    if (tempDisplaySala1) { // Estamos na página monitor.html
+        console.log("DEBUG: Iniciando lógica da página monitor.html (2 salas).");
 
-        // **** CAMINHO NO FIREBASE ONDE O ESP32 VAI SALVAR OS DADOS ****
-        const tempRef = db.ref('sensores/sala_principal/temperatura');
-
-        // "Ouve" qualquer mudança nesse dado em tempo real
-        tempRef.on('value', (snapshot) => {
-            const temperatura = snapshot.val();
-            console.log("DEBUG: Novo dado de temperatura recebido:", temperatura);
-
+        // Função auxiliar para não repetir código
+        function atualizarPainel(temperatura, display, unit, status) {
             if (temperatura !== null && !isNaN(temperatura)) {
-                tempDisplay.innerText = temperatura.toFixed(1); // Mostra com 1 casa decimal
+                display.innerText = temperatura.toFixed(1); // Mostra com 1 casa decimal
                 
                 if (temperatura < 18) {
-                    tempStatus.innerText = "Status: Muito Frio";
-                    tempDisplay.style.color = "#00ccff"; // Azul
-                    tempUnit.style.color = "#00ccff";
+                    status.innerText = "Status: Muito Frio";
+                    display.style.color = "#00ccff"; // Azul
+                    unit.style.color = "#00ccff";
                 } else if (temperatura > 26) {
-                    tempStatus.innerText = "Status: Muito Quente!";
-                    tempDisplay.style.color = "#ff6600"; // Laranja
-                    tempUnit.style.color = "#ff6600";
+                    status.innerText = "Status: Muito Quente!";
+                    display.style.color = "#ff6600"; // Laranja
+                    unit.style.color = "#ff6600";
                 } else {
-                    tempStatus.innerText = "Status: Ideal";
-                    tempDisplay.style.color = "#00ff00"; // Verde
-                    tempUnit.style.color = "#00ff00";
+                    status.innerText = "Status: Ideal";
+                    display.style.color = "#00ff00"; // Verde
+                    unit.style.color = "#00ff00";
                 }
             } else {
-                tempDisplay.innerText = "--";
-                tempStatus.innerText = "Sem dados do sensor. Verifique o ESP32.";
-                tempDisplay.style.color = "#aaa";
-                tempUnit.style.color = "#aaa";
+                display.innerText = "--";
+                status.innerText = "Sem dados do sensor.";
+                display.style.color = "#aaa";
+                unit.style.color = "#aaa";
             }
+        }
+
+        // --- Lógica para a SALA 1 ---
+        const tempStatusSala1 = document.getElementById('temp-status-sala1');
+        const tempUnitSala1 = document.getElementById('temp-unit-sala1');
+        const tempRefSala1 = db.ref('sensores/sala_principal/temperatura'); // Caminho 1
+
+        tempRefSala1.on('value', (snapshot) => {
+            const temperatura = snapshot.val();
+            console.log("DEBUG: Novo dado de temperatura (Sala 1) recebido:", temperatura);
+            atualizarPainel(temperatura, tempDisplaySala1, tempUnitSala1, tempStatusSala1);
             
         }, (errorObject) => {
-            console.error("DEBUG: Erro ao ler temperatura do Firebase:", errorObject.code);
-            if(tempStatus) tempStatus.innerText = "Erro de conexão com o banco de dados.";
-            if(tempDisplay) tempDisplay.innerText = "X";
-            if(tempUnit) tempUnit.style.color = "#aaa";
-            if(tempDisplay) tempDisplay.style.color = "#aaa";
+            console.error("DEBUG: Erro ao ler (Sala 1):", errorObject.code);
+            if(tempStatusSala1) tempStatusSala1.innerText = "Erro de conexão.";
+            if(tempDisplaySala1) tempDisplaySala1.innerText = "X";
+        });
+
+        // --- Lógica para a SALA 2 ---
+        const tempDisplaySala2 = document.getElementById('temp-display-sala2');
+        const tempStatusSala2 = document.getElementById('temp-status-sala2');
+        const tempUnitSala2 = document.getElementById('temp-unit-sala2');
+        const tempRefSala2 = db.ref('sensores/sala_secundaria/temperatura'); // Caminho 2
+
+        tempRefSala2.on('value', (snapshot) => {
+            const temperatura = snapshot.val();
+            console.log("DEBUG: Novo dado de temperatura (Sala 2) recebido:", temperatura);
+            atualizarPainel(temperatura, tempDisplaySala2, tempUnitSala2, tempStatusSala2);
+
+        }, (errorObject) => {
+            console.error("DEBUG: Erro ao ler (Sala 2):", errorObject.code);
+            if(tempStatusSala2) tempStatusSala2.innerText = "Erro de conexão.";
+            if(tempDisplaySala2) tempDisplaySala2.innerText = "X";
         });
     }
 });
-
 // =======================================================
 //     LÓGICA DO BOTÃO "SAIR" (LOGOUT)
 // =======================================================
