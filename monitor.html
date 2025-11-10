@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monitoramento | ARCHITECH</title>
+    
+    <link rel="stylesheet" href="css/inicial.css">
+    <link rel="stylesheet" href="css/automacao.css"> 
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="icon" type="image/png" href="Design sem nome (5).png">
+</head>
+<body>
+
+    <div class="painel-container" id="main-content">
+        <aside class="barra-lateral-esquerda">
+            <div class="logotipo">
+                <i class="fa-solid fa-layer-group"></i>
+                <h1>ARCHITECH</h1>
+            </div>
+            <nav class="menu-navegacao">
+                <ul>
+                    <li><a href="inicial.html"><i class="fa-solid fa-house"></i> Início</a></li>
+                    <li><a href="#"><i class="fa-solid fa-chart-pie"></i> Relatório de gestão</a></li>
+                    <li><a href="automacao.html"><i class="fa-solid fa-robot"></i> Automação de documentos</a></li>
+                    <li class="ativo"><a href="monitor.html"><i class="fa-solid fa-temperature-half"></i> Monitoramento</a></li>
+                    <li><a href="#"><i class="fa-solid fa-message"></i> Mensagem</a></li>
+                    <li><a href="#"><i class="fa-solid fa-shield-halved"></i> Segurança e Compliance</a></li>
+                    <li><a href="configuracoes.html"><i class="fa-solid fa-gear"></i> Configuração</a></li>
+                </ul>
+            </nav>
+            <div class="rodape-barra-lateral">
+                <ul>
+                    <li><a href="#"><i class="fa-solid fa-user"></i> Conta</a></li>
+                    <li><a href="#" id="btn-logout"><i class="fa-solid fa-right-from-bracket"></i> Sair</a></li>
+                    <li><a href="#"><i class="fa-solid fa-circle-question"></i> Ajuda</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <main class="conteudo-principal">
+            <header class="cabecalho-principal">
+                 <div class="barra-pesquisa">
+                    <i class="fa-solid fa-search"></i>
+                    <input type="text" placeholder="Pesquisar">
+                </div>
+                <div class="icones-cabecalho">
+                    <i class="fa-solid fa-sliders"></i>
+                    <i class="fa-solid fa-bell"></i>
+                </div>
+            </header>
+
+            <div id="monitorContainer" class="abas-conteudo" style="background-color: #2a2a3a; color:#f0f0f0; padding: 25px; margin: 20px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);">
+                <h2><i class="fa-solid fa-temperature-half"></i> Monitoramento do Acervo</h2>
+                <p style="font-size: 14px; color: #b0b0b0; margin-bottom: 20px;">Leitura em tempo real dos sensores (ESP32) instalados no arquivo.</p>
+                
+                <div style="text-align: center; padding: 40px; background-color: #1e1e2d; border-radius: 8px;">
+                    <h3 style="color: #aaa; font-size: 1.2rem; margin-bottom: 10px;">Temperatura Atual</h3>
+                    
+                    <h1 id="temp-display" style="font-size: 5rem; color: #00ff00; margin: 0;">
+                        --
+                    </h1>
+                    <span style="color: #00ff00; font-size: 2rem;">°C</span>
+                    
+                    <p id="temp-status" style="margin-top: 15px; color: #aaa;">Aguardando dados do sensor...</p>
+                </div>
+            </div>
+            </main>
+        
+        <aside class="barra-lateral-direita">
+             </aside>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-storage-compat.js"></script>
+    <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
+    <script src="./inicial.js"></script>
+</body>
+</html>
