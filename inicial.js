@@ -312,8 +312,81 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 // =======================================================
+//     LÓGICA DA PÁGINA 'monitor.html' (LER TEMPERATURA) - NOVO!
+// =======================================================
+document.addEventListener('DOMContentLoaded', function() {
+    
+    // Procura o elemento que só existe na página 'monitor.html'
+    const tempDisplay = document.getElementById('temp-display');
+    
+    if (tempDisplay) { // Estamos na página monitor.html
+        console.log("DEBUG: Iniciando lógica da página monitor.html (DOMContentLoaded).");
+        
+        const tempStatus = document.getElementById('temp-status');
+        const tempUnit = document.getElementById('temp-unit'); // Pega a unidade
+
+        // **** CAMINHO NO FIREBASE ONDE O ESP32 VAI SALVAR OS DADOS ****
+        const tempRef = db.ref('sensores/sala_principal/temperatura');
+
+        // "Ouve" qualquer mudança nesse dado em tempo real
+        tempRef.on('value', (snapshot) => {
+            const temperatura = snapshot.val();
+            console.log("DEBUG: Novo dado de temperatura recebido:", temperatura);
+
+            if (temperatura !== null && !isNaN(temperatura)) {
+                tempDisplay.innerText = temperatura.toFixed(1); // Mostra com 1 casa decimal
+                
+                if (temperatura < 18) {
+                    tempStatus.innerText = "Status: Muito Frio";
+                    tempDisplay.style.color = "#00ccff"; // Azul
+                    tempUnit.style.color = "#00ccff";
+                } else if (temperatura > 26) {
+                    tempStatus.innerText = "Status: Muito Quente!";
+                    tempDisplay.style.color = "#ff6600"; // Laranja
+                    tempUnit.style.color = "#ff6600";
+                } else {
+                    tempStatus.innerText = "Status: Ideal";
+                    tempDisplay.style.color = "#00ff00"; // Verde
+                    tempUnit.style.color = "#00ff00";
+                }
+            } else {
+                tempDisplay.innerText = "--";
+                tempStatus.innerText = "Sem dados do sensor. Verifique o ESP32.";
+                tempDisplay.style.color = "#aaa";
+                tempUnit.style.color = "#aaa";
+oversight_attachments:
+- '{"contentFetchId":"uploaded:victor-denv/site-architech-projeto-tcc/site-ArchiTech-Projeto-Tcc-da0d91e644c0ca70c3c2213e549d7f41e000ba91/monitor.html"}'
+- '{"contentFetchId":"uploaded:victor-denv/site-architech-projeto-tcc/site-ArchiTech-Projeto-Tcc-da0d91e644c0ca70c3c2213e549d7f41e000ba91/inicial.js"}'
+- '{"contentFetchId":"uploaded:victor-denv/site-architech-projeto-tcc/site-ArchiTech-Projeto-Tcc-da0d91e644c0ca70c3c2213e549d7f41e000ba91/inicial.html"}'
+- '{"contentFetchId":"uploaded:victor-denv/site-architech-projeto-tcc/site-ArchiTech-Projeto-Tcc-da0d91e644c0ca70c3c2213e549d7f41e000ba91/configuracoes.html"}'
+- '{"contentFetchId":"uploaded:victor-denv/site-architech-projeto-tcc/site-ArchiTech-Projeto-Tcc-da0d91e644c0ca70c3c2213e549d7f41e000ba91/automacao.html"}'
+- '{"contentFetchId":"uploaded:victor-denv/site-architech-projeto-tcc/site-ArchiTech-Projeto-Tcc-da0d91e644c0ca70c3c2213e549d7f41e000ba91/listar.html"}'
+- '{"contentFetchId":"uploaded:victor-denv/site-architech-projeto-tcc/site-ArchiTech-Projeto-Tcc-da0d91e644c0ca70c3c2213e549d7f41e000ba91/arquivo.html"}'
+- '{"contentFetchId":"uploaded:victor-denv/site-architech-projeto-tcc/site-ArchiTech-Projeto-Tcc-da0d91e644c0ca70c3c2213e549d7f41e000ba91/index.html"}'
+- '{"contentFetchId":"uploaded:image_3401c5.png-27a24fcd-9e99-4a48-9328-7b7c3e69e40d"}'
+- '{"contentFetchId":"uploaded:image_9d3026.png-08054b50-8143-4906-833e-d5859bf89c89"}'
+- '{"contentFetchId":"uploaded:image_7e9fdd.png-80ba454c-68c5-43aa-8fe5-5b09ced68048"}'
+- '{"contentFetchId":"uploaded:victor-denv/site-architech-projeto-tcc/site-ArchiTech-Projeto-Tcc-da0d91e644c0ca70c3c2213e549d7f41e000ba91/inicial.html"}'
+- '{"contentFetchId":"uploaded:victor-denv/site-architech-projeto-tcc/site-ArchiTech-Projeto-Tcc-da0d91e644c0ca70c3c2213e549d7f41e000ba91/inicial.js"}'
+- '{"contentFetchId":"uploaded:victor-denv/site-architech-projeto-tcc/site-ArchiTech-Projeto-Tcc-da0d91e644c0ca70c3c2213e549d7f41e000ba91/inicial.css"}'
+- '{"contentFetchId":"uploaded:Captura de Tela (10).png"}'
+- '{"contentFetchId":"uploaded:image_88fe02.jpg-160e5c47-7460-43d7-834a-208d35388012"}'
+            }
+            
+        }, (errorObject) => {
+            console.error("DEBUG: Erro ao ler temperatura do Firebase:", errorObject.code);
+            if(tempStatus) tempStatus.innerText = "Erro de conexão com o banco de dados.";
+            if(tempDisplay) tempDisplay.innerText = "X";
+            if(tempUnit) tempUnit.style.color = "#aaa";
+            if(tempDisplay) tempDisplay.style.color = "#aaa";
+        });
+    }
+});
+
+// =======================================================
 //     LÓGICA DO BOTÃO "SAIR" (LOGOUT)
 // =======================================================
+// **** Usando DOMContentLoaded ****
 document.addEventListener('DOMContentLoaded', function() {
     const btnLogout = document.getElementById('btn-logout');
     if (btnLogout) {
