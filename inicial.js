@@ -1,4 +1,4 @@
-// Comentário para forçar deploy v28 - SEM CHATBOT
+// Comentário para forçar deploy v33 - FINAL COM MONITORAMENTO
 const firebaseConfig = {
   apiKey: "AIzaSyCPym-OjXGXY7IhA1u3DDPIOPi5tECDhR8",
   authDomain: "architeck-e92b4.firebaseapp.com",
@@ -62,7 +62,9 @@ window.addEventListener('load', () => {
         else if (horaAtual >= 12 && horaAtual < 18) saudacao = 'Boa Tarde, Arquivista!!';
         else saudacao = 'Boa Noite, Arquivista!!';
         const textoOriginal = "Veja algumas das atualizações do nosso acervo enquanto você esteve fora...";
-        saudacaoTitulo.textContent = `${saudacao} ${textoOriginal}`;
+        if(saudacaoTitulo && saudacaoTitulo.textContent.includes(textoOriginal)) {
+             saudacaoTitulo.textContent = `${saudacao} ${textoOriginal}`;
+        }
     }
     const menuItens = document.querySelectorAll('.menu-navegacao ul li');
     if (menuItens) {
@@ -263,13 +265,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 if(nomeDisplay) nomeDisplay.innerText = data.nome || 'Sem nome';
                 if(localDisplay) localDisplay.innerText = data.localizacao || 'Não informado';
                 if(tipoDisplay) tipoDisplay.innerText = data.tipo || 'Não informado';
-                if(dataDisplay && data.dataCadastro) { /* ... (formata data) ... */ }
+                if(dataDisplay && data.dataCadastro) {
+                     const dataCadastro = new Date(data.dataCadastro);
+                     dataDisplay.innerText = dataCadastro.toLocaleString('pt-BR');
+                } else if(dataDisplay) { dataDisplay.innerText = 'Data indisponível'; }
                 
-                // REMOVIDO: Anexo Base64 (pois não salvamos mais)
+                // REMOVIDO: Anexo Base64
 
                  // MOSTRAR TEXTO DA IA
-                 if (textoIADisplayContainer) {
-                     if (data.textoExtraido && textoIADisplay) {
+                 if (textoIADisplayContainer && textoIADisplay) {
+                     if (data.textoExtraido) {
                          textoIADisplay.textContent = data.textoExtraido;
                          textoIADisplayContainer.style.display = 'block';
                      } else {
@@ -309,7 +314,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 });
-
 
 // =======================================================
 //     LÓGICA DA PÁGINA 'monitor.html' (LER TEMPERATURA) - NOVO!
@@ -354,23 +358,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 tempStatus.innerText = "Sem dados do sensor. Verifique o ESP32.";
                 tempDisplay.style.color = "#aaa";
                 tempUnit.style.color = "#aaa";
-oversight_attachments:
-- '{"contentFetchId":"uploaded:victor-denv/site-architech-projeto-tcc/site-ArchiTech-Projeto-Tcc-da0d91e644c0ca70c3c2213e549d7f41e000ba91/monitor.html"}'
-- '{"contentFetchId":"uploaded:victor-denv/site-architech-projeto-tcc/site-ArchiTech-Projeto-Tcc-da0d91e644c0ca70c3c2213e549d7f41e000ba91/inicial.js"}'
-- '{"contentFetchId":"uploaded:victor-denv/site-architech-projeto-tcc/site-ArchiTech-Projeto-Tcc-da0d91e644c0ca70c3c2213e549d7f41e000ba91/inicial.html"}'
-- '{"contentFetchId":"uploaded:victor-denv/site-architech-projeto-tcc/site-ArchiTech-Projeto-Tcc-da0d91e644c0ca70c3c2213e549d7f41e000ba91/configuracoes.html"}'
-- '{"contentFetchId":"uploaded:victor-denv/site-architech-projeto-tcc/site-ArchiTech-Projeto-Tcc-da0d91e644c0ca70c3c2213e549d7f41e000ba91/automacao.html"}'
-- '{"contentFetchId":"uploaded:victor-denv/site-architech-projeto-tcc/site-ArchiTech-Projeto-Tcc-da0d91e644c0ca70c3c2213e549d7f41e000ba91/listar.html"}'
-- '{"contentFetchId":"uploaded:victor-denv/site-architech-projeto-tcc/site-ArchiTech-Projeto-Tcc-da0d91e644c0ca70c3c2213e549d7f41e000ba91/arquivo.html"}'
-- '{"contentFetchId":"uploaded:victor-denv/site-architech-projeto-tcc/site-ArchiTech-Projeto-Tcc-da0d91e644c0ca70c3c2213e549d7f41e000ba91/index.html"}'
-- '{"contentFetchId":"uploaded:image_3401c5.png-27a24fcd-9e99-4a48-9328-7b7c3e69e40d"}'
-- '{"contentFetchId":"uploaded:image_9d3026.png-08054b50-8143-4906-833e-d5859bf89c89"}'
-- '{"contentFetchId":"uploaded:image_7e9fdd.png-80ba454c-68c5-43aa-8fe5-5b09ced68048"}'
-- '{"contentFetchId":"uploaded:victor-denv/site-architech-projeto-tcc/site-ArchiTech-Projeto-Tcc-da0d91e644c0ca70c3c2213e549d7f41e000ba91/inicial.html"}'
-- '{"contentFetchId":"uploaded:victor-denv/site-architech-projeto-tcc/site-ArchiTech-Projeto-Tcc-da0d91e644c0ca70c3c2213e549d7f41e000ba91/inicial.js"}'
-- '{"contentFetchId":"uploaded:victor-denv/site-architech-projeto-tcc/site-ArchiTech-Projeto-Tcc-da0d91e644c0ca70c3c2213e549d7f41e000ba91/inicial.css"}'
-- '{"contentFetchId":"uploaded:Captura de Tela (10).png"}'
-- '{"contentFetchId":"uploaded:image_88fe02.jpg-160e5c47-7460-43d7-834a-208d35388012"}'
             }
             
         }, (errorObject) => {
@@ -386,7 +373,6 @@ oversight_attachments:
 // =======================================================
 //     LÓGICA DO BOTÃO "SAIR" (LOGOUT)
 // =======================================================
-// **** Usando DOMContentLoaded ****
 document.addEventListener('DOMContentLoaded', function() {
     const btnLogout = document.getElementById('btn-logout');
     if (btnLogout) {
