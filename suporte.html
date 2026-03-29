@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suporte | ARCHITECH</title>
+    <link rel="icon" type="image/png" href="Design sem nome (5).png">
+    <link rel="stylesheet" href="inicial.css">
+    <link rel="stylesheet" href="automacao.css"> 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+    <div class="painel-container" id="main-content">
+        <aside class="barra-lateral-esquerda">
+            <div class="logotipo">
+                <i class="fa-solid fa-layer-group"></i>
+                <h1>ARCHITECH</h1>
+            </div>
+            <nav class="menu-navegacao">
+                <ul>
+                    <li><a href="inicial.html"><i class="fa-solid fa-house"></i> Início</a></li>
+                    <li><a href="#"><i class="fa-solid fa-chart-pie"></i> Relatório de gestão</a></li>
+                    <li><a href="automacao.html"><i class="fa-solid fa-robot"></i> Automação de documentos</a></li>
+                    <li><a href="monitor.html"><i class="fa-solid fa-temperature-half"></i> Monitoramento</a></li>
+                    <li><a href="suporte.html" style="color: #fff; background-color: #8C52E5;"><i class="fa-solid fa-circle-question"></i> Suporte (Chamados)</a></li>
+                    <li><a href="configuracoes.html"><i class="fa-solid fa-gear"></i> Configuração</a></li>
+                </ul>
+            </nav>
+            <div class="rodape-barra-lateral">
+                <ul>
+                    <li><a href="#"><i class="fa-solid fa-user"></i> Conta</a></li>
+                    <li><a href="#" id="btn-logout"><i class="fa-solid fa-right-from-bracket"></i> Sair</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <main class="conteudo-principal">
+            <div id="formularioCadastro" class="abas-conteudo" style="background-color: #2a2a3a; color:#f0f0f0; padding: 25px; margin: 20px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);">
+                <h2>Abrir Chamado de Suporte</h2>
+                <p style="font-size: 14px; color: #b0b0b0; margin-bottom: 20px;">Relate o problema encontrado no sistema para a nossa equipe corrigir.</p>
+
+                <div style="margin-bottom: 15px;">
+                    <label for="descChamado">Descrição do Problema:</label><br>
+                    <textarea id="descChamado" rows="4" placeholder="Explique o que aconteceu com o máximo de detalhes..." style="width: 100%; padding: 10px; font-size: 14px; background-color: #1e1e2d; color: #f0f0f0; border: 1px solid #444; border-radius: 5px; box-sizing: border-box;"></textarea>
+                </div>
+
+                <div style="margin-bottom: 15px;">
+                    <label for="impactoChamado">Qual o impacto deste problema?</label><br>
+                    <select id="impactoChamado" style="width: 100%; padding: 10px; font-size: 14px; background-color: #1e1e2d; color: #f0f0f0; border: 1px solid #444; border-radius: 5px; box-sizing: border-box;">
+                        <option value="">Selecione o impacto...</option>
+                        <option value="Baixo">Baixo (Consigo continuar usando)</option>
+                        <option value="Médio">Médio (Atrapalha o fluxo)</option>
+                        <option value="Alto">Alto (Funcionalidade travada)</option>
+                    </select>
+                </div>
+
+                <button id="btnSalvarChamado" style="padding: 12px 25px; font-size: 16px; font-weight: bold; color: #ffffff; background-color: #6f42c1; border: none; border-radius: 5px; cursor: pointer; transition: background-color 0.3s ease;">
+                    Enviar Chamado
+                </button>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
+    <script src="./inicial.js"></script>
+</body>
+</html>

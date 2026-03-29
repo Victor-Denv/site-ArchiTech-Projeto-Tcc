@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel de Chamados | ARCHITECH</title>
+    <link rel="icon" type="image/png" href="Design sem nome (5).png">
+    <link rel="stylesheet" href="inicial.css">
+    <link rel="stylesheet" href="automacao.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+    <div class="painel-container" id="main-content">
+        <aside class="barra-lateral-esquerda">
+            <div class="logotipo">
+                <i class="fa-solid fa-layer-group"></i>
+                <h1>ARCHITECH</h1>
+            </div>
+            <nav class="menu-navegacao">
+                <ul>
+                    <li><a href="inicial.html"><i class="fa-solid fa-house"></i> Início</a></li>
+                    <li><a href="suporte.html"><i class="fa-solid fa-circle-question"></i> Suporte</a></li>
+                    <li><a href="painel-chamados.html" style="color: #fff; background-color: #8C52E5;"><i class="fa-solid fa-clipboard-list"></i> Gestão de Chamados</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <main class="conteudo-principal">
+            <div class="abas-conteudo" style="background-color: #2a2a3a; color:#f0f0f0; padding: 25px; margin: 20px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);">
+                <h2>Gestão de Incidentes (Equipe)</h2>
+                <p style="font-size: 14px; color: #b0b0b0; margin-bottom: 20px;">Acompanhe, priorize, corrija e valide os chamados abertos pelos usuários.</p>
+
+                <div id="listaChamadosContainer">
+                    <h3 style="color: #6f42c1; margin-bottom: 10px;">Chamados Recentes</h3>
+                    <div id="listaDeChamados">Carregando chamados...</div>
+                </div>
+
+                <div id="areaEdicaoChamado" style="display: none; margin-top: 30px; border-top: 2px solid #444; padding-top: 20px;">
+                    <h3 style="color: #ffc107; margin-bottom: 15px;">Atualizar Chamado</h3>
+                    
+                    <input type="hidden" id="editChamadoId">
+                    
+                    <p><strong>Problema relatado:</strong> <span id="displayDescricao" style="color: #ccc;"></span></p>
+                    <p style="margin-bottom: 15px;"><strong>Impacto:</strong> <span id="displayImpacto" style="color: #ccc;"></span></p>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                        <div>
+                            <label for="editPrioridade" style="font-size: 14px; color: #d0d0d0;">Prioridade (Líder):</label>
+                            <select id="editPrioridade" style="width: 100%; padding: 8px; background-color: #1e1e2d; color: #fff; border: 1px solid #444; border-radius: 5px;">
+                                <option value="Baixa">Baixa</option>
+                                <option value="Média">Média</option>
+                                <option value="Alta">Alta</option>
+                                <option value="Urgente">Urgente</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="editStatus" style="font-size: 14px; color: #d0d0d0;">Status Atual:</label>
+                            <select id="editStatus" style="width: 100%; padding: 8px; background-color: #1e1e2d; color: #fff; border: 1px solid #444; border-radius: 5px;">
+                                <option value="Aberto">Aberto</option>
+                                <option value="Em análise">Em análise</option>
+                                <option value="Em correção">Em correção</option>
+                                <option value="Em teste">Em teste</option>
+                                <option value="Resolvido">Resolvido</option>
+                                <option value="Reaberto">Reaberto</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 15px;">
+                        <label for="editSolucao" style="font-size: 14px; color: #d0d0d0;">Solução Aplicada (Desenvolvedor):</label>
+                        <textarea id="editSolucao" rows="2" style="width: 100%; padding: 8px; background-color: #1e1e2d; color: #fff; border: 1px solid #444; border-radius: 5px;"></textarea>
+                    </div>
+
+                    <div style="margin-bottom: 15px;">
+                        <label for="editTeste" style="font-size: 14px; color: #d0d0d0;">Evidência de Teste (QA):</label>
+                        <textarea id="editTeste" rows="2" placeholder="Descreva os testes feitos e o resultado..." style="width: 100%; padding: 8px; background-color: #1e1e2d; color: #fff; border: 1px solid #444; border-radius: 5px;"></textarea>
+                    </div>
+
+                    <button id="btnAtualizarChamado" style="padding: 10px 20px; background-color: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">Salvar Atualizações</button>
+                    <button id="btnCancelarEdicao" style="padding: 10px 20px; background-color: #dc3545; color: white; border: none; border-radius: 5px; cursor: pointer; margin-left: 10px; font-weight: bold;">Cancelar</button>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
+    <script src="./inicial.js"></script>
+</body>
+</html>

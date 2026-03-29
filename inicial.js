@@ -407,3 +407,152 @@ document.addEventListener('DOMContentLoaded', function() {
          console.log("DEBUG: Botão Logout NÃO encontrado.");
     }
 });
+
+// =======================================================
+//     LÓGICA DA PÁGINA 'suporte.html' (ABRIR CHAMADO)
+// =======================================================
+document.addEventListener('DOMContentLoaded', function() {
+    const btnSalvarChamado = document.getElementById('btnSalvarChamado');
+    
+    if (btnSalvarChamado) { // Verifica se estamos na página de suporte
+        console.log("DEBUG: Iniciando lógica da página suporte.html.");
+        const descInput = document.getElementById('descChamado');
+        const impactoInput = document.getElementById('impactoChamado');
+
+        btnSalvarChamado.addEventListener('click', function() {
+            const descricao = descInput.value;
+            const impacto = impactoInput.value;
+
+            if (!descricao || !impacto) { 
+                alert("Por favor, preencha a Descrição e o Impacto do problema."); 
+                return; 
+            }
+
+            btnSalvarChamado.innerText = "Enviando...";
+            btnSalvarChamado.disabled = true;
+
+            // Salvando no Firebase conforme modelo de incidente da Aula 06
+            const chamadosRef = db.ref('chamados');
+            chamadosRef.push({
+                descricao: descricao,
+                impacto: impacto,
+                status: 'Aberto', // Controle de status exigido na Aula 06
+                prioridade: 'Não definida', // Líder define depois
+                solucao: '',
+                teste_aplicado: '',
+                evidencia: '',
+                data_abertura: firebase.database.ServerValue.TIMESTAMP
+            })
+            .then((snapshot) => {
+                const docId = snapshot.key;
+                console.log("Chamado aberto com ID: ", docId);
+                alert("Chamado de suporte enviado com sucesso!");
+                descInput.value = "";
+                impactoInput.value = "";
+                btnSalvarChamado.innerText = "Enviar Chamado";
+                btnSalvarChamado.disabled = false;
+            })
+            .catch((error) => {
+                 console.error("Erro ao abrir chamado: ", error);
+                 alert("Ocorreu um erro ao enviar. Tente novamente.");
+                 btnSalvarChamado.innerText = "Enviar Chamado";
+                 btnSalvarChamado.disabled = false;
+             });
+        });
+    }
+});
+
+// =======================================================
+//     LÓGICA DA PÁGINA 'painel-chamados.html' (EQUIPE)
+// =======================================================
+document.addEventListener('DOMContentLoaded', function() {
+    const listaDeChamados = document.getElementById('listaDeChamados');
+    const areaEdicaoChamado = document.getElementById('areaEdicaoChamado');
+    
+    if (listaDeChamados) {
+        console.log("DEBUG: Iniciando Painel de Chamados.");
+        const chamadosRef = db.ref('chamados');
+
+        // Carregar lista de chamados
+        chamadosRef.on('value', (snapshot) => {
+            listaDeChamados.innerHTML = "";
+            const dados = snapshot.val();
+            
+            if (dados) {
+                Object.keys(dados).forEach(key => {
+                    const chamado = dados[key];
+                    // Define cor baseada no status
+                    let corStatus = "#ccc";
+                    if(chamado.status === "Resolvido") corStatus = "#28a745"; // Verde
+                    if(chamado.status === "Em correção" || chamado.status === "Em teste") corStatus = "#ffc107"; // Amarelo
+                    if(chamado.status === "Aberto" || chamado.status === "Reaberto") corStatus = "#dc3545"; // Vermelho
+
+                    const itemHtml = `
+                        <div style="background-color: #333; padding: 15px; border-radius: 5px; margin-bottom: 10px; border-left: 5px solid ${corStatus}; display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <strong>Descrição:</strong> ${chamado.descricao} <br>
+                                <span style="font-size: 12px; color: #aaa;">Status: <span style="color:${corStatus}; font-weight:bold;">${chamado.status}</span> | Impacto: ${chamado.impacto} | Prioridade: ${chamado.prioridade || 'Não definida'}</span>
+                            </div>
+                            <button onclick="editarChamado('${key}')" style="padding: 8px 15px; background-color: #6f42c1; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">Atender</button>
+                        </div>
+                    `;
+                    listaDeChamados.innerHTML += itemHtml;
+                });
+            } else {
+                listaDeChamados.innerHTML = "<p>Nenhum chamado registrado no momento.</p>";
+            }
+        });
+
+        // Função global para abrir o editor (disponível no clique do botão HTML gerado acima)
+        window.editarChamado = function(id) {
+            db.ref('chamados/' + id).once('value').then((snapshot) => {
+                const data = snapshot.val();
+                if(data) {
+                    document.getElementById('editChamadoId').value = id;
+                    document.getElementById('displayDescricao').innerText = data.descricao;
+                    document.getElementById('displayImpacto').innerText = data.impacto;
+                    document.getElementById('editStatus').value = data.status || "Aberto";
+                    document.getElementById('editPrioridade').value = data.prioridade || "Baixa";
+                    document.getElementById('editSolucao').value = data.solucao || "";
+                    document.getElementById('editTeste').value = data.teste_aplicado || "";
+                    
+                    areaEdicaoChamado.style.display = "block";
+                    window.scrollTo(0, document.body.scrollHeight); // Rola para baixo
+                }
+            });
+        };
+
+        // Salvar as atualizações
+        const btnAtualizarChamado = document.getElementById('btnAtualizarChamado');
+        if (btnAtualizarChamado) {
+            btnAtualizarChamado.addEventListener('click', function() {
+                const id = document.getElementById('editChamadoId').value;
+                const novoStatus = document.getElementById('editStatus').value;
+                const novaPrioridade = document.getElementById('editPrioridade').value;
+                const novaSolucao = document.getElementById('editSolucao').value;
+                const novoTeste = document.getElementById('editTeste').value;
+
+                db.ref('chamados/' + id).update({
+                    status: novoStatus,
+                    prioridade: novaPrioridade,
+                    solucao: novaSolucao,
+                    teste_aplicado: novoTeste
+                }).then(() => {
+                    alert("Chamado atualizado com sucesso!");
+                    areaEdicaoChamado.style.display = "none";
+                }).catch((error) => {
+                    console.error("Erro ao atualizar chamado:", error);
+                    alert("Erro ao salvar.");
+                });
+            });
+        }
+
+        // Cancelar edição
+        const btnCancelarEdicao = document.getElementById('btnCancelarEdicao');
+        if(btnCancelarEdicao) {
+            btnCancelarEdicao.addEventListener('click', () => {
+                areaEdicaoChamado.style.display = "none";
+            });
+        }
+    }
+});
