@@ -94,7 +94,7 @@ const firebaseConfig = {
                     console.log("Login feito com sucesso:", userCredential.user);
                     // Redireciona para a página principal do seu sistema
                     // (Pode ser 'inicial.html' ou 'listar.html')
-                    window.location.href = "inicial.html"; 
+                    window.location.href = "html/inicial.html"; 
                 })
                 .catch((error) => {
                     // Deu erro
