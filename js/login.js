@@ -115,7 +115,7 @@ const firebaseConfig = {
                     // Conta criada com sucesso!
                     console.log("Conta criada com sucesso:", userCredential.user);
                     // Redireciona para a página principal
-                    window.location.href = "inicial.html";
+                    window.location.href = "html/inicial.html";
                 })
                 .catch((error) => {
                     // Deu erro
