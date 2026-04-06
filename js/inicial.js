@@ -620,52 +620,76 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 // =======================================================
-//     LÓGICA DA PÁGINA 'mensagem.html'
+//     LÓGICA DA PÁGINA 'mensagem.html' (Notificações)
 // =======================================================
 document.addEventListener('DOMContentLoaded', function() {
-    const btnEnviarMsg = document.getElementById('btnEnviarMsg');
+    const containerNotificacoes = document.getElementById('containerNotificacoes');
     
-    if (btnEnviarMsg) {
-        const assuntoInput = document.getElementById('assuntoMsg');
-        const textoInput = document.getElementById('textoMsg');
-        const statusSpan = document.getElementById('statusMsg');
-
-        btnEnviarMsg.addEventListener('click', function() {
-            const assunto = assuntoInput.value;
-            const texto = textoInput.value;
+    // Só roda se estivermos na página de notificações
+    if (containerNotificacoes) {
+        const arquivosRef = db.ref('arquivos');
+        
+        // Puxa os últimos 15 arquivos cadastrados para gerar os alertas
+        arquivosRef.limitToLast(15).on('value', (snapshot) => {
+            const dados = snapshot.val();
+            containerNotificacoes.innerHTML = ""; // Limpa a tela de "Carregando"
             
-            // Pega o email do usuário logado (se existir)
-            const usuarioLogado = auth.currentUser ? auth.currentUser.email : "Usuário Desconhecido";
-
-            if (!assunto || !texto) {
-                alert("Por favor, preencha o assunto e a mensagem.");
-                return;
-            }
-
-            btnEnviarMsg.innerText = "Enviando...";
-            btnEnviarMsg.disabled = true;
-
-            // Salva no banco de dados na pasta "mensagens_suporte"
-            db.ref('mensagens_suporte').push({
-                remetente: usuarioLogado,
-                assunto: assunto,
-                mensagem: texto,
-                dataEnvio: firebase.database.ServerValue.TIMESTAMP
-            }).then(() => {
-                assuntoInput.value = "";
-                textoInput.value = "";
-                btnEnviarMsg.innerText = "Enviar Mensagem";
-                btnEnviarMsg.disabled = false;
+            if (dados) {
+                // Inverte para a mensagem mais nova ficar no topo
+                const chaves = Object.keys(dados).reverse(); 
                 
-                statusSpan.style.display = "inline-block";
-                setTimeout(() => { statusSpan.style.display = "none"; }, 3000); // Esconde o "sucesso" depois de 3 seg
-            }).catch(error => {
-                console.error("Erro ao enviar mensagem:", error);
-                alert("Erro ao enviar. Tente novamente.");
-                btnEnviarMsg.innerText = "Enviar Mensagem";
-                btnEnviarMsg.disabled = false;
-            });
+                chaves.forEach(key => {
+                    const arquivo = dados[key];
+                    
+                    // Formata a data (Ex: "Hoje às 14:30" ou a data completa)
+                    const dataObj = new Date(arquivo.dataCadastro);
+                    const dataFormatada = dataObj.toLocaleDateString('pt-BR') + ' às ' + dataObj.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+                    
+                    // Define cor e ícone baseados no tipo do arquivo
+                    let corBorda = "#6f42c1"; // Roxo padrão
+                    let icone = "fa-file";
+                    
+                    if(arquivo.tipo === "documento") { corBorda = "#28a745"; icone = "fa-file-pdf"; } // Verde
+                    if(arquivo.tipo === "imagem") { corBorda = "#ffc107"; icone = "fa-file-image"; } // Amarelo
+                    
+                    const notitificacaoHTML = `
+                        <div style="background: white; padding: 20px; border-left: 4px solid ${corBorda}; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); position: relative;">
+                            <span style="position: absolute; top: 15px; right: 20px; font-size: 11px; color: #999;">${dataFormatada}</span>
+                            <div style="display: flex; gap: 15px; align-items: start;">
+                                <div style="background-color: #f8f9fa; padding: 10px; border-radius: 50%; color: ${corBorda};">
+                                    <i class="fa-solid ${icone} fa-lg"></i>
+                                </div>
+                                <div>
+                                    <h4 style="color: #333; margin-bottom: 5px; font-size: 15px;">Novo arquivo indexado</h4>
+                                    <p style="color: #666; font-size: 13px; margin: 0;">
+                                        O arquivo <strong>"${arquivo.nome}"</strong> foi catalogado com sucesso na localização <strong>"${arquivo.localizacao}"</strong>.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    containerNotificacoes.innerHTML += notitificacaoHTML;
+                });
+            } else {
+                containerNotificacoes.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: #999;">
+                        <i class="fa-solid fa-bell-slash fa-2x" style="margin-bottom: 15px;"></i>
+                        <p>Nenhuma notificação no momento.</p>
+                    </div>`;
+            }
         });
+
+        // Botão para limpar a tela (apenas visual, não deleta do banco)
+        const btnLimpar = document.getElementById('btnLimparNotificacoes');
+        if(btnLimpar) {
+            btnLimpar.addEventListener('click', () => {
+                containerNotificacoes.innerHTML = `
+                <div style="text-align: center; padding: 40px; color: #999;">
+                    <i class="fa-solid fa-check-double fa-2x" style="margin-bottom: 15px;"></i>
+                    <p>Você não tem novas notificações.</p>
+                </div>`;
+            });
+        }
     }
 });
 
