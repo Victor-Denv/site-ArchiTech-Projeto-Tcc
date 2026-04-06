@@ -556,3 +556,66 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 });
+// =======================================================
+//     LÓGICA DA PÁGINA 'relatorio.html'
+// =======================================================
+document.addEventListener('DOMContentLoaded', function() {
+    const ctx = document.getElementById('graficoTipos');
+    
+    // Só executa se estivermos na página relatorio.html (se o canvas existir)
+    if (ctx) {
+        console.log("Página de relatório carregada. Buscando dados...");
+        const arquivosRef = db.ref('arquivos');
+
+        arquivosRef.once('value', (snapshot) => {
+            const dados = snapshot.val();
+            
+            let qtdDocs = 0;
+            let qtdImagens = 0;
+            let qtdOutros = 0;
+            let total = 0;
+
+            if (dados) {
+                // Conta quantos arquivos de cada tipo existem no banco
+                Object.values(dados).forEach(arquivo => {
+                    total++;
+                    if (arquivo.tipo === 'documento') qtdDocs++;
+                    else if (arquivo.tipo === 'imagem') qtdImagens++;
+                    else qtdOutros++;
+                });
+            }
+
+            // Atualiza os cartões na tela
+            document.getElementById('totalArquivos').innerText = total;
+            document.getElementById('totalDocs').innerText = qtdDocs;
+            document.getElementById('totalImagens').innerText = qtdImagens;
+
+            // Desenha o gráfico
+            new Chart(ctx, {
+                type: 'doughnut', // Tipo do gráfico (rosca)
+                data: {
+                    labels: ['Documentos (PDF)', 'Imagens (JPG/PNG)', 'Outros'],
+                    datasets: [{
+                        label: 'Quantidade',
+                        data: [qtdDocs, qtdImagens, qtdOutros],
+                        backgroundColor: [
+                            '#28a745', // Verde
+                            '#ffc107', // Amarelo
+                            '#6f42c1'  // Roxo da sua paleta
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { position: 'bottom' }
+                    }
+                }
+            });
+        }).catch(error => {
+            console.error("Erro ao puxar dados do relatório:", error);
+            document.getElementById('totalArquivos').innerText = "Erro";
+        });
+    }
+});
