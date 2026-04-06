@@ -619,3 +619,93 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+// =======================================================
+//     LÓGICA DA PÁGINA 'mensagem.html'
+// =======================================================
+document.addEventListener('DOMContentLoaded', function() {
+    const btnEnviarMsg = document.getElementById('btnEnviarMsg');
+    
+    if (btnEnviarMsg) {
+        const assuntoInput = document.getElementById('assuntoMsg');
+        const textoInput = document.getElementById('textoMsg');
+        const statusSpan = document.getElementById('statusMsg');
+
+        btnEnviarMsg.addEventListener('click', function() {
+            const assunto = assuntoInput.value;
+            const texto = textoInput.value;
+            
+            // Pega o email do usuário logado (se existir)
+            const usuarioLogado = auth.currentUser ? auth.currentUser.email : "Usuário Desconhecido";
+
+            if (!assunto || !texto) {
+                alert("Por favor, preencha o assunto e a mensagem.");
+                return;
+            }
+
+            btnEnviarMsg.innerText = "Enviando...";
+            btnEnviarMsg.disabled = true;
+
+            // Salva no banco de dados na pasta "mensagens_suporte"
+            db.ref('mensagens_suporte').push({
+                remetente: usuarioLogado,
+                assunto: assunto,
+                mensagem: texto,
+                dataEnvio: firebase.database.ServerValue.TIMESTAMP
+            }).then(() => {
+                assuntoInput.value = "";
+                textoInput.value = "";
+                btnEnviarMsg.innerText = "Enviar Mensagem";
+                btnEnviarMsg.disabled = false;
+                
+                statusSpan.style.display = "inline-block";
+                setTimeout(() => { statusSpan.style.display = "none"; }, 3000); // Esconde o "sucesso" depois de 3 seg
+            }).catch(error => {
+                console.error("Erro ao enviar mensagem:", error);
+                alert("Erro ao enviar. Tente novamente.");
+                btnEnviarMsg.innerText = "Enviar Mensagem";
+                btnEnviarMsg.disabled = false;
+            });
+        });
+    }
+});
+
+// =======================================================
+//     LÓGICA DA PÁGINA 'seguranca.html' (Auditoria)
+// =======================================================
+document.addEventListener('DOMContentLoaded', function() {
+    const tabelaAuditoria = document.getElementById('tabelaAuditoria');
+    
+    if (tabelaAuditoria) {
+        const arquivosRef = db.ref('arquivos');
+        
+        // Puxa os dados dos arquivos para preencher a auditoria
+        arquivosRef.limitToLast(5).once('value', (snapshot) => {
+            const dados = snapshot.val();
+            tabelaAuditoria.innerHTML = ""; // Limpa a tabela
+            
+            if (dados) {
+                // Inverte para mostrar do mais novo para o mais velho
+                const chaves = Object.keys(dados).reverse(); 
+                
+                chaves.forEach(key => {
+                    const arquivo = dados[key];
+                    const dataFormatada = new Date(arquivo.dataCadastro).toLocaleString('pt-BR');
+                    
+                    const linha = `
+                        <tr style="border-bottom: 1px solid #eee;">
+                            <td style="padding: 12px; color: #555;"><strong>${arquivo.nome}</strong></td>
+                            <td style="padding: 12px; color: #555;">${arquivo.localizacao}</td>
+                            <td style="padding: 12px; color: #888; font-size: 12px;">${dataFormatada}</td>
+                        </tr>
+                    `;
+                    tabelaAuditoria.innerHTML += linha;
+                });
+            } else {
+                tabelaAuditoria.innerHTML = `<tr><td colspan="3" style="padding: 12px; text-align: center;">Nenhum registro de auditoria encontrado.</td></tr>`;
+            }
+        }).catch(error => {
+            console.error("Erro ao puxar auditoria:", error);
+            tabelaAuditoria.innerHTML = `<tr><td colspan="3" style="padding: 12px; text-align: center; color: red;">Erro ao carregar dados.</td></tr>`;
+        });
+    }
+});

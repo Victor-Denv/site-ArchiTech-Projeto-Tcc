@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mensagens | ARCHITECH</title>
+    <link rel="icon" type="image/png" href="../img/Design sem nome (5).png">
+    
+    <link rel="stylesheet" href="../css/inicial.css">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+
+    <div class="painel-container" id="main-content">
+        <aside class="barra-lateral-esquerda">
+            <div class="logotipo">
+                <i class="fa-solid fa-layer-group"></i>
+                <h1>ARCHITECH</h1>
+            </div>
+            <nav class="menu-navegacao">
+                <ul>
+                    <li><a href="inicial.html"><i class="fa-solid fa-house"></i> Início</a></li>
+                    <li><a href="relatorio.html"><i class="fa-solid fa-chart-pie"></i> Relatório de gestão</a></li>
+                    <li><a href="automacao.html"><i class="fa-solid fa-robot"></i> Automação de documentos</a></li>
+                    <li class="ativo"><a href="mensagem.html"><i class="fa-solid fa-message"></i> Mensagem</a></li>
+                    <li><a href="seguranca.html"><i class="fa-solid fa-shield-halved"></i> Segurança e Compliance</a></li>
+                    <li><a href="configuracoes.html"><i class="fa-solid fa-gear"></i> Configuração</a></li>
+                </ul>
+            </nav>
+            <div class="rodape-barra-lateral">
+                <ul>
+                    <li><a href="#"><i class="fa-solid fa-user"></i> Conta</a></li>
+                    <li><a href="#" id="btn-logout"><i class="fa-solid fa-right-from-bracket"></i> Sair</a></li>
+                    <li><a href="#"><i class="fa-solid fa-circle-question"></i> Ajuda</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <main class="conteudo-principal" style="padding: 30px; background-color: #f4f7f6;">
+            <h2 style="color: #333; margin-bottom: 20px;">Central de Comunicação</h2>
+
+            <div style="background: white; padding: 25px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); max-width: 600px;">
+                <h3 style="margin-bottom: 15px; color: #6f42c1;">Fale com o Suporte (TI)</h3>
+                <p style="font-size: 14px; color: #666; margin-bottom: 20px;">Use este canal para reportar problemas no sistema ou solicitar novos acessos de arquivista.</p>
+                
+                <div style="margin-bottom: 15px;">
+                    <label style="font-weight: bold; font-size: 14px; color: #333;">Assunto:</label>
+                    <input type="text" id="assuntoMsg" placeholder="Ex: Problema com QR Code" style="width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ccc; border-radius: 5px;">
+                </div>
+                
+                <div style="margin-bottom: 15px;">
+                    <label style="font-weight: bold; font-size: 14px; color: #333;">Mensagem:</label>
+                    <textarea id="textoMsg" rows="5" placeholder="Descreva sua solicitação..." style="width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ccc; border-radius: 5px;"></textarea>
+                </div>
+
+                <button id="btnEnviarMsg" style="background-color: #6f42c1; color: white; padding: 10px 20px; border: none; border-radius: 5px; font-weight: bold; cursor: pointer;">
+                    <i class="fa-solid fa-paper-plane"></i> Enviar Mensagem
+                </button>
+                <span id="statusMsg" style="margin-left: 10px; color: #28a745; font-size: 14px; display: none;">Mensagem enviada com sucesso!</span>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
+
+    <script src="../js/inicial.js"></script>
+</body>
+</html>
