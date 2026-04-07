@@ -17,18 +17,59 @@
     const auth = firebase.auth();
     console.log("Firebase Conectado com SUCESSO a partir do inicial.js!");
 
-    // =======================================================
-    //     O "SEGURANÇA" (PROTETOR DE PÁGINA)
-    // =======================================================
-    auth.onAuthStateChanged(function(user) {
-        const isLoginPage = window.location.pathname.endsWith('/') || window.location.pathname.endsWith('index.html') || window.location.pathname.endsWith('login.html');
-        if (user) {
-            console.log("Usuário está LOGADO:", user.email);
-            if (isLoginPage) window.location.href = "inicial.html";
-        } else {
-            if (!isLoginPage) window.location.href = "index.html";
+  // =======================================================
+//     O "SEGURANÇA" E CONTROLE DE ACESSO (HIERARQUIA)
+// =======================================================
+auth.onAuthStateChanged(function(user) {
+    const isLoginPage = window.location.pathname.endsWith('/') || window.location.pathname.endsWith('index.html') || window.location.pathname.endsWith('login.html');
+    
+    if (user) {
+        if (isLoginPage) window.location.href = "inicial.html";
+
+        // MÁGICA DOS FILTROS: Descobre quem é o usuário e esconde o menu
+        db.ref('usuarios/' + user.uid).once('value').then((snapshot) => {
+            const dadosUsuario = snapshot.val();
+            // Se o usuário não tiver cargo no banco, assume que é funcionário (por segurança)
+            const cargo = dadosUsuario ? dadosUsuario.cargo : 'funcionario'; 
+            
+            aplicarFiltrosDeMenu(cargo);
+        });
+
+    } else {
+        if (!isLoginPage) window.location.href = "index.html";
+    }
+});
+
+function aplicarFiltrosDeMenu(cargo) {
+    // Pega todos os links do menu lateral esquerdo
+    const linksMenu = document.querySelectorAll('.menu-navegacao a');
+
+    linksMenu.forEach(link => {
+        const href = link.getAttribute('href');
+        const liPai = link.parentElement;
+
+        if (cargo === 'funcionario') {
+            // FUNCIONÁRIO NÃO VÊ: Relatórios, Chamados, Monitoramento, Segurança e Configurações
+            if (href.includes('relatorio.html') || 
+                href.includes('painel-chamados.html') || 
+                href.includes('monitor.html') || 
+                href.includes('seguranca.html') || 
+                href.includes('configuracoes.html')) {
+                liPai.style.display = 'none'; // Esconde o botão
+            }
+        } 
+        else if (cargo === 'ti') {
+            // EQUIPE DE TI NÃO VÊ: Automação (arquivos), Relatórios, Segurança e Configurações
+            if (href.includes('automacao.html') || 
+                href.includes('relatorio.html') || 
+                href.includes('seguranca.html') || 
+                href.includes('configuracoes.html')) {
+                liPai.style.display = 'none'; // Esconde o botão
+            }
         }
+        // Se for 'chefe', a função não faz nada, deixando todos os botões visíveis!
     });
+}
 
     //----- SCRIPT DA TELA DE CARREGAMENTO (Usa window.load) -----
     window.addEventListener('load', () => {
@@ -925,6 +966,19 @@ document.addEventListener('DOMContentLoaded', function() {
     const btnCriarUsuario = document.getElementById('btnCriarUsuario');
     
     if (btnCriarUsuario) {
+        // Trava de segurança: Só chefe pode ver essa página
+        auth.onAuthStateChanged(function(user) {
+            if (user) {
+                db.ref('usuarios/' + user.uid).once('value').then((snapshot) => {
+                    const cargo = snapshot.val() ? snapshot.val().cargo : 'funcionario';
+                    if (cargo !== 'chefe') {
+                        alert("Acesso Negado: Apenas o Arquivista Chefe pode gerenciar a equipe.");
+                        window.location.href = "inicial.html";
+                    }
+                });
+            }
+        });
+
         // Cria um App secundário do Firebase APENAS para registrar novos usuários sem deslogar o Chefe
         const appSecundario = firebase.initializeApp(firebaseConfig, "AppCriadorUsuarios");
         const authSecundario = appSecundario.auth();
@@ -934,35 +988,22 @@ document.addEventListener('DOMContentLoaded', function() {
             const senha = document.getElementById('novaSenhaUser').value;
             const cargo = document.getElementById('nivelAcessoUser').value;
 
-            if (!email || !senha) {
-                alert("Preencha e-mail e senha para criar o usuário.");
-                return;
-            }
-            if (senha.length < 6) {
-                alert("A senha deve ter pelo menos 6 caracteres.");
-                return;
-            }
+            if (!email || !senha) { alert("Preencha e-mail e senha para criar o usuário."); return; }
+            if (senha.length < 6) { alert("A senha deve ter pelo menos 6 caracteres."); return; }
 
             btnCriarUsuario.innerText = "Criando usuário...";
             btnCriarUsuario.disabled = true;
 
-            // 1. Cria o usuário na Autenticação (pelo App Secundário)
             authSecundario.createUserWithEmailAndPassword(email, senha)
                 .then((userCredential) => {
                     const novoUid = userCredential.user.uid;
-
-                    // 2. Salva as permissões de acesso no Banco de Dados (App Principal)
                     db.ref('usuarios/' + novoUid).set({
                         email: email,
                         cargo: cargo,
                         dataCriacao: firebase.database.ServerValue.TIMESTAMP
                     }).then(() => {
-                        // 3. Desloga o usuário recém-criado do App Secundário para não bugar
                         authSecundario.signOut();
-                        
                         alert(`Usuário criado com sucesso!\nE-mail: ${email}\nCargo: ${cargo}`);
-                        
-                        // Limpa os campos
                         document.getElementById('novoEmailUser').value = "";
                         document.getElementById('novaSenhaUser').value = "";
                         btnCriarUsuario.innerText = "Criar Conta e Atribuir Permissões";
@@ -977,7 +1018,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
         });
 
-        // Carrega a lista de equipe na tela
         const listaEquipe = document.getElementById('listaUsuariosCadastrados');
         db.ref('usuarios').on('value', (snapshot) => {
             listaEquipe.innerHTML = "";
@@ -985,9 +1025,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (dados) {
                 Object.keys(dados).forEach(uid => {
                     const user = dados[uid];
-                    let corBadge = "#6c757d"; // Cinza (Funcionario)
-                    let nomeCargo = "Funcionário";
-
+                    let corBadge = "#6c757d", nomeCargo = "Funcionário";
                     if (user.cargo === 'chefe') { corBadge = "#dc3545"; nomeCargo = "Arquivista Chefe"; }
                     if (user.cargo === 'ti') { corBadge = "#007bff"; nomeCargo = "Equipe de TI"; }
 
@@ -998,8 +1036,26 @@ document.addEventListener('DOMContentLoaded', function() {
                         </div>
                     `;
                 });
-            } else {
-                listaEquipe.innerHTML = "Nenhum usuário cadastrado.";
+            } else { listaEquipe.innerHTML = "Nenhum usuário cadastrado."; }
+        });
+    }
+});
+
+// =======================================================
+//     BLINDAGEM DA PÁGINA 'relatorio.html'
+// =======================================================
+document.addEventListener('DOMContentLoaded', function() {
+    const ctx = document.getElementById('graficoTipos');
+    if (ctx) { 
+        auth.onAuthStateChanged(function(user) {
+            if (user) {
+                db.ref('usuarios/' + user.uid).once('value').then((snapshot) => {
+                    const cargo = snapshot.val() ? snapshot.val().cargo : 'funcionario';
+                    if (cargo !== 'chefe') {
+                        alert("Acesso Negado: Esta página é restrita ao Arquivista Chefe.");
+                        window.location.href = "inicial.html";
+                    }
+                });
             }
         });
     }
