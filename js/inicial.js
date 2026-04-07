@@ -30,7 +30,7 @@ auth.onAuthStateChanged(function(user) {
         db.ref('usuarios/' + user.uid).once('value').then((snapshot) => {
             const dadosUsuario = snapshot.val();
             // Se o usuário não tiver cargo no banco, assume que é funcionário (por segurança)
-            const cargo = dadosUsuario ? dadosUsuario.cargo : 'funcionario'; 
+           const cargo = dadosUsuario ? dadosUsuario.cargo : 'chefe';
             
             aplicarFiltrosDeMenu(cargo);
         });
@@ -939,25 +939,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    // =======================================================
-//     LÓGICA DA PÁGINA 'conta.html' (Perfil do Usuário)
-// =======================================================
-document.addEventListener('DOMContentLoaded', function() {
-    const emailUsuarioConta = document.getElementById('emailUsuarioConta');
-    
-    // Só executa se estivermos na página de conta
-    if (emailUsuarioConta) {
-        // O Firebase Auth observa se tem alguém logado
-        auth.onAuthStateChanged(function(user) {
-            if (user) {
-                // Se tiver, joga o e-mail na tela
-                emailUsuarioConta.innerText = user.email;
-            } else {
-                emailUsuarioConta.innerText = "Usuário desconectado";
-            }
-        });
-    }
-});
+
 
 // =======================================================
 //     LÓGICA DA PÁGINA 'configuracoes.html' (Criar Usuários)
@@ -1056,6 +1038,21 @@ document.addEventListener('DOMContentLoaded', function() {
                         window.location.href = "inicial.html";
                     }
                 });
+            }
+        });
+    }
+});
+// =======================================================
+//     LÓGICA DA PÁGINA 'conta.html' (Perfil do Usuário)
+// =======================================================
+document.addEventListener('DOMContentLoaded', function() {
+    const emailUsuarioConta = document.getElementById('emailUsuarioConta');
+    if (emailUsuarioConta) {
+        auth.onAuthStateChanged(function(user) {
+            if (user) {
+                emailUsuarioConta.innerText = user.email;
+            } else {
+                emailUsuarioConta.innerText = "Usuário desconectado";
             }
         });
     }
