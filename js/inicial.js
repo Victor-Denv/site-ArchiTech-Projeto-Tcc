@@ -165,54 +165,83 @@
             });
         }
 
-            // Lógica Botão Salvar
-            btnSalvar.addEventListener('click', function() {
-                const nome = nomeArquivoInput.value;
-                const local = localizacaoInput.value;
-                const tipo = tipoArquivoInput.value;
-                const textoIA = textoExtraidoIA ? textoExtraidoIA.value : null;
-                if (!nome || !local) { alert("Preencha Nome e Localização!"); return; }
-                btnSalvar.innerText = "Salvando...";
-                btnSalvar.disabled = true;
-                salvarNoBanco(nome, local, tipo, textoIA);
-            });
 
-            // Função salvarNoBanco (Salva textoExtraido)
-            function salvarNoBanco(nome, local, tipo, textoIA) {
-                console.log("Salvando no REALTIME DATABASE (com texto da IA)...");
-                const arquivosRef = db.ref('arquivos');
-                arquivosRef.push({
-                    nome: nome,
-                    localizacao: local,
-                    tipo: tipo,
-                    dataCadastro: firebase.database.ServerValue.TIMESTAMP,
-                    anexoUrl: null, // Não salvamos mais anexo
-                    textoExtraido: textoIA || null // Salva texto da IA
-                })
-                .then((snapshot) => {
-                    const docId = snapshot.key;
-                    console.log("Documento salvo com ID: ", docId);
-                    if(nomeArquivoInput) nomeArquivoInput.value = "";
-                    if(localizacaoInput) localizacaoInput.value = "";
-                    if(arquivoUploadInput) arquivoUploadInput.value = null;
-                    if(textoExtraidoIA) textoExtraidoIA.value = "";
-                    if(iaStatus) iaStatus.innerText = "";
-                    if(qrcodeDiv) qrcodeDiv.innerHTML = "";
-                    const urlParaQR = `${window.location.origin}/arquivo.html?id=${docId}`;
-                    new QRCode(qrcodeDiv, { text: urlParaQR, width: 150, height: 150 });
-                    alert("Arquivo salvo com sucesso!");
-                    btnSalvar.innerText = "Salvar e Gerar QR Code";
-                    btnSalvar.disabled = false;
-                })
-                .catch((error) => {
-                    console.error("Erro ao salvar documento: ", error);
-                    btnSalvar.innerText = "Salvar e Gerar QR Code";
-                    btnSalvar.disabled = false;
-                });
+         // ==========================================
+        // LÓGICA DO BOTÃO SALVAR (AGORA SALVA O ANEXO)
+        // ==========================================
+        btnSalvar.addEventListener('click', function() {
+            const nome = nomeArquivoInput.value;
+            const local = localizacaoInput.value;
+            const tipo = tipoArquivoInput.value;
+            const textoIA = textoExtraidoIA ? textoExtraidoIA.value : null;
+            const file = arquivoUploadInput.files[0]; // Captura o arquivo anexado!
+
+            if (!nome || !local) { 
+                alert("Preencha Nome e Localização!"); 
+                return; 
             }
+
+            btnSalvar.innerText = "Salvando...";
+            btnSalvar.disabled = true;
+
+            // Se o usuário anexou um arquivo, converte e salva
+            if (file) {
+                const reader = new FileReader();
+                reader.readAsDataURL(file); // Converte para Base64
+                reader.onload = function() {
+                    salvarNoBanco(nome, local, tipo, textoIA, reader.result); // Passa o arquivo!
+                };
+                reader.onerror = function() {
+                    alert("Erro ao ler o arquivo.");
+                    btnSalvar.innerText = "Salvar e Gerar QR Code";
+                    btnSalvar.disabled = false;
+                };
+            } else {
+                // Se não anexou nada, salva sem anexo
+                salvarNoBanco(nome, local, tipo, textoIA, null);
+            }
+        });
+
+        // A função que manda pro Firebase
+        function salvarNoBanco(nome, local, tipo, textoIA, anexoBase64) {
+            const arquivosRef = db.ref('arquivos');
+            arquivosRef.push({
+                nome: nome,
+                localizacao: local,
+                tipo: tipo,
+                dataCadastro: firebase.database.ServerValue.TIMESTAMP,
+                anexoUrl: anexoBase64, // <-- ISSO É O QUE FAZ OS BOTÕES APARECEREM!
+                textoExtraido: textoIA || null 
+            })
+            .then((snapshot) => {
+                const docId = snapshot.key;
+                
+                // Limpa os campos
+                if(nomeArquivoInput) nomeArquivoInput.value = "";
+                if(localizacaoInput) localizacaoInput.value = "";
+                if(arquivoUploadInput) arquivoUploadInput.value = null;
+                if(textoExtraidoIA) textoExtraidoIA.value = "";
+                if(iaStatus) iaStatus.innerText = "";
+                
+                // Gera o QR Code
+                if(qrcodeDiv) qrcodeDiv.innerHTML = "";
+                const urlParaQR = `${window.location.origin}/html/arquivo.html?id=${docId}`;
+                new QRCode(qrcodeDiv, { text: urlParaQR, width: 150, height: 150 });
+                
+                alert("Arquivo salvo com sucesso!");
+                btnSalvar.innerText = "Salvar e Gerar QR Code";
+                btnSalvar.disabled = false;
+            })
+            .catch((error) => {
+                 console.error("Erro ao salvar:", error);
+                 btnSalvar.innerText = "Salvar e Gerar QR Code";
+                 btnSalvar.disabled = false;
+             });
+        }
+
+
         }
     });
-
 
     // =======================================================
     //     LÓGICA DA PÁGINA 'listar.html'
