@@ -952,7 +952,7 @@ document.addEventListener('DOMContentLoaded', function() {
         auth.onAuthStateChanged(function(user) {
             if (user) {
                 db.ref('usuarios/' + user.uid).once('value').then((snapshot) => {
-                    const cargo = snapshot.val() ? snapshot.val().cargo : 'funcionario';
+                    const cargo = snapshot.val() ? snapshot.val().cargo : 'chefe'; // Mantém você como chefe se não tiver no banco
                     if (cargo !== 'chefe') {
                         alert("Acesso Negado: Apenas o Arquivista Chefe pode gerenciar a equipe.");
                         window.location.href = "inicial.html";
@@ -962,44 +962,60 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         // Cria um App secundário do Firebase APENAS para registrar novos usuários sem deslogar o Chefe
-        const appSecundario = firebase.initializeApp(firebaseConfig, "AppCriadorUsuarios");
+        const appSecundario = firebase.apps.find(app => app.name === "AppCriadorUsuarios") || firebase.initializeApp(firebaseConfig, "AppCriadorUsuarios");
         const authSecundario = appSecundario.auth();
 
         btnCriarUsuario.addEventListener('click', function() {
             const email = document.getElementById('novoEmailUser').value;
-            const senha = document.getElementById('novaSenhaUser').value;
             const cargo = document.getElementById('nivelAcessoUser').value;
 
-            if (!email || !senha) { alert("Preencha e-mail e senha para criar o usuário."); return; }
-            if (senha.length < 6) { alert("A senha deve ter pelo menos 6 caracteres."); return; }
+            if (!email) { alert("Preencha o e-mail real do usuário."); return; }
 
-            btnCriarUsuario.innerText = "Criando usuário...";
+            btnCriarUsuario.innerText = "Enviando convite...";
             btnCriarUsuario.disabled = true;
 
-            authSecundario.createUserWithEmailAndPassword(email, senha)
+            // Gera uma senha aleatória absurda que ninguém vai saber (o usuário vai resetar logo em seguida)
+            const senhaAleatoria = Math.random().toString(36).slice(-10) + "A1@";
+
+            // 1. Cria a conta no Firebase Auth
+            authSecundario.createUserWithEmailAndPassword(email, senhaAleatoria)
                 .then((userCredential) => {
                     const novoUid = userCredential.user.uid;
+                    
+                    // 2. Salva o nível de acesso (cargo) no Banco de Dados
                     db.ref('usuarios/' + novoUid).set({
                         email: email,
                         cargo: cargo,
                         dataCriacao: firebase.database.ServerValue.TIMESTAMP
                     }).then(() => {
-                        authSecundario.signOut();
-                        alert(`Usuário criado com sucesso!\nE-mail: ${email}\nCargo: ${cargo}`);
-                        document.getElementById('novoEmailUser').value = "";
-                        document.getElementById('novaSenhaUser').value = "";
-                        btnCriarUsuario.innerText = "Criar Conta e Atribuir Permissões";
-                        btnCriarUsuario.disabled = false;
+                        
+                        // 3. Manda o e-mail de "Esqueci minha senha" para a pessoa definir a própria senha
+                        authSecundario.sendPasswordResetEmail(email)
+                            .then(() => {
+                                authSecundario.signOut();
+                                alert(`Convite enviado com sucesso!\nUm e-mail foi enviado para: ${email}\nA pessoa deve clicar no link do e-mail para criar a senha dela.`);
+                                
+                                document.getElementById('novoEmailUser').value = "";
+                                btnCriarUsuario.innerText = "Enviar Convite e Atribuir Permissões";
+                                btnCriarUsuario.disabled = false;
+                            })
+                            .catch((error) => {
+                                console.error("Erro ao enviar e-mail:", error);
+                                alert("Usuário criado, mas houve um erro ao enviar o e-mail. Peça para a pessoa clicar em 'Esqueci a Senha' na tela de login.");
+                                btnCriarUsuario.innerText = "Enviar Convite e Atribuir Permissões";
+                                btnCriarUsuario.disabled = false;
+                            });
                     });
                 })
                 .catch((error) => {
                     console.error("Erro ao criar usuário:", error);
-                    alert("Erro ao criar usuário. Talvez este e-mail já exista no Firebase.");
-                    btnCriarUsuario.innerText = "Criar Conta e Atribuir Permissões";
+                    alert("Erro ao criar usuário. Talvez este e-mail já esteja cadastrado no sistema.");
+                    btnCriarUsuario.innerText = "Enviar Convite e Atribuir Permissões";
                     btnCriarUsuario.disabled = false;
                 });
         });
 
+        // Carrega a equipe na tela
         const listaEquipe = document.getElementById('listaUsuariosCadastrados');
         db.ref('usuarios').on('value', (snapshot) => {
             listaEquipe.innerHTML = "";
