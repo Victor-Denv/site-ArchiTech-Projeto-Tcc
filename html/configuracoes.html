@@ -3,124 +3,84 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Configurações | ARCHITECH</title>
-
-     <link rel="icon" type="image/png" href="img/Design sem nome (5).png">
-
+    <title>Configurações e Equipe | ARCHITECH</title>
+    <link rel="icon" type="image/png" href="../img/Design sem nome (5).png">
     <link rel="stylesheet" href="../css/inicial.css">
-
-    <link rel="stylesheet" href="../css/configuracoes.css">
-
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body>
+
     <div class="painel-container" id="main-content">
         <aside class="barra-lateral-esquerda">
-            <div class="logotipo">
-                <i class="fa-solid fa-layer-group"></i>
-                <h1>ARCHITECH</h1>
-            </div>
-          <nav class="menu-navegacao">
-                 <ul>
-                   <li><a href="inicial.html"><i class="fa-solid fa-house"></i> Início</a></li>
+            <div class="logotipo"><i class="fa-solid fa-layer-group"></i><h1>ARCHITECH</h1></div>
+            <nav class="menu-navegacao">
+                <ul>
+                    <li><a href="inicial.html"><i class="fa-solid fa-house"></i> Início</a></li>
                     <li><a href="relatorio.html"><i class="fa-solid fa-chart-pie"></i> Relatório de gestão</a></li>
                     <li><a href="automacao.html"><i class="fa-solid fa-robot"></i> Automação de documentos</a></li>
                     <li><a href="suporte.html"><i class="fa-solid fa-circle-question"></i> Suporte</a></li>
-<li><a href="painel-chamados.html"><i class="fa-solid fa-clipboard-list"></i> Gestão de Chamados</a></li>
+                    <li><a href="painel-chamados.html"><i class="fa-solid fa-clipboard-list"></i> Gestão de Chamados</a></li>
                     <li><a href="monitor.html"><i class="fa-solid fa-temperature-half"></i> Monitoramento</a></li>
-                    
                     <li><a href="mensagem.html"><i class="fa-solid fa-message"></i> Mensagem</a></li>
                     <li><a href="seguranca.html"><i class="fa-solid fa-shield-halved"></i> Segurança e Compliance</a></li>
-                    <li><a href="configuracoes.html"><i class="fa-solid fa-gear"></i> Configuração</a></li>
+                    <li class="ativo"><a href="configuracoes.html"><i class="fa-solid fa-gear"></i> Configuração</a></li>
                 </ul>
             </nav>
-          <div class="rodape-barra-lateral">
-    <ul>
-        <li><a href="conta.html"><i class="fa-solid fa-user"></i> Conta</a></li>
-        <li><a href="#" id="btn-logout"><i class="fa-solid fa-right-from-bracket"></i> Sair</a></li>
-        <li><a href="suporte.html"><i class="fa-solid fa-circle-question"></i> Ajuda</a></li>
-    </ul>
-</div>
+            <div class="rodape-barra-lateral">
+                <ul>
+                    <li><a href="conta.html"><i class="fa-solid fa-user"></i> Conta</a></li>
+                    <li><a href="#" id="btn-logout"><i class="fa-solid fa-right-from-bracket"></i> Sair</a></li>
+                    <li><a href="suporte.html"><i class="fa-solid fa-circle-question"></i> Ajuda</a></li>
+                </ul>
+            </div>
         </aside>
 
-        <main class="conteudo-principal">
-            <header class="cabecalho-principal">
-                <div class="barra-pesquisa">
-                    <i class="fa-solid fa-search"></i>
-                    <input type="text" placeholder="Pesquisar nas configurações">
+        <main class="conteudo-principal" style="padding: 30px; background-color: #f4f7f6; overflow-y: auto;">
+            <h2 style="color: #333; margin-bottom: 20px;">Gerenciamento de Equipe e Acessos</h2>
+
+            <div style="background: white; padding: 25px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); max-width: 600px; margin-bottom: 30px;">
+                <h3 style="color: #6f42c1; margin-bottom: 15px;"><i class="fa-solid fa-user-plus"></i> Cadastrar Novo Membro</h3>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                    <div>
+                        <label style="font-weight: bold; font-size: 13px; color: #555;">E-mail do Usuário:</label>
+                        <input type="email" id="novoEmailUser" placeholder="exemplo@architech.com" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; margin-top: 5px; box-sizing: border-box;">
+                    </div>
+                    <div>
+                        <label style="font-weight: bold; font-size: 13px; color: #555;">Senha Provisória:</label>
+                        <input type="password" id="novaSenhaUser" placeholder="Mínimo 6 caracteres" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; margin-top: 5px; box-sizing: border-box;">
+                    </div>
                 </div>
-                <div class="icones-cabecalho">
-                    <i class="fa-solid fa-sliders"></i>
-                    <i class="fa-solid fa-bell"></i>
+
+                <div style="margin-bottom: 20px;">
+                    <label style="font-weight: bold; font-size: 13px; color: #555;">Nível de Acesso (Hierarquia):</label>
+                    <select id="nivelAcessoUser" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; margin-top: 5px;">
+                        <option value="funcionario">Funcionário (Apenas vê e cadastra arquivos)</option>
+                        <option value="ti">Equipe de TI (Apenas Gestão de Chamados e Monitoramento)</option>
+                        <option value="chefe">Arquivista Chefe (Acesso Total)</option>
+                    </select>
                 </div>
-            </header>
 
-            <h1>Configurações</h1>
-
-            <div class="settings-container">
-                <aside class="settings-menu">
-                    <ul>
-                        <li class="active"><a href="#"><i class="fa-solid fa-user"></i> Perfil público</a></li>
-                        <li><a href="#"><i class="fa-solid fa-key"></i> Conta</a></li>
-                        <li><a href="#"><i class="fa-solid fa-palette"></i> Aparência</a></li>
-                        <li><a href="#"><i class="fa-solid fa-bell"></i> Notificações</a></li>
-                        <li><a href="#"><i class="fa-solid fa-shield-halved"></i> Senha e autenticação</a></li>
-                    </ul>
-                </aside>
-
-                <div class="settings-content">
-                    <section id="perfil-publico">
-                        <h2>Perfil público</h2>
-                        <div class="profile-section">
-                            <div class="profile-details">
-                                <div class="form-group">
-                                    <label for="nome">Nome</label>
-                                    <input type="text" id="nome" value="Vitor Da Silva">
-                                    <p class="helper-text">Seu nome pode aparecer no Architech onde você contribui ou é mencionado.</p>
-                                </div>
-                            </div>
-                            <div class="profile-pic-area">
-                                <label>Foto de perfil</label>
-                                <img src="https://avatars.githubusercontent.com/u/178439100?s=400&u=9b5e3c5b1fdcc3794f31dc3385b9bc8d8a16c681&v=4" alt="Foto Minha">
-                                <button class="btn-edit">Editar</button>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="email">E-mail público</label>
-                            <input type="email" id="email" value="jisoo.kim@example.com">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="bio">Biografia</label>
-                            <textarea id="bio" rows="3">Arquivista na Architech, especialista em digitalização e compliance de documentos.</textarea>
-                        </div>
-
-                        <div class="form-group">
-                                <label for="pronome">Pronomes</label>
-                                <input type="text" id="pronome" placeholder="Ex: ela/dela">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="url">URL</label>
-                            <input type="url" id="url" placeholder="https://seusite.com">
-                       </div>
-
-                        <button class="btn-save">Salvar alterações</button>
-                    </section>
-                </div>
+                <button id="btnCriarUsuario" style="background-color: #28a745; color: white; padding: 10px 20px; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; width: 100%;">
+                    Criar Conta e Atribuir Permissões
+                </button>
             </div>
-        </main>
+            
+            <div style="background: white; padding: 25px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); max-width: 600px;">
+                <h3 style="color: #333; margin-bottom: 15px;"><i class="fa-solid fa-users"></i> Equipe Registrada</h3>
+                <p style="font-size: 13px; color: #666;">Usuários com permissão no sistema Architech.</p>
+                <div id="listaUsuariosCadastrados">Carregando equipe...</div>
+            </div>
 
-        </div>
+        </main>
+    </div>
 
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script> <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
     <script src="../js/inicial.js"></script>
-
 </body>
 </html>

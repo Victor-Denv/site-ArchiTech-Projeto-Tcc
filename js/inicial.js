@@ -918,4 +918,89 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
+// =======================================================
+//     LÓGICA DA PÁGINA 'configuracoes.html' (Criar Usuários)
+// =======================================================
+document.addEventListener('DOMContentLoaded', function() {
+    const btnCriarUsuario = document.getElementById('btnCriarUsuario');
+    
+    if (btnCriarUsuario) {
+        // Cria um App secundário do Firebase APENAS para registrar novos usuários sem deslogar o Chefe
+        const appSecundario = firebase.initializeApp(firebaseConfig, "AppCriadorUsuarios");
+        const authSecundario = appSecundario.auth();
 
+        btnCriarUsuario.addEventListener('click', function() {
+            const email = document.getElementById('novoEmailUser').value;
+            const senha = document.getElementById('novaSenhaUser').value;
+            const cargo = document.getElementById('nivelAcessoUser').value;
+
+            if (!email || !senha) {
+                alert("Preencha e-mail e senha para criar o usuário.");
+                return;
+            }
+            if (senha.length < 6) {
+                alert("A senha deve ter pelo menos 6 caracteres.");
+                return;
+            }
+
+            btnCriarUsuario.innerText = "Criando usuário...";
+            btnCriarUsuario.disabled = true;
+
+            // 1. Cria o usuário na Autenticação (pelo App Secundário)
+            authSecundario.createUserWithEmailAndPassword(email, senha)
+                .then((userCredential) => {
+                    const novoUid = userCredential.user.uid;
+
+                    // 2. Salva as permissões de acesso no Banco de Dados (App Principal)
+                    db.ref('usuarios/' + novoUid).set({
+                        email: email,
+                        cargo: cargo,
+                        dataCriacao: firebase.database.ServerValue.TIMESTAMP
+                    }).then(() => {
+                        // 3. Desloga o usuário recém-criado do App Secundário para não bugar
+                        authSecundario.signOut();
+                        
+                        alert(`Usuário criado com sucesso!\nE-mail: ${email}\nCargo: ${cargo}`);
+                        
+                        // Limpa os campos
+                        document.getElementById('novoEmailUser').value = "";
+                        document.getElementById('novaSenhaUser').value = "";
+                        btnCriarUsuario.innerText = "Criar Conta e Atribuir Permissões";
+                        btnCriarUsuario.disabled = false;
+                    });
+                })
+                .catch((error) => {
+                    console.error("Erro ao criar usuário:", error);
+                    alert("Erro ao criar usuário. Talvez este e-mail já exista no Firebase.");
+                    btnCriarUsuario.innerText = "Criar Conta e Atribuir Permissões";
+                    btnCriarUsuario.disabled = false;
+                });
+        });
+
+        // Carrega a lista de equipe na tela
+        const listaEquipe = document.getElementById('listaUsuariosCadastrados');
+        db.ref('usuarios').on('value', (snapshot) => {
+            listaEquipe.innerHTML = "";
+            const dados = snapshot.val();
+            if (dados) {
+                Object.keys(dados).forEach(uid => {
+                    const user = dados[uid];
+                    let corBadge = "#6c757d"; // Cinza (Funcionario)
+                    let nomeCargo = "Funcionário";
+
+                    if (user.cargo === 'chefe') { corBadge = "#dc3545"; nomeCargo = "Arquivista Chefe"; }
+                    if (user.cargo === 'ti') { corBadge = "#007bff"; nomeCargo = "Equipe de TI"; }
+
+                    listaEquipe.innerHTML += `
+                        <div style="padding: 10px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center;">
+                            <span style="color: #333; font-weight: 500;">${user.email}</span>
+                            <span style="background-color: ${corBadge}; color: white; padding: 3px 8px; border-radius: 12px; font-size: 11px; font-weight: bold;">${nomeCargo}</span>
+                        </div>
+                    `;
+                });
+            } else {
+                listaEquipe.innerHTML = "Nenhum usuário cadastrado.";
+            }
+        });
+    }
+});
