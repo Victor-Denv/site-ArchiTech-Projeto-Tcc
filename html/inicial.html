@@ -9,9 +9,10 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-     <link rel="icon" type="image/png" href="img/Design sem nome (5).png">
+    <link rel="icon" type="image/png" href="../img/Design sem nome (5).png">
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <body>
 
     <div id="splash-screen">
@@ -21,35 +22,35 @@
             <div class="loader"></div>
         </div>
     </div>
+
     <div class="painel-container" id="main-content" style="display: none;">
+        
         <aside class="barra-lateral-esquerda">
             <div class="logotipo">
                 <i class="fa-solid fa-layer-group"></i>
                 <h1>ARCHITECH</h1>
             </div>
-        <nav class="menu-navegacao">
-               <ul>
-                   <li><a href="inicial.html"><i class="fa-solid fa-house"></i> Início</a></li>
+            <nav class="menu-navegacao">
+                <ul>
+                    <li class="ativo"><a href="inicial.html"><i class="fa-solid fa-house"></i> Início</a></li>
                     <li><a href="relatorio.html"><i class="fa-solid fa-chart-pie"></i> Relatório de gestão</a></li>
                     <li><a href="automacao.html"><i class="fa-solid fa-robot"></i> Automação de documentos</a></li>
                     <li><a href="suporte.html"><i class="fa-solid fa-circle-question"></i> Suporte</a></li>
-<li><a href="painel-chamados.html"><i class="fa-solid fa-clipboard-list"></i> Gestão de Chamados</a></li>
+                    <li><a href="painel-chamados.html"><i class="fa-solid fa-clipboard-list"></i> Gestão de Chamados</a></li>
                     <li><a href="monitor.html"><i class="fa-solid fa-temperature-half"></i> Monitoramento</a></li>
-                    
                     <li><a href="mensagem.html"><i class="fa-solid fa-message"></i> Mensagem</a></li>
                     <li><a href="seguranca.html"><i class="fa-solid fa-shield-halved"></i> Segurança e Compliance</a></li>
                     <li><a href="configuracoes.html"><i class="fa-solid fa-gear"></i> Configuração</a></li>
                 </ul>
             </nav>
-          <div class="rodape-barra-lateral">
-    <ul>
-        <li><a href="conta.html"><i class="fa-solid fa-user"></i> Conta</a></li>
-        <li><a href="#" id="btn-logout"><i class="fa-solid fa-right-from-bracket"></i> Sair</a></li>
-        <li><a href="suporte.html"><i class="fa-solid fa-circle-question"></i> Ajuda</a></li>
-    </ul>
-</div>
+            <div class="rodape-barra-lateral">
+                <ul>
+                    <li><a href="conta.html"><i class="fa-solid fa-user"></i> Conta</a></li>
+                    <li><a href="#" id="btn-logout"><i class="fa-solid fa-right-from-bracket"></i> Sair</a></li>
+                    <li><a href="suporte.html"><i class="fa-solid fa-circle-question"></i> Ajuda</a></li>
+                </ul>
             </div>
-        </aside>
+            </aside>
 
         <main class="conteudo-principal">
             <header class="cabecalho-principal">
@@ -110,7 +111,8 @@
                     </a>
                 </div>
             </section>
-<section class="outras-unidades">
+
+            <section class="outras-unidades">
                  <div class="cabecalho-secao" style="margin-bottom: 20px;">
                     <h3>Capacidade de Armazenamento</h3>
                     <a href="relatorio.html" class="botao-ver-tudo">ver detalhes</a>
@@ -140,7 +142,6 @@
 
                 </div>
             </section>
-         
         </main>
 
         <aside class="barra-lateral-direita">
@@ -200,8 +201,7 @@
                     </li>
                 </ul>
             </section>
-            
-            </aside> 
+        </aside> 
     </div> 
     
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
@@ -210,6 +210,6 @@
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-storage-compat.js"></script>
     <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
     
-   <script src="../js/inicial.js"></script>
+    <script src="../js/inicial.js"></script>
 </body>
 </html>
