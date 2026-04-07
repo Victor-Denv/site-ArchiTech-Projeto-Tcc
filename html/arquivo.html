@@ -3,10 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Detalhes do Arquivo | ARCHITECH</title>
-   <link rel="icon" type="image/png" href="img/Design sem nome (5).png">
-   <link rel="stylesheet" href="../css/inicial.css">
+    <link rel="icon" type="image/png" href="../img/Design sem nome (5).png">
+    <link rel="stylesheet" href="../css/inicial.css">
     <link rel="stylesheet" href="../css/automacao.css"> 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -21,15 +20,12 @@
                 <i class="fa-solid fa-layer-group"></i>
                 <h1>ARCHITECH</h1>
             </div>
-         <nav class="menu-navegacao">
+            <nav class="menu-navegacao">
                 <ul>
-                   <li><a href="inicial.html"><i class="fa-solid fa-house"></i> Início</a></li>
+                    <li><a href="inicial.html"><i class="fa-solid fa-house"></i> Início</a></li>
                     <li><a href="relatorio.html"><i class="fa-solid fa-chart-pie"></i> Relatório de gestão</a></li>
                     <li><a href="automacao.html"><i class="fa-solid fa-robot"></i> Automação de documentos</a></li>
-                    <li><a href="suporte.html"><i class="fa-solid fa-circle-question"></i> Suporte</a></li>
-<li><a href="painel-chamados.html"><i class="fa-solid fa-clipboard-list"></i> Gestão de Chamados</a></li>
-                    <li><a href="monitor.html"><i class="fa-solid fa-temperature-half"></i> Monitoramento</a></li>
-                    
+                    <li><a href="painel-chamados.html"><i class="fa-solid fa-clipboard-list"></i> Gestão de Chamados</a></li>
                     <li><a href="mensagem.html"><i class="fa-solid fa-message"></i> Mensagem</a></li>
                     <li><a href="seguranca.html"><i class="fa-solid fa-shield-halved"></i> Segurança e Compliance</a></li>
                     <li><a href="configuracoes.html"><i class="fa-solid fa-gear"></i> Configuração</a></li>
@@ -45,48 +41,66 @@
         </aside>
 
         <main class="conteudo-principal">
-            <div id="formularioCadastro" class="abas-conteudo" style="border-radius: 8px !important; margin: 20px; background-color: #2a2a3a; color:#f0f0f0; padding: 25px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);">
+            <div id="formularioCadastro" class="abas-conteudo" style="border-radius: 8px !important; margin: 20px; background-color: #2a2a3a; color:#f0f0f0; padding: 25px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); overflow-y: auto;">
 
                 <h2>Detalhes do Arquivo</h2>
-                <p style="font-size: 14px; color: #b0b0b0; margin-bottom: 20px;">Informações do arquivo físico e atualização de local.</p>
+                <p style="font-size: 14px; color: #b0b0b0; margin-bottom: 20px;">Informações completas e gerenciamento do documento.</p>
 
-                <div style="border-bottom: 1px solid #444; padding-bottom: 15px;">
+                <div style="border-bottom: 1px solid #444; padding-bottom: 15px; margin-bottom: 20px;">
                     <h3 style="color: #6f42c1;">Informações Salvas</h3>
                     <p><strong>Nome:</strong> <span id="nomeArquivoDisplay">Carregando...</span></p>
                     <p><strong>Tipo:</strong> <span id="tipoArquivoDisplay">Carregando...</span></p>
                     <p><strong>Data de Cadastro:</strong> <span id="dataCadastroDisplay">Carregando...</span></p>
-                    <p style="font-size: 1.2em; font-weight: bold;">
+                    <p style="font-size: 1.2em; font-weight: bold; margin-top: 10px;">
                         <strong>LOCALIZAÇÃO ATUAL:</strong>
                         <span id="localizacaoAtualDisplay" style="color: #00ff00;">Carregando...</span>
                     </p>
-                    <div id="anexoContainer"></div>
 
-                    <p style="margin-top: 15px;">
-                        <strong>QR Code de Rastreio:</strong>
-                    </p>
-                    <div id="qrcodeDetalhes" style="margin-top: 5px; padding: 10px; background-color: #ffffff; border-radius: 5px; display: inline-block; min-width: 128px; min-height: 128px;">
-                        </div>
+                    <div id="areaTextoIA" style="display: none; margin-top: 15px;">
+                        <label style="font-weight: bold; color: #d0d0d0;">Texto Extraído pela IA:</label>
+                        <textarea id="textoIADisplay" rows="4" readonly style="width: 100%; padding: 10px; margin-top: 5px; background-color: #1e1e2d; color: #ccc; border: 1px solid #444; border-radius: 5px;"></textarea>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 10px; margin-bottom: 25px; flex-wrap: wrap;">
+                    <button id="btnVisualizar" style="background-color: #007bff; color: white; padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; display: none;">
+                        <i class="fa-solid fa-eye"></i> Visualizar Arquivo
+                    </button>
+                    <button id="btnBaixar" style="background-color: #28a745; color: white; padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; display: none;">
+                        <i class="fa-solid fa-download"></i> Baixar Arquivo
+                    </button>
+                    <button id="btnDeletar" style="background-color: #dc3545; color: white; padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">
+                        <i class="fa-solid fa-trash"></i> Deletar Registro
+                    </button>
+                </div>
+
+                <div id="areaVisualizador" style="display: none; border: 1px solid #444; border-radius: 5px; overflow: hidden; margin-bottom: 20px;">
+                    <div style="background: #1e1e2d; color: white; padding: 8px 15px; font-size: 14px; display: flex; justify-content: space-between; align-items: center;">
+                        <strong>Pré-visualização</strong>
+                        <i class="fa-solid fa-xmark" id="btnFecharVisualizador" style="cursor: pointer; color: #ff4d4d; font-size: 18px;"></i>
+                    </div>
+                    <iframe id="iframeVisualizador" style="width: 100%; height: 500px; border: none; background: white;"></iframe>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start;">
+                    <div>
+                        <h3 style="color: #6f42c1;">Atualizar Localização</h3>
+                        <p style="font-size: 13px; color: #b0b0b0; margin-bottom: 10px;">Moveu o arquivo? Salve o novo local.</p>
+                        <input type="text" id="novaLocalizacaoInput" placeholder="Ex: Mesa do Gerente" style="width: 100%; padding: 10px; background-color: #1e1e2d; color: #f0f0f0; border: 1px solid #444; border-radius: 5px; margin-bottom: 10px;">
+                        <button id="btnAtualizarLocal" style="padding: 10px 20px; font-weight: bold; color: #ffffff; background-color: #6f42c1; border: none; border-radius: 5px; cursor: pointer;">
+                            Salvar Novo Local
+                        </button>
                     </div>
 
-                <div style="margin-top: 20px;">
-                     <h3 style="color: #6f42c1;">Atualizar Localização Física</h3>
-                     <p style="font-size: 14px; color: #b0b0b0; margin-bottom: 20px;">Moveu o arquivo? Salve a nova localização aqui.</p>
-                     <div>
-                         <label for="novaLocalizacaoInput" style="display: block; font-weight: bold; font-size: 14px; margin-bottom: 5px; color: #d0d0d0;">Nova Localização:</label><br>
-                         <input type="text" id="novaLocalizacaoInput" placeholder="Ex: Mesa do Gerente, Gaveta 2" style="width: 100%; padding: 10px; font-size: 14px; background-color: #1e1e2d; color: #f0f0f0; border: 1px solid #444; border-radius: 5px; box-sizing: border-box;">
-                     </div>
+                    <div>
+                        <h3 style="color: #6f42c1;">QR Code de Rastreio</h3>
+                        <div id="qrcodeDetalhes" style="margin-top: 10px; padding: 10px; background-color: #ffffff; border-radius: 5px; display: inline-block; min-width: 128px; min-height: 128px;"></div>
+                    </div>
+                </div>
 
-                     <button id="btnAtualizarLocal" style="padding: 12px 25px; font-size: 16px; font-weight: bold; color: #ffffff; background-color: #6f42c1; border: none; border-radius: 5px; cursor: pointer; transition: background-color 0.3s ease; margin-top: 10px;">
-                         Salvar Nova Localização
-                     </button>
-
-                     <button id="btnIrParaCadastro" style="padding: 12px 25px; font-size: 16px; font-weight: bold; color: #ffffff; background-color: #28a745; border: none; border-radius: 5px; cursor: pointer; transition: background-color 0.3s ease; margin-top: 10px; margin-left: 10px;">
-                         + Adicionar Novo Arquivo
-                     </button>
-                 </div>
             </div>
-            </main>
-        </div>
+        </main>
+    </div>
 
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
