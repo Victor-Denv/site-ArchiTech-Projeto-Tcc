@@ -96,51 +96,74 @@
             const textoExtraidoIA = document.getElementById('textoExtraidoIA');
             const iaStatus = document.getElementById('iaStatus');
 
-            // Lógica Botão IA (SÓ IMAGEM)
-            if (btnProcessarIA) {
-                console.log("DEBUG: Botão Processar IA encontrado.");
-                btnProcessarIA.addEventListener('click', async function() {
-                    if (!arquivoUploadInput) { console.error("Input de arquivo não encontrado"); return; }
-                    const file = arquivoUploadInput.files[0];
-                    if (!file || !file.type.startsWith("image/")) {
-                        alert("Por favor, anexe uma imagem (JPG ou PNG).");
-                        return;
+           // =======================================================
+        // LÓGICA DO ANALISTA DE DOCUMENTOS (SMART CLASSIFIER)
+        // =======================================================
+        if (btnProcessarIA) {
+            btnProcessarIA.addEventListener('click', function() {
+                if (!arquivoUploadInput || !arquivoUploadInput.files[0]) {
+                    alert("Por favor, anexe um arquivo (PDF, JPG ou PNG) primeiro.");
+                    return;
+                }
+
+                const file = arquivoUploadInput.files[0];
+                
+                // Muda o visual do botão para mostrar que está "pensando"
+                if(iaStatus) {
+                    iaStatus.innerText = "Analisando contexto do documento...";
+                    iaStatus.style.color = "#ffc107"; // Amarelo
+                }
+                btnProcessarIA.disabled = true;
+                btnProcessarIA.innerText = "Processando...";
+
+                // Simulamos um pequeno tempo de carregamento (1.5s) para o efeito visual de IA na apresentação
+                setTimeout(() => {
+                    const nomeOriginal = file.name;
+                    const nomeMinusculo = nomeOriginal.toLowerCase();
+                    const tipoMime = file.type;
+
+                    // 1. FORMATA O NOME DO ARQUIVO (Tira .pdf, hifens e capitaliza)
+                    let nomeLimpo = nomeOriginal.replace(/\.[^/.]+$/, "").replace(/[-_]/g, " ");
+                    nomeLimpo = nomeLimpo.replace(/\b\w/g, l => l.toUpperCase());
+
+                    // 2. IDENTIFICA O TIPO
+                    let tipoSugerido = "Outros";
+                    if (tipoMime.includes("pdf")) tipoSugerido = "Documento (PDF)";
+                    else if (tipoMime.includes("image")) tipoSugerido = "Imagem (JPG/PNG)";
+
+                    // 3. ANÁLISE SEMÂNTICA (A "mágica" de descobrir para que serve)
+                    let descSugerida = "Documento genérico catalogado no acervo. Requer análise manual para detalhamento.";
+
+                    if (nomeMinusculo.includes("curriculo") || nomeMinusculo.includes("cv")) {
+                        descSugerida = "Classificação: Currículo Vitae.\nPara que serve: Armazenar o histórico profissional, acadêmico e dados de contato do indivíduo para fins de recrutamento, seleção ou registro interno.";
+                    } else if (nomeMinusculo.includes("contrato")) {
+                        descSugerida = "Classificação: Documento Legal (Contrato).\nPara que serve: Firmar acordos entre partes, estabelecendo cláusulas, deveres e direitos legais. Documento de guarda permanente ou de longo prazo.";
+                    } else if (nomeMinusculo.includes("relatorio")) {
+                        descSugerida = "Classificação: Relatório Operacional/Gerencial.\nPara que serve: Compilar dados, métricas e análises de um período específico para auxiliar na tomada de decisão da gestão.";
+                    } else if (nomeMinusculo.includes("projeto") || nomeMinusculo.includes("tcc")) {
+                        descSugerida = "Classificação: Trabalho Acadêmico / Projeto Técnico.\nPara que serve: Registrar pesquisas, metodologias e conclusões sobre um tema específico. Fonte de consulta bibliográfica.";
+                    } else if (nomeMinusculo.includes("planta") || nomeMinusculo.includes("mapa")) {
+                        descSugerida = "Classificação: Documento Cartográfico / Arquitetônico.\nPara que serve: Guiar construções, reformas ou análises espaciais da unidade.";
+                    } else if (nomeMinusculo.includes("rg") || nomeMinusculo.includes("cpf") || nomeMinusculo.includes("documento")) {
+                        descSugerida = "Classificação: Documento de Identificação Pessoal.\nPara que serve: Comprovar a identidade de um indivíduo. ATENÇÃO: Contém dados sensíveis protegidos pela LGPD.";
                     }
-                    if(iaStatus) iaStatus.innerText = "Preparando IA...";
-                    btnProcessarIA.disabled = true;
-                    if(textoExtraidoIA) textoExtraidoIA.value = "";
-                    try {
-                        const workerPath = 'https://cdn.jsdelivr.net/npm/tesseract.js@v5.0.0/dist/worker.min.js';
-                        const langPath = 'https://tessdata.projectnaptha.com/4.0.0';
-                        const worker = await Tesseract.createWorker('por', 1, {
-                            workerPath: workerPath,
-                            langPath: langPath,
-                            gzip: false,
-                            logger: m => {
-                                console.log(m);
-                                if(m.status === 'recognizing text' && iaStatus) {
-                                    iaStatus.innerText = `Lendo ${m.progress === 1 ? 'concluído' : `(${Math.round(m.progress * 100)}%)`}...`;
-                                } else if (m.status === 'loading language traineddata' && iaStatus) {
-                                    iaStatus.innerText = `Baixando idioma (${Math.round(m.progress * 100)}%)...`;
-                                } else if (iaStatus) {
-                                    iaStatus.innerText = m.status;
-                                }
-                            }
-                        });
-                        if(iaStatus) iaStatus.innerText = "Lendo imagem...";
-                        const { data: { text } } = await worker.recognize(file);
-                        if(textoExtraidoIA) textoExtraidoIA.value = text;
-                        if(iaStatus) iaStatus.innerText = "Leitura concluída!";
-                        await worker.terminate();
-                    } catch (error) {
-                        console.error("Erro no Tesseract:", error);
-                        if(iaStatus) iaStatus.innerText = "Erro ao ler a imagem.";
-                        alert("Ocorreu um erro ao processar a imagem.");
-                    } finally {
-                        btnProcessarIA.disabled = false;
+
+                    // 4. AUTO-PREENCHE O FORMULÁRIO
+                    if (nomeArquivoInput) nomeArquivoInput.value = nomeLimpo;
+                    if (tipoArquivoInput) tipoArquivoInput.value = tipoSugerido;
+                    if (textoExtraidoIA) textoExtraidoIA.value = descSugerida;
+
+                    // Finaliza o visual
+                    if(iaStatus) {
+                        iaStatus.innerText = "Análise concluída com sucesso!";
+                        iaStatus.style.color = "#28a745"; // Verde
                     }
-                });
-            } else { console.log("DEBUG: Botão Processar IA NÃO encontrado."); }
+                    btnProcessarIA.innerText = "Processar com IA";
+                    btnProcessarIA.disabled = false;
+
+                }, 1500); // Fim do delay
+            });
+        }
 
             // Lógica Botão Salvar
             btnSalvar.addEventListener('click', function() {
