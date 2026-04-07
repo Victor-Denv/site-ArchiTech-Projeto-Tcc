@@ -897,3 +897,25 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
     });
+    
+    // =======================================================
+//     LÓGICA DA PÁGINA 'conta.html' (Perfil do Usuário)
+// =======================================================
+document.addEventListener('DOMContentLoaded', function() {
+    const emailUsuarioConta = document.getElementById('emailUsuarioConta');
+    
+    // Só executa se estivermos na página de conta
+    if (emailUsuarioConta) {
+        // O Firebase Auth observa se tem alguém logado
+        auth.onAuthStateChanged(function(user) {
+            if (user) {
+                // Se tiver, joga o e-mail na tela
+                emailUsuarioConta.innerText = user.email;
+            } else {
+                emailUsuarioConta.innerText = "Usuário desconectado";
+            }
+        });
+    }
+});
+
+
