@@ -733,3 +733,76 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+// =======================================================
+//     LÓGICA DO GRÁFICO DA PÁGINA INICIAL ('inicial.html')
+// =======================================================
+document.addEventListener('DOMContentLoaded', function() {
+    const ctxCapacidade = document.getElementById('graficoCapacidade');
+    
+    // Só executa se o gráfico de capacidade existir na tela (ou seja, se estivermos na inicial.html)
+    if (ctxCapacidade) {
+        const arquivosRef = db.ref('arquivos');
+        const capacidadeMaxima = 1000; // Defina a capacidade máxima do seu arquivo físico aqui
+
+        arquivosRef.on('value', (snapshot) => {
+            const dados = snapshot.val();
+            let totalArquivos = 0;
+
+            if (dados) {
+                totalArquivos = Object.keys(dados).length; // Conta quantos arquivos existem no banco
+            }
+
+            const espacoLivre = capacidadeMaxima - totalArquivos;
+            
+            // Atualiza o texto na tela
+            document.getElementById('qtdArquivosOcupados').innerText = totalArquivos;
+
+            // Se o gráfico já existir, destrói para criar um novo atualizado (evita sobreposição)
+            if (window.meuGraficoCapacidade) {
+                window.meuGraficoCapacidade.destroy();
+            }
+
+            // Desenha o Gráfico de Rosca (Doughnut)
+            window.meuGraficoCapacidade = new Chart(ctxCapacidade, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Ocupado', 'Espaço Livre'],
+                    datasets: [{
+                        data: [totalArquivos, espacoLivre],
+                        backgroundColor: [
+                            '#6f42c1', // Roxo (Ocupado)
+                            '#e9ecef'  // Cinza Claro (Livre)
+                        ],
+                        borderWidth: 0,
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '75%', // Deixa a rosca mais fina
+                    plugins: {
+                        legend: {
+                            display: false // Esconde a legenda padrão para ficar mais limpo
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed !== null) {
+                                        label += context.parsed + ' arquivos';
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    }
+});
