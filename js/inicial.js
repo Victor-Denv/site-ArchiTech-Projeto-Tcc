@@ -1046,3 +1046,67 @@ window.addEventListener('load', function() {
         });
     }
 });
+
+
+// =======================================================
+//     LÓGICA DA BARRA LATERAL DIREITA (PÁGINA INICIAL)
+// =======================================================
+window.addEventListener('load', function() {
+    const nomeUsuarioSidebar = document.getElementById('nomeUsuarioSidebar');
+    const cargoUsuarioSidebar = document.getElementById('cargoUsuarioSidebar');
+    const listaUltimosArquivos = document.getElementById('listaUltimosArquivosSidebar');
+
+    // Só executa se estivermos na página inicial (onde essa barra existe)
+    if (nomeUsuarioSidebar && listaUltimosArquivos) {
+        
+        // 1. Puxa o Nome e o Cargo do Usuário Logado
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                // Pega só a primeira parte do e-mail (ex: vitor@... vira "vitor")
+                nomeUsuarioSidebar.innerText = user.email.split('@')[0]; 
+                
+                db.ref('usuarios/' + user.uid).once('value').then((snapshot) => {
+                    const cargo = snapshot.val() ? snapshot.val().cargo : 'chefe';
+                    let nomeCargoFormatado = "Funcionário";
+                    if (cargo === 'chefe') nomeCargoFormatado = "Arquivista Chefe";
+                    if (cargo === 'ti') nomeCargoFormatado = "Equipe de TI";
+                    
+                    cargoUsuarioSidebar.innerText = nomeCargoFormatado;
+                });
+            }
+        });
+
+        // 2. Puxa os últimos 3 arquivos cadastrados para o Feed
+        db.ref('arquivos').limitToLast(3).on('value', (snapshot) => {
+            listaUltimosArquivos.innerHTML = "";
+            const dados = snapshot.val();
+            
+            if (dados) {
+                const chaves = Object.keys(dados).reverse(); // Mais novos primeiro
+                chaves.forEach(key => {
+                    const arq = dados[key];
+                    
+                    // Escolhe o ícone e a cor dependendo do tipo
+                    let icone = "fa-file";
+                    let cor = "#6f42c1"; // Roxo padrão
+                    if(arq.tipo === 'documento') { icone = 'fa-file-pdf'; cor = '#28a745'; } // Verde
+                    if(arq.tipo === 'imagem') { icone = 'fa-file-image'; cor = '#ffc107'; } // Amarelo
+
+                    listaUltimosArquivos.innerHTML += `
+                        <li style="display: flex; align-items: center; gap: 12px; padding-bottom: 12px; border-bottom: 1px solid #f0f0f0;">
+                            <div style="background: ${cor}20; color: ${cor}; width: 35px; height: 35px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0;">
+                                <i class="fa-solid ${icone}"></i>
+                            </div>
+                            <div style="overflow: hidden; width: 100%;">
+                                <strong style="display: block; font-size: 13px; color: #333; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${arq.nome}</strong>
+                                <span style="font-size: 11px; color: #888;"><i class="fa-solid fa-location-dot" style="margin-right:3px;"></i>${arq.localizacao}</span>
+                            </div>
+                        </li>
+                    `;
+                });
+            } else {
+                listaUltimosArquivos.innerHTML = '<li style="text-align: center; color: #999; font-size: 12px;">Nenhum arquivo no acervo.</li>';
+            }
+        });
+    }
+});

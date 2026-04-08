@@ -144,64 +144,45 @@
             </section>
         </main>
 
-        <aside class="barra-lateral-direita">
-            <div class="secao-perfil">
-                <img src="https://avatars.githubusercontent.com/u/178439100?s=400&u=9b5e3c5b1fdcc3794f31dc3385b9bc8d8a16c681&v=4" alt="Foto de Perfil">
-                <div class="info-perfil">
-                    <h4>Vitor Da Silva</h4>
-                    <span>Arquivista</span>
+        <aside class="barra-lateral-direita" style="background-color: transparent; border: none; padding: 20px 20px 20px 0;">
+            
+            <div class="secao-perfil" style="background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 25px; display: flex; align-items: center; gap: 15px;">
+                <div style="background: #6f42c1; color: white; width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0;">
+                    <i class="fa-solid fa-user-astronaut"></i>
+                </div>
+                <div class="info-perfil" style="overflow: hidden;">
+                    <h4 id="nomeUsuarioSidebar" style="margin: 0; color: #333; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Carregando...</h4>
+                    <span id="cargoUsuarioSidebar" style="color: #6f42c1; font-size: 11px; font-weight: bold; background: #f3ebff; padding: 3px 8px; border-radius: 10px; display: inline-block; margin-top: 5px;">Aguarde</span>
                 </div>
             </div>
 
-            <section class="secao-agenda">
-                <div class="cabecalho-secao">
-                    <h4>Agenda</h4>
-                    <i class="fa-solid fa-ellipsis"></i>
+            <section class="atividades-disponiveis" style="background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 25px;">
+                 <div class="cabecalho-secao" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <h4 style="margin: 0; color: #333; font-size: 14px; font-weight: bold;"><i class="fa-solid fa-clock-rotate-left" style="color:#6f42c1; margin-right:5px;"></i> Recentes no Acervo</h4>
+                    <a href="listar.html" style="font-size: 11px; color: #6f42c1; text-decoration: none; font-weight: bold;">Ver tudo</a>
                 </div>
-                <div class="datas-agenda">
-                    <div class="cartao-data">
-                        <span>2024</span>
-                        <strong>20</strong>
-                        <span>Julho</span>
+                <ul id="listaUltimosArquivosSidebar" style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 15px;">
+                    <li style="text-align: center; color: #999; font-size: 12px;">Buscando arquivos...</li>
+                </ul>
+            </section>
+
+            <section class="secao-agenda" style="background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+                <div class="cabecalho-secao" style="margin-bottom: 15px;">
+                    <h4 style="margin: 0; color: #333; font-size: 14px; font-weight: bold;"><i class="fa-solid fa-calendar-check" style="color:#6f42c1; margin-right:5px;"></i> Manutenção Programada</h4>
+                </div>
+                <div class="datas-agenda" style="display: flex; flex-direction: column; gap: 10px;">
+                    <div style="background: #fff3cd; border-left: 4px solid #ffc107; padding: 10px 15px; border-radius: 5px;">
+                        <strong style="color: #856404; display: block; font-size: 13px;">Dedetização do Acervo</strong>
+                        <span style="color: #666; font-size: 11px;">Previsto: 15 Maio 2026</span>
                     </div>
-                     <div class="cartao-data">
-                        <span>2025</span>
-                        <strong>18</strong>
-                        <span>Agosto</span>
+                     <div style="background: #d4edda; border-left: 4px solid #28a745; padding: 10px 15px; border-radius: 5px;">
+                        <strong style="color: #155724; display: block; font-size: 13px;">Auditoria Semestral LGPD</strong>
+                        <span style="color: #666; font-size: 11px;">Previsto: 22 Junho 2026</span>
                     </div>
                 </div>
             </section>
 
-            <section class="atividades-disponiveis">
-                 <div class="cabecalho-secao">
-                    <h4>Atividades disponíveis</h4>
-                    <i class="fa-solid fa-ellipsis"></i>
-                </div>
-                <ul>
-                    <li class="item-atividade destacado">
-                        <div class="fundo-icone"><i class="fa-solid fa-book-open"></i></div>
-                        <div class="info-atividade">
-                            <strong>Curso de Restauração</strong>
-                            <span>Profa Dra Alice Duha</span>
-                        </div>
-                    </li>
-                    <li class="item-atividade">
-                        <div class="fundo-icone"><i class="fa-solid fa-landmark"></i></div>
-                        <div class="info-atividade">
-                            <strong>Conhecendo o Arquivo</strong>
-                            <span>Arq. Louise Anunciação</span>
-                        </div>
-                    </li>
-                    <li class="item-atividade">
-                        <div class="fundo-icone"><i class="fa-solid fa-heart-pulse"></i></div>
-                        <div class="info-atividade">
-                            <strong>O que são arquivos de saúde?</strong>
-                            <span>Prof Ilara Moraes</span>
-                        </div>
-                    </li>
-                </ul>
-            </section>
-        </aside> 
+        </aside>
     </div> 
     
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
