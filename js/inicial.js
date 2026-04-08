@@ -961,20 +961,7 @@ window.addEventListener('load', function() {
     const listaEquipe = document.getElementById('listaUsuariosCadastrados');
     if (listaEquipe) {
         
-        // Protege a tela
-        auth.onAuthStateChanged(function(user) {
-            if (user) {
-                db.ref('usuarios/' + user.uid).once('value').then((snapshot) => {
-                    const cargo = snapshot.val() ? snapshot.val().cargo : 'chefe'; 
-                    if (cargo !== 'chefe') {
-                        alert("Acesso Negado: Apenas o Arquivista Chefe pode gerenciar a equipe.");
-                        window.location.href = "inicial.html";
-                    }
-                });
-            }
-        });
-
-        // Puxa a equipe com tratamento de erro
+        // Puxa a equipe direto (removi a trava de expulsão para você conseguir se promover)
         db.ref('usuarios').on('value', (snapshot) => {
             listaEquipe.innerHTML = "";
             const dados = snapshot.val();
@@ -995,16 +982,12 @@ window.addEventListener('load', function() {
                     `;
                 });
             } else { 
-                listaEquipe.innerHTML = "<div style='color: #7f8c8d; font-size: 14px;'>Nenhum usuário cadastrado além do administrador principal.</div>"; 
+                listaEquipe.innerHTML = "<div style='color: #7f8c8d; font-size: 14px;'>Você ainda não tem uma equipe cadastrada.</div>"; 
             }
-        }, (error) => {
-            // Se der erro de permissão (zumbi), ele avisa na tela!
-            console.error("Erro no Banco de Dados:", error);
-            listaEquipe.innerHTML = `<div style='color: #e74c3c; font-weight: bold;'>Erro ao conectar. Você está logado corretamente? Erro: ${error.message}</div>`;
         });
     }
 
-    // --- 3. CRIAR USUÁRIO COM AVISO DE ERROS ---
+    // --- 3. CRIAR USUÁRIO ---
     const btnCriarUsuario = document.getElementById('btnCriarUsuario');
     if (btnCriarUsuario) {
         btnCriarUsuario.addEventListener('click', function() {
@@ -1015,23 +998,32 @@ window.addEventListener('load', function() {
             if (!email || !senha) { alert("Preencha o e-mail e a senha."); return; }
             if (senha.length < 6) { alert("A senha deve ter no mínimo 6 caracteres."); return; }
 
-            btnCriarUsuario.innerText = "Processando no Firebase...";
+            btnCriarUsuario.innerText = "Processando...";
             btnCriarUsuario.disabled = true;
 
-            // Inicia o app paralelo para não te deslogar
-            const appSecundario = firebase.apps.find(app => app.name === "AppCriador") || firebase.initializeApp(firebaseConfig, "AppCriador");
+            // Cria o App Secundário com try/catch
+            let appSecundario;
+            try {
+                appSecundario = firebase.app("AppCriador");
+            } catch (e) {
+                appSecundario = firebase.initializeApp(firebaseConfig, "AppCriador");
+            }
+            
             const authSecundario = appSecundario.auth();
 
+            // Tenta criar na Autenticação
             authSecundario.createUserWithEmailAndPassword(email, senha)
                 .then((userCredential) => {
-                    // Se a conta for criada, tenta salvar no banco
-                    db.ref('usuarios/' + userCredential.user.uid).set({
+                    const novoUid = userCredential.user.uid;
+                    
+                    // Tenta salvar no Banco de Dados
+                    db.ref('usuarios/' + novoUid).set({
                         email: email,
                         cargo: cargo,
                         dataCriacao: firebase.database.ServerValue.TIMESTAMP
                     }).then(() => {
                         authSecundario.signOut();
-                        alert(`SUCESSO! O usuário foi criado.\nE-mail: ${email}\nCargo: ${cargo}`);
+                        alert(`SUCESSO!\nO usuário ${email} foi criado como ${cargo}.`);
                         
                         document.getElementById('novoEmailUser').value = "";
                         document.getElementById('novaSenhaUser').value = ""; 
@@ -1039,18 +1031,18 @@ window.addEventListener('load', function() {
                         btnCriarUsuario.innerText = "Criar Conta e Atribuir Permissões";
                         btnCriarUsuario.disabled = false;
                     }).catch((error) => {
-                        console.error("Erro no Database:", error);
-                        alert("Usuário criado na Autenticação, MAS houve um erro ao dar a permissão no Banco de Dados. Erro: " + error.message);
+                        console.error("Erro no Banco:", error);
+                        alert("Usuário criado, mas houve erro de permissão no banco: " + error.message);
                         btnCriarUsuario.innerText = "Criar Conta e Atribuir Permissões";
                         btnCriarUsuario.disabled = false;
                     });
                 })
                 .catch((error) => {
-                    console.error("Erro na Autenticação:", error);
-                    alert("O Firebase bloqueou a criação. Motivo: " + error.message);
+                    console.error("Erro Auth:", error);
+                    alert("Erro ao criar: " + error.message);
                     btnCriarUsuario.innerText = "Criar Conta e Atribuir Permissões";
                     btnCriarUsuario.disabled = false;
                 });
         });
     }
-});     
+});
