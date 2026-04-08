@@ -1,88 +1,36 @@
+🏛️ Projeto Architech
+Inovação e Inteligência na Gestão de Acervos Documentais
+O Architech nasceu da necessidade de modernizar processos arquivísticos tradicionais. Este sistema não é apenas um repositório de arquivos, mas uma camada de inteligência que auxilia instituições na transição do meio físico para o digital, garantindo que a informação seja classificada, protegida e facilmente rastreável.
+![Logo](img/interface.png)
+💡 A Proposta
+O foco central do projeto é a Eficiência Operacional. Ao integrar a API do Google Gemini, o Architech elimina o preenchimento manual e exaustivo de metadados, permitindo que a Inteligência Artificial identifique e categorize documentos automaticamente através de visão computacional.
 
-# Dashboard Architech - Protótipo TCC
+🛠️ Especificações Técnicas
+Construído com uma arquitetura Serverless, o projeto preza pela escalabilidade e baixa latência:
 
-![Status do Projeto](https://img.shields.io/badge/status-funcional-blue)
+Interface: Desenvolvida em JavaScript moderno (ES6+), utilizando metodologias de design responsivo para garantir acessibilidade em dispositivos móveis.
 
-Este projeto é a implementação em HTML, CSS e JavaScript de um dashboard para um sistema de gestão de arquivos chamado "Architech". A interface foi desenvolvida com base em um protótipo visual **criado na plataforma Canva**, focando em criar uma experiência de usuário limpa, moderna e intuitiva.
+Infraestrutura: Ecossistema Firebase (Google Cloud) para autenticação segura, banco de dados em tempo real e armazenamento de objetos.
 
-### 🎯 Objetivo do Projeto
+Inteligência: Processamento de linguagem natural e análise de imagem via Gemini API.
 
-O objetivo principal deste projeto de TCC (Trabalho de Conclusão de Curso) é desenvolver um protótipo de front-end funcional para um dashboard de arquivamento. A aplicação visa centralizar informações importantes, facilitar o acesso rápido a funcionalidades e oferecer uma interface clara para a gestão de documentos, seguindo as melhores práticas de design e usabilidade.
+Segurança: Implementação de regras de acesso (RBH - Role Based Hierarchy) para conformidade com diretrizes de governança de dados.
 
----
+🗝️ Funcionalidades de Destaque
+Dashboard Executivo: Visualização dinâmica do status do acervo e atividades recentes.
 
-### 🖼️ Preview do Projeto
+Triagem Inteligente: Upload assistido por IA com extração automática de dados críticos.
 
-O layout final busca ser fiel à visão original do protótipo, com uma estrutura de três colunas que organiza as informações de forma clara e acessível.
+Protocolo de Rastreabilidade: Geração automatizada de QR Codes para a ponte entre o documento físico e o registro digital.
 
-![Preview do Dashboard](interface.png)
+Gestão de Permissões: Controle rigoroso de níveis de acesso (Administrador, TI e Operador).
 
-### 🚀 Acesso e Execução
+🌐 Acesso ao Sistema
+O sistema encontra-se em ambiente de produção e pode ser acessado através do domínio oficial:
+👉 www.architechapp.com.br
 
-#### Acesso Online (Recomendado)
+Nota Acadêmica: Este projeto é o resultado de uma pesquisa aprofundada em sistemas de informação e gestão documental, desenvolvido como Trabalho de Conclusão de Curso (TCC).
 
-O projeto está hospedado na plataforma **Vercel** e pode ser acessado publicamente através do seguinte link:
+Autor: Vitor da Silva , Adrianne Barreto e Ana Luiza
 
-**[➡️ Acessar o Dashboard Architech](https://site-archi-tech-projeto-tcc.vercel.app/)**
-
-#### Execução Local
-
-Para executar o projeto em sua máquina, basta clonar o repositório e abrir o arquivo `index.html` em seu navegador.
-
----
-
-### ✨ Funcionalidades
-
-* **Layout de 3 Colunas:** Estrutura principal dividida em navegação, conteúdo principal e painel de informações.
-* **Design Limpo:** Uso de cores, ícones e espaçamentos consistentes para uma interface agradável.
-* **Saudação Dinâmica:** O título principal exibe "Bom dia", "Boa tarde" ou "Boa noite" de acordo com o horário do usuário.
-* **Navegação Interativa:** O item de menu clicado na barra lateral fica marcado como "ativo", dando feedback visual ao usuário.
-* **Alertas de Interação:** Botões e ícones (como o sino de notificação) exibem alertas ao serem clicados, simulando futuras funcionalidades.
-
----
-
-### 💻 Tecnologias Utilizadas
-
-* **HTML5:** Para a estruturação semântica do conteúdo.
-* **CSS3:** Para a estilização completa, utilizando Flexbox e CSS Grid para o layout.
-* **JavaScript (ES6):** Para manipulação do DOM e interatividade do lado do cliente.
-* **Google Fonts:** Para a tipografia do projeto (fonte "Poppins").
-* **Font Awesome:** Para a biblioteca de ícones.
-
----
-
-### 📂 Estrutura de Arquivos
-
-```
-/projeto-architech
-|-- index.html      # Estrutura principal da página
-|-- style.css       # Arquivo de estilos
-|-- script.js       # Arquivo com as funcionalidades e interações
-|-- interface.png   # Imagem de preview do protótipo
-|-- README.md       # Documentação do projeto
-```
-
----
-
-### 👥 Equipe e Contribuições
-
-Este projeto é o resultado da colaboração e do esforço de uma equipe dedicada. Agradecimentos especiais a todos os envolvidos:
-
-* 🎨 **Protótipo e Design Visual:** **Adriane Barreto** - [GitHub](https://www.linkedin.com/in/seu-usuario/)
-    * Idealizou e **criou no Canva** o protótipo que serviu como base e inspiração visual para toda a interface.
-
-* 💻 **Desenvolvimento Principal (Front-End):** **Vitor Lopes** - [GitHub](https://github.com/Victor-Denv) | 
-    * Responsável pela codificação da maior parte da estrutura HTML, CSS e interações em JavaScript.
-
-* 🤝 **Contribuição no Desenvolvimento:** **Ana Luiza** - [GitHub](https://github.com/seu-usuario) |
-    * Auxiliou em partes do código, colaborando com ajustes e contribuindo para a finalização do projeto.
-
----
-
-### ©️ Direitos Autorais e Licença de Uso
-
-Este é um projeto pessoal e acadêmico desenvolvido pelo grupo de TCC (Trabalho de Conclusão de Curso) do SENAI Camaçari.
-
-**© 2025 - Todos os direitos reservados.**
-
-A cópia, reprodução, distribuição ou plágio deste projeto, seja total ou parcial, é estritamente proibida sem a autorização prévia e por escrito dos autores. Para solicitações de permissão ou outras questões, por favor, entre em contato com os integrantes do grupo.
+Status do Projeto: Finalizado / Em Produção
