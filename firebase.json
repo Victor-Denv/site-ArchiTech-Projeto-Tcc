@@ -1,5 +1,6 @@
 {
   "hosting": {
+    "site": "architeck-e92b4-3e532",
     "public": ".",
     "ignore": [
       "firebase.json",
