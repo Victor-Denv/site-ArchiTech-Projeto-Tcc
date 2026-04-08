@@ -38,37 +38,47 @@
             </div>
         </aside>
 
-        <main class="conteudo-principal" style="padding: 30px; background-color: #f4f7f6; overflow-y: auto;">
-            <h2 style="color: #333; margin-bottom: 20px;">Gerenciamento de Equipe e Acessos</h2>
+        <main class="conteudo-principal" style="padding: 40px; background-color: #f4f7f6; overflow-y: auto;">
+            <h2 style="color: #2c3e50; font-size: 28px; margin-bottom: 30px;">Gerenciamento de Equipe e Acessos</h2>
 
-            <div style="background: white; padding: 25px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); max-width: 600px; margin-bottom: 30px;">
-                <h3 style="color: #6f42c1; margin-bottom: 15px;"><i class="fa-solid fa-envelope-open-text"></i> Convidar Novo Membro</h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
                 
-                <div style="margin-bottom: 15px;">
-                    <label style="font-weight: bold; font-size: 13px; color: #555;">E-mail do Usuário (Real):</label>
-                    <input type="email" id="novoEmailUser" placeholder="exemplo@architech.com" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; margin-top: 5px; box-sizing: border-box;">
+                <div style="background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+                    <h3 style="color: #6f42c1; font-size: 20px; margin-bottom: 20px; border-bottom: 2px solid #f0f0f0; padding-bottom: 10px;">
+                        <i class="fa-solid fa-envelope-open-text" style="margin-right: 10px;"></i> Convidar Novo Membro
+                    </h3>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label style="font-weight: 600; font-size: 14px; color: #4a4a4a; display: block; margin-bottom: 8px;">E-mail do Usuário (Real):</label>
+                        <input type="email" id="novoEmailUser" placeholder="exemplo@architech.com" style="width: 100%; padding: 12px; border: 1px solid #dcdde1; border-radius: 8px; font-family: 'Poppins', sans-serif; transition: border-color 0.3s;">
+                    </div>
+
+                    <div style="margin-bottom: 25px;">
+                        <label style="font-weight: 600; font-size: 14px; color: #4a4a4a; display: block; margin-bottom: 8px;">Nível de Acesso (Hierarquia):</label>
+                        <select id="nivelAcessoUser" style="width: 100%; padding: 12px; border: 1px solid #dcdde1; border-radius: 8px; font-family: 'Poppins', sans-serif; background-color: #f8f9fa;">
+                            <option value="funcionario">Funcionário (Apenas vê e cadastra arquivos)</option>
+                            <option value="ti">Equipe de TI (Apenas Gestão de Chamados e Monitoramento)</option>
+                            <option value="chefe">Arquivista Chefe (Acesso Total)</option>
+                        </select>
+                    </div>
+
+                    <button id="btnCriarUsuario" style="background-color: #6f42c1; color: white; padding: 12px 20px; border: none; border-radius: 8px; font-weight: 600; font-size: 15px; cursor: pointer; width: 100%; transition: background-color 0.3s; box-shadow: 0 4px 6px rgba(111, 66, 193, 0.2);">
+                        Enviar Convite e Atribuir Permissões
+                    </button>
+                </div>
+                
+                <div style="background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+                    <h3 style="color: #2c3e50; font-size: 20px; margin-bottom: 10px; border-bottom: 2px solid #f0f0f0; padding-bottom: 10px;">
+                        <i class="fa-solid fa-users" style="margin-right: 10px;"></i> Equipe Registrada
+                    </h3>
+                    <p style="font-size: 13px; color: #7f8c8d; margin-bottom: 20px;">Usuários com permissão no sistema Architech.</p>
+                    
+                    <div id="listaUsuariosCadastrados" style="display: flex; flex-direction: column; gap: 10px;">
+                        <div style="text-align: center; padding: 20px; color: #95a5a6;">Carregando equipe...</div>
+                    </div>
                 </div>
 
-                <div style="margin-bottom: 20px;">
-                    <label style="font-weight: bold; font-size: 13px; color: #555;">Nível de Acesso (Hierarquia):</label>
-                    <select id="nivelAcessoUser" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; margin-top: 5px;">
-                        <option value="funcionario">Funcionário (Apenas vê e cadastra arquivos)</option>
-                        <option value="ti">Equipe de TI (Apenas Gestão de Chamados e Monitoramento)</option>
-                        <option value="chefe">Arquivista Chefe (Acesso Total)</option>
-                    </select>
-                </div>
-
-                <button id="btnCriarUsuario" style="background-color: #28a745; color: white; padding: 10px 20px; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; width: 100%;">
-                    Enviar Convite e Atribuir Permissões
-                </button>
             </div>
-            
-            <div style="background: white; padding: 25px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); max-width: 600px;">
-                <h3 style="color: #333; margin-bottom: 15px;"><i class="fa-solid fa-users"></i> Equipe Registrada</h3>
-                <p style="font-size: 13px; color: #666;">Usuários com permissão no sistema Architech.</p>
-                <div id="listaUsuariosCadastrados">Carregando equipe...</div>
-            </div>
-
         </main>
     </div>
 

@@ -942,17 +942,58 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 // =======================================================
-//     LÓGICA DA PÁGINA 'configuracoes.html' (Criar Usuários)
+//     LÓGICA ISOLADA: PERFIL (CONTA) E EQUIPE (CONFIG)
 // =======================================================
-document.addEventListener('DOMContentLoaded', function() {
-    const btnCriarUsuario = document.getElementById('btnCriarUsuario');
+window.addEventListener('load', function() {
     
+    // --- 1. MOSTRAR E-MAIL NA TELA DE CONTA ---
+    const emailUsuarioConta = document.getElementById('emailUsuarioConta');
+    if (emailUsuarioConta) {
+        auth.onAuthStateChanged(function(user) {
+            if (user) {
+                emailUsuarioConta.innerText = user.email;
+            } else {
+                emailUsuarioConta.innerText = "Usuário não autenticado";
+            }
+        });
+    }
+
+    // --- 2. LISTAR EQUIPE NA TELA DE CONFIGURAÇÕES ---
+    const listaEquipe = document.getElementById('listaUsuariosCadastrados');
+    if (listaEquipe) {
+        db.ref('usuarios').on('value', (snapshot) => {
+            listaEquipe.innerHTML = "";
+            const dados = snapshot.val();
+            if (dados) {
+                Object.keys(dados).forEach(uid => {
+                    const user = dados[uid];
+                    let corBadge = "#95a5a6"; // Cinza (Funcionario)
+                    let nomeCargo = "Funcionário";
+                    
+                    if (user.cargo === 'chefe') { corBadge = "#e74c3c"; nomeCargo = "Arquivista Chefe"; }
+                    if (user.cargo === 'ti') { corBadge = "#3498db"; nomeCargo = "Equipe de TI"; }
+
+                    listaEquipe.innerHTML += `
+                        <div style="background-color: #f8f9fa; padding: 12px 15px; border-radius: 8px; border-left: 4px solid ${corBadge}; display: flex; justify-content: space-between; align-items: center;">
+                            <span style="color: #2c3e50; font-weight: 500; font-size: 14px;">${user.email}</span>
+                            <span style="background-color: ${corBadge}; color: white; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600;">${nomeCargo}</span>
+                        </div>
+                    `;
+                });
+            } else { 
+                listaEquipe.innerHTML = "<div style='color: #7f8c8d; font-size: 14px;'>Nenhum usuário cadastrado na base de dados.</div>"; 
+            }
+        });
+    }
+
+    // --- 3. BOTÃO DE CONVIDAR USUÁRIO ---
+    const btnCriarUsuario = document.getElementById('btnCriarUsuario');
     if (btnCriarUsuario) {
-        // Trava de segurança: Só chefe pode ver essa página
+        // Trava de Segurança na Tela de Config
         auth.onAuthStateChanged(function(user) {
             if (user) {
                 db.ref('usuarios/' + user.uid).once('value').then((snapshot) => {
-                    const cargo = snapshot.val() ? snapshot.val().cargo : 'chefe'; // Mantém você como chefe se não tiver no banco
+                    const cargo = snapshot.val() ? snapshot.val().cargo : 'chefe'; 
                     if (cargo !== 'chefe') {
                         alert("Acesso Negado: Apenas o Arquivista Chefe pode gerenciar a equipe.");
                         window.location.href = "inicial.html";
@@ -961,8 +1002,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
-        // Cria um App secundário do Firebase APENAS para registrar novos usuários sem deslogar o Chefe
-        const appSecundario = firebase.apps.find(app => app.name === "AppCriadorUsuarios") || firebase.initializeApp(firebaseConfig, "AppCriadorUsuarios");
+        const appSecundario = firebase.apps.find(app => app.name === "AppCriador") || firebase.initializeApp(firebaseConfig, "AppCriador");
         const authSecundario = appSecundario.auth();
 
         btnCriarUsuario.addEventListener('click', function() {
@@ -974,67 +1014,30 @@ document.addEventListener('DOMContentLoaded', function() {
             btnCriarUsuario.innerText = "Enviando convite...";
             btnCriarUsuario.disabled = true;
 
-            // Gera uma senha aleatória absurda que ninguém vai saber (o usuário vai resetar logo em seguida)
-            const senhaAleatoria = Math.random().toString(36).slice(-10) + "A1@";
+            const senhaAleatoria = Math.random().toString(36).slice(-10) + "X1@";
 
-            // 1. Cria a conta no Firebase Auth
             authSecundario.createUserWithEmailAndPassword(email, senhaAleatoria)
                 .then((userCredential) => {
-                    const novoUid = userCredential.user.uid;
-                    
-                    // 2. Salva o nível de acesso (cargo) no Banco de Dados
-                    db.ref('usuarios/' + novoUid).set({
+                    db.ref('usuarios/' + userCredential.user.uid).set({
                         email: email,
                         cargo: cargo,
                         dataCriacao: firebase.database.ServerValue.TIMESTAMP
                     }).then(() => {
-                        
-                        // 3. Manda o e-mail de "Esqueci minha senha" para a pessoa definir a própria senha
-                        authSecundario.sendPasswordResetEmail(email)
-                            .then(() => {
-                                authSecundario.signOut();
-                                alert(`Convite enviado com sucesso!\nUm e-mail foi enviado para: ${email}\nA pessoa deve clicar no link do e-mail para criar a senha dela.`);
-                                
-                                document.getElementById('novoEmailUser').value = "";
-                                btnCriarUsuario.innerText = "Enviar Convite e Atribuir Permissões";
-                                btnCriarUsuario.disabled = false;
-                            })
-                            .catch((error) => {
-                                console.error("Erro ao enviar e-mail:", error);
-                                alert("Usuário criado, mas houve um erro ao enviar o e-mail. Peça para a pessoa clicar em 'Esqueci a Senha' na tela de login.");
-                                btnCriarUsuario.innerText = "Enviar Convite e Atribuir Permissões";
-                                btnCriarUsuario.disabled = false;
-                            });
+                        authSecundario.sendPasswordResetEmail(email).then(() => {
+                            authSecundario.signOut();
+                            alert(`Convite enviado para: ${email}`);
+                            document.getElementById('novoEmailUser').value = "";
+                            btnCriarUsuario.innerText = "Enviar Convite e Atribuir Permissões";
+                            btnCriarUsuario.disabled = false;
+                        });
                     });
                 })
                 .catch((error) => {
-                    console.error("Erro ao criar usuário:", error);
-                    alert("Erro ao criar usuário. Talvez este e-mail já esteja cadastrado no sistema.");
+                    console.error("Erro:", error);
+                    alert("Erro ao criar usuário. Talvez o e-mail já exista.");
                     btnCriarUsuario.innerText = "Enviar Convite e Atribuir Permissões";
                     btnCriarUsuario.disabled = false;
                 });
-        });
-
-        // Carrega a equipe na tela
-        const listaEquipe = document.getElementById('listaUsuariosCadastrados');
-        db.ref('usuarios').on('value', (snapshot) => {
-            listaEquipe.innerHTML = "";
-            const dados = snapshot.val();
-            if (dados) {
-                Object.keys(dados).forEach(uid => {
-                    const user = dados[uid];
-                    let corBadge = "#6c757d", nomeCargo = "Funcionário";
-                    if (user.cargo === 'chefe') { corBadge = "#dc3545"; nomeCargo = "Arquivista Chefe"; }
-                    if (user.cargo === 'ti') { corBadge = "#007bff"; nomeCargo = "Equipe de TI"; }
-
-                    listaEquipe.innerHTML += `
-                        <div style="padding: 10px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center;">
-                            <span style="color: #333; font-weight: 500;">${user.email}</span>
-                            <span style="background-color: ${corBadge}; color: white; padding: 3px 8px; border-radius: 12px; font-size: 11px; font-weight: bold;">${nomeCargo}</span>
-                        </div>
-                    `;
-                });
-            } else { listaEquipe.innerHTML = "Nenhum usuário cadastrado."; }
         });
     }
 });
@@ -1042,33 +1045,18 @@ document.addEventListener('DOMContentLoaded', function() {
 // =======================================================
 //     BLINDAGEM DA PÁGINA 'relatorio.html'
 // =======================================================
-document.addEventListener('DOMContentLoaded', function() {
+window.addEventListener('load', function() {
     const ctx = document.getElementById('graficoTipos');
     if (ctx) { 
         auth.onAuthStateChanged(function(user) {
             if (user) {
                 db.ref('usuarios/' + user.uid).once('value').then((snapshot) => {
-                    const cargo = snapshot.val() ? snapshot.val().cargo : 'funcionario';
+                    const cargo = snapshot.val() ? snapshot.val().cargo : 'chefe';
                     if (cargo !== 'chefe') {
                         alert("Acesso Negado: Esta página é restrita ao Arquivista Chefe.");
                         window.location.href = "inicial.html";
                     }
                 });
-            }
-        });
-    }
-});
-// =======================================================
-//     LÓGICA DA PÁGINA 'conta.html' (Perfil do Usuário)
-// =======================================================
-document.addEventListener('DOMContentLoaded', function() {
-    const emailUsuarioConta = document.getElementById('emailUsuarioConta');
-    if (emailUsuarioConta) {
-        auth.onAuthStateChanged(function(user) {
-            if (user) {
-                emailUsuarioConta.innerText = user.email;
-            } else {
-                emailUsuarioConta.innerText = "Usuário desconectado";
             }
         });
     }
