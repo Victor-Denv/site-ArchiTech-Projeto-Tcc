@@ -38,19 +38,24 @@
             </div>
         </aside>
 
-        <main class="conteudo-principal" style="padding: 40px; background-color: #f4f7f6; overflow-y: auto;">
+       <main class="conteudo-principal" style="padding: 40px; background-color: #f4f7f6; overflow-y: auto;">
             <h2 style="color: #2c3e50; font-size: 28px; margin-bottom: 30px;">Gerenciamento de Equipe e Acessos</h2>
 
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
                 
                 <div style="background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
                     <h3 style="color: #6f42c1; font-size: 20px; margin-bottom: 20px; border-bottom: 2px solid #f0f0f0; padding-bottom: 10px;">
-                        <i class="fa-solid fa-envelope-open-text" style="margin-right: 10px;"></i> Convidar Novo Membro
+                        <i class="fa-solid fa-user-plus" style="margin-right: 10px;"></i> Cadastrar Novo Membro
                     </h3>
                     
-                    <div style="margin-bottom: 20px;">
-                        <label style="font-weight: 600; font-size: 14px; color: #4a4a4a; display: block; margin-bottom: 8px;">E-mail do Usuário (Real):</label>
+                    <div style="margin-bottom: 15px;">
+                        <label style="font-weight: 600; font-size: 14px; color: #4a4a4a; display: block; margin-bottom: 8px;">E-mail do Usuário:</label>
                         <input type="email" id="novoEmailUser" placeholder="exemplo@architech.com" style="width: 100%; padding: 12px; border: 1px solid #dcdde1; border-radius: 8px; font-family: 'Poppins', sans-serif; transition: border-color 0.3s;">
+                    </div>
+
+                    <div style="margin-bottom: 15px;">
+                        <label style="font-weight: 600; font-size: 14px; color: #4a4a4a; display: block; margin-bottom: 8px;">Senha Inicial:</label>
+                        <input type="password" id="novaSenhaUser" placeholder="Mínimo 6 caracteres" style="width: 100%; padding: 12px; border: 1px solid #dcdde1; border-radius: 8px; font-family: 'Poppins', sans-serif;">
                     </div>
 
                     <div style="margin-bottom: 25px;">
@@ -63,7 +68,7 @@
                     </div>
 
                     <button id="btnCriarUsuario" style="background-color: #6f42c1; color: white; padding: 12px 20px; border: none; border-radius: 8px; font-weight: 600; font-size: 15px; cursor: pointer; width: 100%; transition: background-color 0.3s; box-shadow: 0 4px 6px rgba(111, 66, 193, 0.2);">
-                        Enviar Convite e Atribuir Permissões
+                        Criar Conta e Atribuir Permissões
                     </button>
                 </div>
                 

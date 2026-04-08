@@ -940,11 +940,10 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
 
-
 // =======================================================
 //     LÓGICA ISOLADA: PERFIL (CONTA) E EQUIPE (CONFIG)
 // =======================================================
-window.addEventListener('load', function() {
+document.addEventListener('DOMContentLoaded', function() {
     
     // --- 1. MOSTRAR E-MAIL NA TELA DE CONTA ---
     const emailUsuarioConta = document.getElementById('emailUsuarioConta');
@@ -961,35 +960,8 @@ window.addEventListener('load', function() {
     // --- 2. LISTAR EQUIPE NA TELA DE CONFIGURAÇÕES ---
     const listaEquipe = document.getElementById('listaUsuariosCadastrados');
     if (listaEquipe) {
-        db.ref('usuarios').on('value', (snapshot) => {
-            listaEquipe.innerHTML = "";
-            const dados = snapshot.val();
-            if (dados) {
-                Object.keys(dados).forEach(uid => {
-                    const user = dados[uid];
-                    let corBadge = "#95a5a6"; // Cinza (Funcionario)
-                    let nomeCargo = "Funcionário";
-                    
-                    if (user.cargo === 'chefe') { corBadge = "#e74c3c"; nomeCargo = "Arquivista Chefe"; }
-                    if (user.cargo === 'ti') { corBadge = "#3498db"; nomeCargo = "Equipe de TI"; }
-
-                    listaEquipe.innerHTML += `
-                        <div style="background-color: #f8f9fa; padding: 12px 15px; border-radius: 8px; border-left: 4px solid ${corBadge}; display: flex; justify-content: space-between; align-items: center;">
-                            <span style="color: #2c3e50; font-weight: 500; font-size: 14px;">${user.email}</span>
-                            <span style="background-color: ${corBadge}; color: white; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600;">${nomeCargo}</span>
-                        </div>
-                    `;
-                });
-            } else { 
-                listaEquipe.innerHTML = "<div style='color: #7f8c8d; font-size: 14px;'>Nenhum usuário cadastrado na base de dados.</div>"; 
-            }
-        });
-    }
-
-    // --- 3. BOTÃO DE CONVIDAR USUÁRIO ---
-    const btnCriarUsuario = document.getElementById('btnCriarUsuario');
-    if (btnCriarUsuario) {
-        // Trava de Segurança na Tela de Config
+        
+        // Trava de Segurança
         auth.onAuthStateChanged(function(user) {
             if (user) {
                 db.ref('usuarios/' + user.uid).once('value').then((snapshot) => {
@@ -1002,62 +974,71 @@ window.addEventListener('load', function() {
             }
         });
 
+        db.ref('usuarios').on('value', (snapshot) => {
+            listaEquipe.innerHTML = "";
+            const dados = snapshot.val();
+            if (dados) {
+                Object.keys(dados).forEach(uid => {
+                    const user = dados[uid];
+                    let corBadge = "#95a5a6"; // Cinza
+                    let nomeCargo = "Funcionário";
+                    
+                    if (user.cargo === 'chefe') { corBadge = "#e74c3c"; nomeCargo = "Arquivista Chefe"; }
+                    if (user.cargo === 'ti') { corBadge = "#3498db"; nomeCargo = "Equipe de TI"; }
+
+                    listaEquipe.innerHTML += `
+                        <div style="background-color: #f8f9fa; padding: 12px 15px; border-radius: 8px; border-left: 4px solid ${corBadge}; display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                            <span style="color: #2c3e50; font-weight: 500; font-size: 14px;">${user.email}</span>
+                            <span style="background-color: ${corBadge}; color: white; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600;">${nomeCargo}</span>
+                        </div>
+                    `;
+                });
+            } else { 
+                listaEquipe.innerHTML = "<div style='color: #7f8c8d; font-size: 14px;'>Nenhum usuário cadastrado.</div>"; 
+            }
+        });
+    }
+
+    // --- 3. CRIAR USUÁRIO (AGORA COM SENHA MANUAL) ---
+    const btnCriarUsuario = document.getElementById('btnCriarUsuario');
+    if (btnCriarUsuario) {
         const appSecundario = firebase.apps.find(app => app.name === "AppCriador") || firebase.initializeApp(firebaseConfig, "AppCriador");
         const authSecundario = appSecundario.auth();
 
         btnCriarUsuario.addEventListener('click', function() {
             const email = document.getElementById('novoEmailUser').value;
+            const senha = document.getElementById('novaSenhaUser').value; // Pegando a senha do input!
             const cargo = document.getElementById('nivelAcessoUser').value;
 
-            if (!email) { alert("Preencha o e-mail real do usuário."); return; }
+            if (!email || !senha) { alert("Preencha o e-mail e a senha."); return; }
+            if (senha.length < 6) { alert("A senha deve ter no mínimo 6 caracteres."); return; }
 
-            btnCriarUsuario.innerText = "Enviando convite...";
+            btnCriarUsuario.innerText = "Criando usuário...";
             btnCriarUsuario.disabled = true;
 
-            const senhaAleatoria = Math.random().toString(36).slice(-10) + "X1@";
-
-            authSecundario.createUserWithEmailAndPassword(email, senhaAleatoria)
+            authSecundario.createUserWithEmailAndPassword(email, senha)
                 .then((userCredential) => {
                     db.ref('usuarios/' + userCredential.user.uid).set({
                         email: email,
                         cargo: cargo,
                         dataCriacao: firebase.database.ServerValue.TIMESTAMP
                     }).then(() => {
-                        authSecundario.sendPasswordResetEmail(email).then(() => {
-                            authSecundario.signOut();
-                            alert(`Convite enviado para: ${email}`);
-                            document.getElementById('novoEmailUser').value = "";
-                            btnCriarUsuario.innerText = "Enviar Convite e Atribuir Permissões";
-                            btnCriarUsuario.disabled = false;
-                        });
+                        authSecundario.signOut();
+                        alert(`Usuário criado com sucesso!\nE-mail: ${email}\nCargo: ${cargo}`);
+                        
+                        document.getElementById('novoEmailUser').value = "";
+                        document.getElementById('novaSenhaUser').value = ""; // Limpa a senha
+                        
+                        btnCriarUsuario.innerText = "Criar Conta e Atribuir Permissões";
+                        btnCriarUsuario.disabled = false;
                     });
                 })
                 .catch((error) => {
                     console.error("Erro:", error);
                     alert("Erro ao criar usuário. Talvez o e-mail já exista.");
-                    btnCriarUsuario.innerText = "Enviar Convite e Atribuir Permissões";
+                    btnCriarUsuario.innerText = "Criar Conta e Atribuir Permissões";
                     btnCriarUsuario.disabled = false;
                 });
-        });
-    }
-});
-
-// =======================================================
-//     BLINDAGEM DA PÁGINA 'relatorio.html'
-// =======================================================
-window.addEventListener('load', function() {
-    const ctx = document.getElementById('graficoTipos');
-    if (ctx) { 
-        auth.onAuthStateChanged(function(user) {
-            if (user) {
-                db.ref('usuarios/' + user.uid).once('value').then((snapshot) => {
-                    const cargo = snapshot.val() ? snapshot.val().cargo : 'chefe';
-                    if (cargo !== 'chefe') {
-                        alert("Acesso Negado: Esta página é restrita ao Arquivista Chefe.");
-                        window.location.href = "inicial.html";
-                    }
-                });
-            }
         });
     }
 });
