@@ -631,3 +631,115 @@ ul {
     33% { content: '..'; }
     66% { content: '...'; }
 }
+
+/* =======================================================
+   RESPONSIVIDADE PARA CELULARES E TABLETS (MOBILE)
+   ======================================================= */
+@media screen and (max-width: 900px) {
+    /* 1. Transforma o layout em coluna (empilha tudo) */
+    .painel-container {
+        display: flex !important;
+        flex-direction: column !important;
+        height: auto !important;
+        min-height: 100vh;
+        overflow-y: visible !important;
+    }
+
+    /* 2. Barra Lateral vira um Menu no Topo com rolagem horizontal */
+    .barra-lateral-esquerda {
+        width: 100% !important;
+        height: auto !important;
+        position: relative !important;
+        padding: 15px !important;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        z-index: 10;
+    }
+
+    .logotipo { margin-bottom: 15px; }
+
+    .menu-navegacao ul {
+        display: flex !important;
+        flex-direction: row !important;
+        overflow-x: auto !important; /* Rolagem horizontal tipo Netflix */
+        white-space: nowrap;
+        gap: 10px;
+        padding-bottom: 10px;
+        width: 100%;
+    }
+
+    .menu-navegacao ul li {
+        margin: 0 !important;
+        flex-shrink: 0;
+    }
+
+    .rodape-barra-lateral {
+        position: relative !important;
+        margin-top: 10px;
+        width: 100%;
+    }
+
+    .rodape-barra-lateral ul {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        padding: 0;
+    }
+
+    /* 3. Conserta o Banner esmagado da foto */
+    .banner-destaque {
+        padding: 20px !important;
+        border-radius: 10px !important;
+        text-align: center;
+    }
+
+    .banner-destaque h2 {
+        font-size: 18px !important; /* Fonte menor para caber */
+        line-height: 1.4 !important;
+        word-wrap: break-word !important;
+    }
+
+    /* 4. Ajusta o espaço do conteúdo central */
+    .conteudo-principal {
+        width: 100% !important;
+        padding: 15px !important;
+        height: auto !important;
+        overflow-y: visible !important;
+    }
+
+    /* 5. Cartões de Acesso Rápido: 2 por linha */
+    .grade-cartoes {
+        grid-template-columns: 1fr 1fr !important; 
+        gap: 10px !important;
+    }
+
+    /* 6. Joga a barra da direita lá pro final da página */
+    .barra-lateral-direita {
+        width: 100% !important;
+        height: auto !important;
+        border-left: none !important;
+        border-top: 2px solid #eee;
+        padding: 20px !important;
+    }
+
+    /* 7. Truque para corrigir o formulário de configuração e gráficos */
+    div[style*="grid-template-columns: 1fr 1fr"] {
+        grid-template-columns: 1fr !important; /* Força 1 coluna só */
+    }
+    
+    div[style*="display: flex; align-items: center; justify-content: space-around;"] {
+        flex-direction: column !important;
+        text-align: center;
+    }
+}
+
+/* Telas MUITO pequenas (Celulares antigos) */
+@media screen and (max-width: 480px) {
+    .grade-cartoes {
+        grid-template-columns: 1fr !important; /* 1 cartão por linha */
+    }
+    .banner-destaque h2 {
+        font-size: 16px !important;
+    }
+}
