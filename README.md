@@ -18,7 +18,7 @@ O objetivo deste Trabalho de Conclusão de Curso (TCC) é apresentar uma infraes
 
 O layout final utiliza uma arquitetura de três colunas, garantindo uma navegação fluida, conteúdo centralizado e um painel de monitoramento dinâmico.
 
-![Preview do Dashboard](interface.png)
+![Preview do Dashboard](img/interface.png)
 
 ### 🚀 Acesso e Execução
 
