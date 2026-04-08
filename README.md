@@ -1,36 +1,87 @@
-🏛️ Projeto Architech
-Inovação e Inteligência na Gestão de Acervos Documentais
-O Architech nasceu da necessidade de modernizar processos arquivísticos tradicionais. Este sistema não é apenas um repositório de arquivos, mas uma camada de inteligência que auxilia instituições na transição do meio físico para o digital, garantindo que a informação seja classificada, protegida e facilmente rastreável.
-![Logo](img/interface.png)
-💡 A Proposta
-O foco central do projeto é a Eficiência Operacional. Ao integrar a API do Google Gemini, o Architech elimina o preenchimento manual e exaustivo de metadados, permitindo que a Inteligência Artificial identifique e categorize documentos automaticamente através de visão computacional.
+# 🏛️ Dashboard Architech - Gestão Arquivística Inteligente
 
-🛠️ Especificações Técnicas
-Construído com uma arquitetura Serverless, o projeto preza pela escalabilidade e baixa latência:
+![Status do Projeto](https://img.shields.io/badge/status-em--produ%C3%A7%C3%A3o-green)
+![IA](https://img.shields.io/badge/IA-Google%20Gemini-blueviolet)
+![Database](https://img.shields.io/badge/Database-Firebase-orange)
 
-Interface: Desenvolvida em JavaScript moderno (ES6+), utilizando metodologias de design responsivo para garantir acessibilidade em dispositivos móveis.
+O **Architech** é uma solução avançada de gestão documental que integra design moderno à Inteligência Artificial. Evoluído de um conceito visual, o sistema hoje é uma aplicação funcional capaz de centralizar acervos, automatizar a extração de metadados e oferecer uma interface de alta performance para a governança de dados.
 
-Infraestrutura: Ecossistema Firebase (Google Cloud) para autenticação segura, banco de dados em tempo real e armazenamento de objetos.
+---
 
-Inteligência: Processamento de linguagem natural e análise de imagem via Gemini API.
+### 🎯 Objetivo do Projeto
 
-Segurança: Implementação de regras de acesso (RBH - Role Based Hierarchy) para conformidade com diretrizes de governança de dados.
+O objetivo deste Trabalho de Conclusão de Curso (TCC) é apresentar uma infraestrutura de front-end e back-end integrada para arquivamento digital. A aplicação visa otimizar o fluxo de trabalho arquivístico, facilitando a busca, o rastreamento físico-digital e a segurança da informação em conformidade com as melhores práticas de usabilidade.
 
-🗝️ Funcionalidades de Destaque
-Dashboard Executivo: Visualização dinâmica do status do acervo e atividades recentes.
+---
 
-Triagem Inteligente: Upload assistido por IA com extração automática de dados críticos.
+### 🖼️ Preview do Sistema
 
-Protocolo de Rastreabilidade: Geração automatizada de QR Codes para a ponte entre o documento físico e o registro digital.
+O layout final utiliza uma arquitetura de três colunas, garantindo uma navegação fluida, conteúdo centralizado e um painel de monitoramento dinâmico.
 
-Gestão de Permissões: Controle rigoroso de níveis de acesso (Administrador, TI e Operador).
+![Preview do Dashboard](interface.png)
 
-🌐 Acesso ao Sistema
-O sistema encontra-se em ambiente de produção e pode ser acessado através do domínio oficial:
-👉 www.architechapp.com.br
+### 🚀 Acesso e Execução
 
-Nota Acadêmica: Este projeto é o resultado de uma pesquisa aprofundada em sistemas de informação e gestão documental, desenvolvido como Trabalho de Conclusão de Curso (TCC).
+#### Domínio Oficial (Recomendado)
+O projeto está em produção com certificado SSL ativo e pode ser acessado publicamente:
 
-Autor: Vitor da Silva , Adrianne Barreto e Ana Luiza
+**[➡️ Acessar o Architech App](https://www.architechapp.com.br/)**
 
-Status do Projeto: Finalizado / Em Produção
+#### Execução Local
+Para executar o ambiente de desenvolvimento, clone o repositório e utilize um servidor local (como Live Server) para garantir o funcionamento das integrações de API.
+
+---
+
+### ✨ Funcionalidades Implementadas
+
+* **Análise Documental por IA (Gemini):** Upload assistido com extração automática de dados e classificação inteligente.
+* **Hierarquia de Acesso (RBAC):** Níveis de permissão distintos para Arquivista Chefe, TI e Funcionários.
+* **Dashboard em Tempo Real:** Painel lateral dinâmico que reflete o perfil do usuário e as últimas atualizações do banco de dados.
+* **Responsividade Total:** Interface 100% adaptada para dispositivos Mobile (iOS/Android) e Desktop.
+* **Protocolo QR Code:** Geração de identificadores exclusivos para vinculação entre o acervo físico e o registro digital.
+* **Saudação Adaptativa:** Interface que reconhece o período do dia para interagir com o usuário de forma humanizada.
+
+---
+
+### 💻 Tecnologias Utilizadas
+
+* **HTML5 & CSS3:** Estruturação semântica e estilização via Flexbox e CSS Grid.
+* **JavaScript (ES6+):** Lógica de aplicação, manipulação de DOM e integração assíncrona.
+* **Firebase (Google Cloud):** Autenticação (Auth), Banco de Dados (Realtime DB) e Hospedagem (Hosting).
+* **Google Gemini API:** Motor de Inteligência Artificial para processamento e visão computacional.
+* **Font Awesome & Google Fonts:** Identidade visual e bibliotecas de iconografia.
+
+---
+
+### 📂 Estrutura de Arquivos
+/projeto-architech
+|-- /html           # Páginas do ecossistema (Login, Configurações, Arquivos)
+|-- /css            # Estilização modular e regras de responsividade
+|-- /js             # Motores do sistema: Firebase, Gemini IA e Interações
+|-- /img            # Ativos visuais e ícones do projeto
+|-- index.html      # Página de entrada e autenticação
+|-- README.md       # Documentação técnica e guia do projeto
+
+    ---
+
+### 👥 Equipe e Contribuições
+
+Este projeto é o resultado da colaboração técnica e acadêmica dos seguintes integrantes:
+
+* 🎨 **Design Visual & Prototipagem:** **Adriane Barreto**
+     Responsável pela concepção visual original e design de interface (UI/UX).
+* 💻 **Desenvolvimento Full-Stack:** **Vitor Lopes**
+    * Responsável pela arquitetura de software, integração Firebase/IA e responsividade.
+* 🤝 **Apoio no Desenvolvimento:** **Ana Luiza**
+    * Colaboração em testes de usabilidade e refinamento de interface.
+
+---
+
+### ©️ Direitos Autorais e Licença
+
+Projeto desenvolvido como Trabalho de Conclusão de Curso (TCC) no SENAI Camaçari.
+
+**© 2026 - Todos os direitos reservados.**
+A reprodução ou plágio deste conteúdo sem autorização prévia dos autores é estritamente proibida.
+
+---
