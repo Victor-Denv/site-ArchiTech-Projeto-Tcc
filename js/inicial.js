@@ -946,16 +946,48 @@ document.addEventListener('DOMContentLoaded', function() {
 window.addEventListener('load', function() {
     
     // --- 1. MOSTRAR E-MAIL NA TELA DE CONTA ---
-    const emailUsuarioConta = document.getElementById('emailUsuarioConta');
-    if (emailUsuarioConta) {
-        auth.onAuthStateChanged(function(user) {
-            if (user) {
-                emailUsuarioConta.innerText = user.email;
-            } else {
-                emailUsuarioConta.innerText = "Usuário desconectado";
+   // --- 1. MOSTRAR E EDITAR NOME/E-MAIL NA TELA DE CONTA ---
+const emailUsuarioConta = document.getElementById('emailUsuarioConta');
+const nomeExibicaoAtual = document.getElementById('nomeExibicaoAtual');
+const inputNomeUsuario = document.getElementById('inputNomeUsuario');
+const btnSalvarNome = document.getElementById('btnSalvarNome');
+
+if (emailUsuarioConta) {
+    auth.onAuthStateChanged(function(user) {
+        if (user) {
+            emailUsuarioConta.innerText = user.email;
+
+            // Busca o nome do usuário no Realtime Database
+            db.ref('usuarios/' + user.uid).on('value', (snapshot) => {
+                const dados = snapshot.val();
+                if (dados && dados.nome) {
+                    nomeExibicaoAtual.innerText = dados.nome;
+                    if(inputNomeUsuario) inputNomeUsuario.value = dados.nome;
+                } else {
+                    nomeExibicaoAtual.innerText = "Usuário sem nome";
+                }
+            });
+
+            // Salva o novo nome quando clicar no botão
+            if(btnSalvarNome) {
+                btnSalvarNome.addEventListener('click', () => {
+                    const novoNome = inputNomeUsuario.value;
+                    if(!novoNome) { alert("Digite um nome válido."); return; }
+                    
+                    btnSalvarNome.innerText = "Salvando...";
+                    db.ref('usuarios/' + user.uid).update({ nome: novoNome })
+                        .then(() => {
+                            alert("Perfil atualizado com sucesso!");
+                            btnSalvarNome.innerText = "Salvar Nome";
+                        })
+                        .catch(err => alert("Erro ao salvar: " + err));
+                });
             }
-        });
-    }
+        } else {
+            emailUsuarioConta.innerText = "Usuário desconectado";
+        }
+    });
+}
 
     // --- 2. LISTAR EQUIPE NA TELA DE CONFIGURAÇÕES ---
     const listaEquipe = document.getElementById('listaUsuariosCadastrados');
