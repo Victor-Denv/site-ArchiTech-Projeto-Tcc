@@ -25,7 +25,7 @@
                 <ul>
                    <li><a href="inicial.html"><i class="fa-solid fa-house"></i> Início</a></li>
                     <li><a href="relatorio.html"><i class="fa-solid fa-chart-pie"></i> Relatório de gestão</a></li>
-                    <li><a href="automacao.html"><i class="fa-solid fa-robot"></i> Automação de documentos</a></li>
+                    <li><a href="automacao.html"><i class="fa-solid fa-robot"></i> Gestão de documentos</a></li>
                     <li><a href="suporte.html"><i class="fa-solid fa-circle-question"></i> Suporte</a></li>
 <li><a href="painel-chamados.html"><i class="fa-solid fa-clipboard-list"></i> Gestão de Chamados</a></li>
                     <li><a href="monitor.html"><i class="fa-solid fa-temperature-half"></i> Monitoramento</a></li>
@@ -38,7 +38,7 @@
            <div class="rodape-barra-lateral">
     <ul>
         <li><a href="conta.html"><i class="fa-solid fa-user"></i> Conta</a></li>
-        <li><a href="index.html" id="btn-logout"><i class="fa-solid fa-right-from-bracket"></i> Sair</a></li>
+       <a href="#" id="btn-logout"> <i class="fa-solid fa-right-from-bracket"></i> Sair </a>
         <li><a href="suporte.html"><i class="fa-solid fa-circle-question"></i> Ajuda</a></li>
     </ul>
 </div>
@@ -58,7 +58,7 @@
 
             <div id="formularioCadastro" class="abas-conteudo" style="background-color: #2a2a3a; color:#f0f0f0; padding: 25px; margin: 0 20px 20px 20px; border-radius: 0 8px 8px 8px !important; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);">
                 <h2>Cadastrar Novo Arquivo</h2>
-                <p style="font-size: 14px; color: #b0b0b0; margin-bottom: 20px;">Preencha os dados para registrar o arquivo físico e gerar um QR Code de rastreio.</p>
+                <p style="font-size: 14px; color: #ffffff; margin-bottom: 20px;">Preencha os dados para registrar o arquivo físico e gerar um QR Code de rastreio.</p>
 
                 <div style="margin-bottom: 15px;">
                     <label for="nomeArquivo">Nome do Arquivo:</label><br>
@@ -67,18 +67,25 @@
 
                 <div style="margin-bottom: 15px;">
                     <label for="localizacaoArquivo">Localização Física:</label><br>
-                    <input type="text" id="localizacaoArquivo" placeholder="Ex: Prateleira A, Gaveta 3" style="width: 100%; padding: 10px; font-size: 14px; background-color: #1e1e2d; color: #f0f0f0; border: 1px solid #444; border-radius: 5px; box-sizing: border-box;">
+                    <input type="text" id="localizacaoArquivo" placeholder="Ex: Prateleira A, Gaveta 3" style="width: 100%; padding: 10px; font-size: 14px; background-color: #1e1e2d; color: #f0f0f0; border: 1px solid #444; border-radius: 5px; box-sizing: border-box;"">
                 </div>
 
-                <div style="margin-bottom: 15px;">
-                    <label for="tipoArquivo">Tipo de Arquivo:</label><br>
-                    <select id="tipoArquivo" style="width: 100%; padding: 10px; font-size: 14px; background-color: #1e1e2d; color: #f0f0f0; border: 1px solid #444; border-radius: 5px; box-sizing: border-box;">
-                        <option value="documento">Documento (PDF)</option>
-                        <option value="imagem">Imagem (JPG/PNG)</option>
-                        <option value="certificacao">Certificação</option>
-                        <option value="outro">Outro</option>
-                    </select>
-                </div>
+               <div class="campo-grupo" style="margin-bottom: 15px;">
+    <label for="tipoArquivo" style="width: 100%; padding: 10px; font-size: 14px; background-color: #1e1e2d; color: #f0f0f0; border: 1px solid #444; border-radius: 5px; box-sizing: border-box;">Tipo de Arquivo:</label>
+    <select id="tipoArquivo" class="input-padrao" style="width: 100%; padding: 10px; font-size: 14px; background-color: #1e1e2d; color: #f0f0f0; border: 1px solid #444; border-radius: 5px; box-sizing: border-box;">
+        <option value="documento">Documento (PDF)</option>
+        <option value="imagem">Imagem (JPG/PNG)</option>
+        <option value="outros">Outros</option>
+    </select>
+</div>
+
+<div class="campo-grupo" style="margin-bottom: 15px;">
+    <label for="visibilidadeArquivo" style="width: 100%; padding: 10px; font-size: 14px; background-color: #1e1e2d; color: #f0f0f0; border: 1px solid #444; border-radius: 5px; box-sizing: border-box;">Nível de Acesso:</label>
+    <select id="visibilidadeArquivo" class="input-padrao" style="width: 100%; padding: 10px; font-size: 14px; background-color: #1e1e2d; color: #f0f0f0; border: 1px solid #444; border-radius: 5px; box-sizing: border-box;"">
+        <option value="simples">Simples (Toda a equipe pode ver)</option>
+        <option value="confidencial">Confidencial (Apenas Arquivista Chefe)</option>
+    </select>
+</div>
 
                 <div style="margin-bottom: 15px;">
                     <label for="arquivoUpload" style="display: block; font-weight: bold; font-size: 14px; margin-bottom: 5px; color: #d0d0d0;">Anexar Imagem ou PDF para Leitura:</label><br>

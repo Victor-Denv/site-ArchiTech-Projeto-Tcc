@@ -632,114 +632,172 @@ ul {
     66% { content: '...'; }
 }
 
-/* =======================================================
-   RESPONSIVIDADE PARA CELULARES E TABLETS (MOBILE)
-   ======================================================= */
+/* ======================================================= */
+/* RESPONSIVIDADE PRINCIPAL (CELULARES E TABLETS) */
+/* ======================================================= */
 @media screen and (max-width: 900px) {
-    /* 1. Transforma o layout em coluna (empilha tudo) */
-    .painel-container {
-        display: flex !important;
-        flex-direction: column !important;
-        height: auto !important;
-        min-height: 100vh;
-        overflow-y: visible !important;
-    }
+    .painel-container { display: flex !important; flex-direction: column !important; }
+    .barra-lateral-esquerda { width: 100%; padding: 15px; align-items: center; }
+    .menu-navegacao { width: 100%; }
+    .menu-navegacao ul { display: flex; overflow-x: auto; gap: 10px; padding-bottom: 10px; white-space: nowrap; }
+    .menu-navegacao ul::-webkit-scrollbar { height: 0px; }
+    .menu-navegacao ul li { flex-shrink: 0; margin: 0; }
+    .rodape-barra-lateral { margin-top: 15px; width: 100%; }
+    .rodape-barra-lateral ul { display: flex; justify-content: center; gap: 20px; padding: 0; }
+    .conteudo-principal { width: 100%; padding: 15px; }
+    .cabecalho-principal { flex-direction: column; gap: 15px; }
+    .cabecalho-principal .barra-pesquisa { width: 100%; max-width: 100%; }
+    .banner-destaque { padding: 20px; text-align: center; }
+    .banner-destaque h2 { max-width: 100%; font-size: 1.5rem; }
+    .acesso-rapido .grade-cartoes { grid-template-columns: repeat(2, 1fr) !important; gap: 10px; }
+    .barra-lateral-direita { width: 100%; border-left: none; border-top: 1px solid var(--border-color); padding: 20px 15px; }
+}
 
-    /* 2. Barra Lateral vira um Menu no Topo com rolagem horizontal */
-    .barra-lateral-esquerda {
-        width: 100% !important;
-        height: auto !important;
-        position: relative !important;
-        padding: 15px !important;
+/* ======================================================= */
+/* ESTILOS DO MENU DE RECOMENDAÇÕES DA PESQUISA */
+/* ======================================================= */
+.menu-recomendacoes-pesquisa {
+    display: none; /* Escondido por padrão */
+    position: absolute;
+    top: 110%;
+    left: 0;
+    width: 100%;
+    background-color: var(--card-background);
+    border-radius: 10px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    z-index: 1000;
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+}
+
+.menu-recomendacoes-pesquisa .titulo-recomenda {
+    padding: 12px 15px 5px 15px;
+    font-size: 11px;
+    text-transform: uppercase;
+    color: var(--text-light);
+    font-weight: bold;
+}
+
+.menu-recomendacoes-pesquisa ul li {
+    padding: 12px 15px;
+    cursor: pointer;
+    font-size: 14px;
+    color: var(--text-dark);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.menu-recomendacoes-pesquisa ul li i {
+    color: var(--primary-purple);
+    width: 20px;
+    text-align: center;
+}
+
+/* Efeito ao passar o mouse por cima das opções */
+.menu-recomendacoes-pesquisa ul li:hover {
+    background-color: var(--light-purple);
+    color: var(--primary-purple);
+}
+@media screen and (max-width: 480px) {
+    .acesso-rapido .grade-cartoes { grid-template-columns: 1fr !important; }
+}@media screen and (max-width: 900px) {
+    /* Transforma o layout grid em blocos empilhados */
+    .painel-container {
         display: flex;
         flex-direction: column;
-        align-items: center;
-        z-index: 10;
     }
 
-    .logotipo { margin-bottom: 15px; }
+    /* Menu Lateral vira um Menu no Topo */
+    .barra-lateral-esquerda {
+        width: 100%;
+        padding: 15px;
+        align-items: center;
+    }
+    
+    .barra-lateral-esquerda .logotipo {
+        margin-bottom: 20px;
+    }
 
-    .menu-navegacao ul {
-        display: flex !important;
-        flex-direction: row !important;
-        overflow-x: auto !important; /* Rolagem horizontal tipo Netflix */
-        white-space: nowrap;
-        gap: 10px;
-        padding-bottom: 10px;
+    .menu-navegacao {
         width: 100%;
     }
 
+    /* Menu rolável (Scroll horizontal) */
+    .menu-navegacao ul {
+        display: flex;
+        overflow-x: auto;
+        gap: 10px;
+        padding-bottom: 10px;
+        white-space: nowrap;
+    }
+    
+    /* Esconde a barra de rolagem para ficar mais bonito */
+    .menu-navegacao ul::-webkit-scrollbar {
+        height: 0px; 
+    }
+
     .menu-navegacao ul li {
-        margin: 0 !important;
         flex-shrink: 0;
     }
 
     .rodape-barra-lateral {
-        position: relative !important;
-        margin-top: 10px;
+        margin-top: 15px;
         width: 100%;
     }
 
     .rodape-barra-lateral ul {
         display: flex;
         justify-content: center;
-        gap: 15px;
-        padding: 0;
+        gap: 20px;
     }
 
-    /* 3. Conserta o Banner esmagado da foto */
+    /* Ajustes do Conteúdo Central */
+    .conteudo-principal {
+        padding: 15px;
+    }
+
+    .cabecalho-principal {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .cabecalho-principal .barra-pesquisa {
+        width: 100%;
+        max-width: 100%;
+    }
+
     .banner-destaque {
-        padding: 20px !important;
-        border-radius: 10px !important;
+        padding: 20px;
         text-align: center;
     }
 
     .banner-destaque h2 {
-        font-size: 18px !important; /* Fonte menor para caber */
-        line-height: 1.4 !important;
-        word-wrap: break-word !important;
+        max-width: 100%;
+        font-size: 1.5rem;
     }
 
-    /* 4. Ajusta o espaço do conteúdo central */
-    .conteudo-principal {
-        width: 100% !important;
-        padding: 15px !important;
-        height: auto !important;
-        overflow-y: visible !important;
+    /* Cartões viram 2 colunas */
+    .acesso-rapido .grade-cartoes {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
     }
 
-    /* 5. Cartões de Acesso Rápido: 2 por linha */
-    .grade-cartoes {
-        grid-template-columns: 1fr 1fr !important; 
-        gap: 10px !important;
-    }
-
-    /* 6. Joga a barra da direita lá pro final da página */
+    /* A barra da direita vai para o final da página */
     .barra-lateral-direita {
-        width: 100% !important;
-        height: auto !important;
-        border-left: none !important;
-        border-top: 2px solid #eee;
-        padding: 20px !important;
-    }
-
-    /* 7. Truque para corrigir o formulário de configuração e gráficos */
-    div[style*="grid-template-columns: 1fr 1fr"] {
-        grid-template-columns: 1fr !important; /* Força 1 coluna só */
-    }
-    
-    div[style*="display: flex; align-items: center; justify-content: space-around;"] {
-        flex-direction: column !important;
-        text-align: center;
+        width: 100%;
+        border-top: 1px solid var(--border-color);
+        padding: 20px 15px;
     }
 }
 
-/* Telas MUITO pequenas (Celulares antigos) */
-@media screen and (max-width: 480px) {
-    .grade-cartoes {
-        grid-template-columns: 1fr !important; /* 1 cartão por linha */
+/* Telas MUITO pequenas (Ex: iPhone SE) */
+@media screen and (max-width: 400px) {
+    .acesso-rapido .grade-cartoes {
+        grid-template-columns: 1fr; /* 1 cartão por linha */
     }
     .banner-destaque h2 {
-        font-size: 16px !important;
+        font-size: 1.2rem;
     }
 }

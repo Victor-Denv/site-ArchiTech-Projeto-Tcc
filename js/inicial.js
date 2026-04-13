@@ -16,118 +16,156 @@
     const db = firebase.database();
     const auth = firebase.auth();
     console.log("Firebase Conectado com SUCESSO a partir do inicial.js!");
-
-  // =======================================================
-//     O "SEGURANÇA" E CONTROLE DE ACESSO (HIERARQUIA)
 // =======================================================
+//     O "SEGURANÇA" E CONTROLE DE ACESSO (SaaS MULTI-EMPRESA)
+// =======================================================
+// Variáveis globais para guardar o cargo e a EMPRESA do usuário
+window.cargoAtual = localStorage.getItem('userCargo') || 'funcionario';
+window.idEmpresa = localStorage.getItem('userIdEmpresa') || null;
+
 auth.onAuthStateChanged(function(user) {
     const isLoginPage = window.location.pathname.endsWith('/') || window.location.pathname.endsWith('index.html') || window.location.pathname.endsWith('login.html');
     
     if (user) {
         if (isLoginPage) window.location.href = "inicial.html";
 
-        // MÁGICA DOS FILTROS: Descobre quem é o usuário e esconde o menu
         db.ref('usuarios/' + user.uid).once('value').then((snapshot) => {
             const dadosUsuario = snapshot.val();
-            // Se o usuário não tiver cargo no banco, assume que é funcionário (por segurança)
-           const cargo = dadosUsuario ? dadosUsuario.cargo : 'chefe';
             
-            aplicarFiltrosDeMenu(cargo);
-        });
+            // --- A MÁGICA MULTI-EMPRESA ACONTECE AQUI ---
+            if (!dadosUsuario) {
+                // Se a conta não existe no banco, é um cadastro novo na tela de Login. Vira Chefe!
+                window.cargoAtual = 'chefe';
+                window.idEmpresa = user.uid; // O ID da empresa é o ID do próprio chefe
 
+                // Salva esse novo chefe no banco para ele não ficar "fantasma"
+                db.ref('usuarios/' + user.uid).set({
+                    email: user.email,
+                    cargo: 'chefe',
+                    id_empresa: user.uid,
+                    dataCriacao: firebase.database.ServerValue.TIMESTAMP
+                });
+            } else {
+                // Se já existe, pega os dados normais
+                window.cargoAtual = dadosUsuario.cargo;
+                window.idEmpresa = dadosUsuario.id_empresa;
+            }
+
+            // Salva no navegador para as outras telas usarem
+            localStorage.setItem('userCargo', window.cargoAtual);
+            localStorage.setItem('userIdEmpresa', window.idEmpresa);
+            
+            aplicarFiltrosDeMenu(window.cargoAtual);
+            aplicarTravasDeConsulta(window.cargoAtual);
+        });
     } else {
-        if (!isLoginPage) window.location.href = "index.html";
+        if (!isLoginPage) window.location.href = "../index.html";
     }
 });
 
 function aplicarFiltrosDeMenu(cargo) {
-    // Pega todos os links do menu lateral esquerdo
     const linksMenu = document.querySelectorAll('.menu-navegacao a');
 
     linksMenu.forEach(link => {
         const href = link.getAttribute('href');
         const liPai = link.parentElement;
 
-        if (cargo === 'funcionario') {
-            // FUNCIONÁRIO NÃO VÊ: Relatórios, Chamados, Monitoramento, Segurança e Configurações
-            if (href.includes('relatorio.html') || 
-                href.includes('painel-chamados.html') || 
-                href.includes('monitor.html') || 
-                href.includes('seguranca.html') || 
-                href.includes('configuracoes.html')) {
-                liPai.style.display = 'none'; // Esconde o botão
-            }
-        } 
-        else if (cargo === 'ti') {
-            // EQUIPE DE TI NÃO VÊ: Automação (arquivos), Relatórios, Segurança e Configurações
-            if (href.includes('automacao.html') || 
-                href.includes('relatorio.html') || 
-                href.includes('seguranca.html') || 
-                href.includes('configuracoes.html')) {
-                liPai.style.display = 'none'; // Esconde o botão
+        // REGRA OURO: Só o 'chefe' vê a aba de Configurações (onde cria usuários)
+        if (cargo !== 'chefe') {
+            if (href.includes('configuracoes.html')) {
+                liPai.style.display = 'none';
             }
         }
-        // Se for 'chefe', a função não faz nada, deixando todos os botões visíveis!
+
+        // Restrições específicas do Usuário de Consulta
+        if (cargo === 'consulta') {
+            if (href.includes('automacao.html') || href.includes('relatorio.html') || 
+                href.includes('painel-chamados.html') || href.includes('monitor.html') || 
+                href.includes('seguranca.html') || href.includes('mensagem.html')) {
+                liPai.style.display = 'none';
+            }
+        }
+        // Restrições do Funcionário e TI (mantendo sua lógica original)
+        else if (cargo === 'funcionario' || cargo === 'ti') {
+            if (href.includes('relatorio.html') || href.includes('painel-chamados.html') || 
+                href.includes('monitor.html') || href.includes('seguranca.html')) {
+                liPai.style.display = 'none';
+            }
+        }
     });
 }
 
-    //----- SCRIPT DA TELA DE CARREGAMENTO (Usa window.load) -----
-    window.addEventListener('load', () => {
-        console.log("DEBUG: Evento window.load disparado (para Splash).");
-        const splashScreen = document.getElementById("splash-screen");
-        const mainContent = document.getElementById("main-content");
-        if (splashScreen && mainContent) {
-            const splashScreenTime = 1000;
-            setTimeout(() => {
-                if (splashScreen) {
-                    splashScreen.classList.add("hidden");
-                    splashScreen.addEventListener("transitionend", () => {
-                        if (splashScreen) { splashScreen.remove(); }
-                        if (mainContent) mainContent.style.display = "grid";
-                    }, { once: true });
-                } else if(mainContent) { mainContent.style.display = "grid"; }
-            }, splashScreenTime);
-        } else if (mainContent){ mainContent.style.display = "grid"; }
-    });
-    //----- FIM DO SCRIPT DA TELA DE CARREGAMENTO -----
+function aplicarTravasDeConsulta(cargo) {
+    // Esconde os botões perigosos se o usuário for apenas de leitura
+    if (cargo === 'consulta') {
+        const btnDeletar = document.getElementById('btnDeletar');
+        const boxAtualizarLocal = document.getElementById('btnAtualizarLocal')?.parentElement;
+        const btnSalvarArquivo = document.getElementById('btnSalvarArquivo'); 
+        
+        if (btnDeletar) btnDeletar.style.display = 'none'; 
+        if (boxAtualizarLocal) boxAtualizarLocal.style.display = 'none'; 
+        if (btnSalvarArquivo) btnSalvarArquivo.style.display = 'none'; 
+    }
+}
 
-    // --- SCRIPT ORIGINAL DA PÁGINA (inicial.html) ---
-    // **** Usando window.load ****
-    window.addEventListener('load', () => {
-        console.log("DEBUG: window.load disparado (para Scripts da inicial.html).");
-        const saudacaoTitulo = document.querySelector('.banner-destaque h2');
-        if (saudacaoTitulo) {
-            const horaAtual = new Date().getHours();
-            let saudacao = '';
-            if (horaAtual >= 5 && horaAtual < 12) saudacao = 'Bom dia, Arquivista!!';
-            else if (horaAtual >= 12 && horaAtual < 18) saudacao = 'Boa Tarde, Arquivista!!';
-            else saudacao = 'Boa Noite, Arquivista!!';
-            const textoOriginal = "Veja algumas das atualizações do nosso acervo enquanto você esteve fora...";
-            if(saudacaoTitulo && saudacaoTitulo.textContent.includes(textoOriginal)) {
-                saudacaoTitulo.textContent = `${saudacao} ${textoOriginal}`;
-            }
+//----- SCRIPT DA TELA DE CARREGAMENTO (Usa window.load) -----
+window.addEventListener('load', () => {
+    console.log("DEBUG: Evento window.load disparado (para Splash).");
+    const splashScreen = document.getElementById("splash-screen");
+    const mainContent = document.getElementById("main-content");
+    if (splashScreen && mainContent) {
+        const splashScreenTime = 1000;
+        setTimeout(() => {
+            if (splashScreen) {
+                splashScreen.classList.add("hidden");
+                splashScreen.addEventListener("transitionend", () => {
+                    if (splashScreen) { splashScreen.remove(); }
+                    if (mainContent) mainContent.style.display = "grid";
+                }, { once: true });
+            } else if(mainContent) { mainContent.style.display = "grid"; }
+        }, splashScreenTime);
+    } else if (mainContent){ mainContent.style.display = "grid"; }
+});
+//----- FIM DO SCRIPT DA TELA DE CARREGAMENTO -----
+
+// --- SCRIPT ORIGINAL DA PÁGINA (inicial.html) ---
+window.addEventListener('load', () => {
+    console.log("DEBUG: window.load disparado (para Scripts da inicial.html).");
+    const saudacaoTitulo = document.querySelector('.banner-destaque h2');
+    if (saudacaoTitulo) {
+        const horaAtual = new Date().getHours();
+        let saudacao = '';
+        if (horaAtual >= 5 && horaAtual < 12) saudacao = 'Bom dia, Arquivista!!';
+        else if (horaAtual >= 12 && horaAtual < 18) saudacao = 'Boa Tarde, Arquivista!!';
+        else saudacao = 'Boa Noite, Arquivista!!';
+        const textoOriginal = "Veja algumas das atualizações do nosso acervo enquanto você esteve fora...";
+        if(saudacaoTitulo && saudacaoTitulo.textContent.includes(textoOriginal)) {
+            saudacaoTitulo.textContent = `${saudacao} ${textoOriginal}`;
         }
-        const menuItens = document.querySelectorAll('.menu-navegacao ul li');
-        if (menuItens) {
-            menuItens.forEach(item => {
-                item.addEventListener('click', () => {
-                    const itemAtivoAtual = document.querySelector('.menu-navegacao li.ativo');
-                    if (itemAtivoAtual) itemAtivoAtual.classList.remove('ativo');
-                    item.classList.add('ativo');
-                });
+    }
+    const menuItens = document.querySelectorAll('.menu-navegacao ul li');
+    if (menuItens) {
+        menuItens.forEach(item => {
+            item.addEventListener('click', () => {
+                const itemAtivoAtual = document.querySelector('.menu-navegacao li.ativo');
+                if (itemAtivoAtual) itemAtivoAtual.classList.remove('ativo');
+                item.classList.add('ativo');
             });
-        }
-        // ... (outros scripts da inicial.html) ...
-    });
+        });
+    }
+});
 
+  // =======================================================
+    //      LÓGICA DA PÁGINA 'automacao.html' (IA E SALVAR)
     // =======================================================
-    //     LÓGICA DA PÁGINA 'automacao.html' (IA SÓ PARA IMAGEM)
-    // =======================================================
-    // **** Usando DOMContentLoaded ****
     document.addEventListener('DOMContentLoaded', function() {
         const btnSalvar = document.getElementById('btnSalvarArquivo');
-        if (btnSalvar) { // Só roda na automacao.html
-            console.log("DEBUG: Iniciando lógica da página automacao.html (DOMContentLoaded).");
+        
+        // Só executa se estivermos na página de automação (onde o botão salvar existe)
+        if (btnSalvar) { 
+            console.log("DEBUG: Iniciando lógica da página automacao.html.");
+            
+            // Captura todos os campos de uma vez para que tanto a IA quanto o Salvar os vejam
             const nomeArquivoInput = document.getElementById('nomeArquivo');
             const localizacaoInput = document.getElementById('localizacaoArquivo');
             const tipoArquivoInput = document.getElementById('tipoArquivo');
@@ -137,408 +175,350 @@ function aplicarFiltrosDeMenu(cargo) {
             const textoExtraidoIA = document.getElementById('textoExtraidoIA');
             const iaStatus = document.getElementById('iaStatus');
 
-           // =======================================================
-        // LÓGICA DO ANALISTA DE DOCUMENTOS (SMART CLASSIFIER)
-        // =======================================================
-        if (btnProcessarIA) {
-            btnProcessarIA.addEventListener('click', function() {
-                if (!arquivoUploadInput || !arquivoUploadInput.files[0]) {
-                    alert("Por favor, anexe um arquivo (PDF, JPG ou PNG) primeiro.");
-                    return;
-                }
+            // --- 1. LÓGICA DO PROCESSAMENTO COM IA ---
+            if (btnProcessarIA) {
+                btnProcessarIA.addEventListener('click', function() {
+                    if (!arquivoUploadInput || !arquivoUploadInput.files[0]) {
+                        alert("Por favor, anexe um arquivo primeiro."); return;
+                    }
+                    const file = arquivoUploadInput.files[0];
+                    if(iaStatus) { iaStatus.innerText = "Analisando contexto..."; iaStatus.style.color = "#ffc107"; }
+                    btnProcessarIA.disabled = true;
 
+                    setTimeout(() => {
+                        const nomeOriginal = file.name;
+                        let nomeLimpo = nomeOriginal.replace(/\.[^/.]+$/, "").replace(/[-_]/g, " ");
+                        nomeLimpo = nomeLimpo.replace(/\b\w/g, l => l.toUpperCase());
+
+                        if (nomeArquivoInput) nomeArquivoInput.value = nomeLimpo;
+                        if(iaStatus) { iaStatus.innerText = "Análise concluída!"; iaStatus.style.color = "#28a745"; }
+                        btnProcessarIA.innerText = "Processar com IA";
+                        btnProcessarIA.disabled = false;
+                    }, 1500); 
+                });
+            }
+
+            // --- 2. LÓGICA DO BOTÃO SALVAR ---
+            btnSalvar.addEventListener('click', function() {
+                const nome = nomeArquivoInput.value;
+                const local = localizacaoInput.value;
+                const visibilidade = document.getElementById('visibilidadeArquivo')?.value || 'simples';
                 const file = arquivoUploadInput.files[0];
-                
-                // Muda o visual do botão para mostrar que está "pensando"
-                if(iaStatus) {
-                    iaStatus.innerText = "Analisando contexto do documento...";
-                    iaStatus.style.color = "#ffc107"; // Amarelo
-                }
-                btnProcessarIA.disabled = true;
-                btnProcessarIA.innerText = "Processando...";
 
-                // Simulamos um pequeno tempo de carregamento (1.5s) para o efeito visual de IA na apresentação
-                setTimeout(() => {
-                    const nomeOriginal = file.name;
-                    const nomeMinusculo = nomeOriginal.toLowerCase();
-                    const tipoMime = file.type;
+                if (!nome || !local) { alert("Preencha Nome e Localização!"); return; }
+                if (!window.idEmpresa) { alert("Erro de Sessão: ID da Empresa não encontrado."); return; }
 
-                    // 1. FORMATA O NOME DO ARQUIVO (Tira .pdf, hifens e capitaliza)
-                    let nomeLimpo = nomeOriginal.replace(/\.[^/.]+$/, "").replace(/[-_]/g, " ");
-                    nomeLimpo = nomeLimpo.replace(/\b\w/g, l => l.toUpperCase());
+                btnSalvar.innerText = "Salvando...";
+                btnSalvar.disabled = true;
 
-                    // 2. IDENTIFICA O TIPO
-                    let tipoSugerido = "Outros";
-                    if (tipoMime.includes("pdf")) tipoSugerido = "Documento (PDF)";
-                    else if (tipoMime.includes("image")) tipoSugerido = "Imagem (JPG/PNG)";
-
-                    // 3. ANÁLISE SEMÂNTICA (A "mágica" de descobrir para que serve)
-                    let descSugerida = "Documento genérico catalogado no acervo. Requer análise manual para detalhamento.";
-
-                    if (nomeMinusculo.includes("curriculo") || nomeMinusculo.includes("cv")) {
-                        descSugerida = "Classificação: Currículo Vitae.\nPara que serve: Armazenar o histórico profissional, acadêmico e dados de contato do indivíduo para fins de recrutamento, seleção ou registro interno.";
-                    } else if (nomeMinusculo.includes("contrato")) {
-                        descSugerida = "Classificação: Documento Legal (Contrato).\nPara que serve: Firmar acordos entre partes, estabelecendo cláusulas, deveres e direitos legais. Documento de guarda permanente ou de longo prazo.";
-                    } else if (nomeMinusculo.includes("relatorio")) {
-                        descSugerida = "Classificação: Relatório Operacional/Gerencial.\nPara que serve: Compilar dados, métricas e análises de um período específico para auxiliar na tomada de decisão da gestão.";
-                    } else if (nomeMinusculo.includes("projeto") || nomeMinusculo.includes("tcc")) {
-                        descSugerida = "Classificação: Trabalho Acadêmico / Projeto Técnico.\nPara que serve: Registrar pesquisas, metodologias e conclusões sobre um tema específico. Fonte de consulta bibliográfica.";
-                    } else if (nomeMinusculo.includes("planta") || nomeMinusculo.includes("mapa")) {
-                        descSugerida = "Classificação: Documento Cartográfico / Arquitetônico.\nPara que serve: Guiar construções, reformas ou análises espaciais da unidade.";
-                    } else if (nomeMinusculo.includes("rg") || nomeMinusculo.includes("cpf") || nomeMinusculo.includes("documento")) {
-                        descSugerida = "Classificação: Documento de Identificação Pessoal.\nPara que serve: Comprovar a identidade de um indivíduo. ATENÇÃO: Contém dados sensíveis protegidos pela LGPD.";
-                    }
-
-                    // 4. AUTO-PREENCHE O FORMULÁRIO
-                    if (nomeArquivoInput) nomeArquivoInput.value = nomeLimpo;
-                    if (tipoArquivoInput) tipoArquivoInput.value = tipoSugerido;
-                    if (textoExtraidoIA) textoExtraidoIA.value = descSugerida;
-
-                    // Finaliza o visual
-                    if(iaStatus) {
-                        iaStatus.innerText = "Análise concluída com sucesso!";
-                        iaStatus.style.color = "#28a745"; // Verde
-                    }
-                    btnProcessarIA.innerText = "Processar com IA";
-                    btnProcessarIA.disabled = false;
-
-                }, 1500); // Fim do delay
-            });
-        }
-
-
-         // ==========================================
-        // LÓGICA DO BOTÃO SALVAR (AGORA SALVA O ANEXO)
-        // ==========================================
-        btnSalvar.addEventListener('click', function() {
-            const nome = nomeArquivoInput.value;
-            const local = localizacaoInput.value;
-            const tipo = tipoArquivoInput.value;
-            const textoIA = textoExtraidoIA ? textoExtraidoIA.value : null;
-            const file = arquivoUploadInput.files[0]; // Captura o arquivo anexado!
-
-            if (!nome || !local) { 
-                alert("Preencha Nome e Localização!"); 
-                return; 
-            }
-
-            btnSalvar.innerText = "Salvando...";
-            btnSalvar.disabled = true;
-
-            // Se o usuário anexou um arquivo, converte e salva
-            if (file) {
-                const reader = new FileReader();
-                reader.readAsDataURL(file); // Converte para Base64
-                reader.onload = function() {
-                    salvarNoBanco(nome, local, tipo, textoIA, reader.result); // Passa o arquivo!
-                };
-                reader.onerror = function() {
-                    alert("Erro ao ler o arquivo.");
-                    btnSalvar.innerText = "Salvar e Gerar QR Code";
-                    btnSalvar.disabled = false;
-                };
-            } else {
-                // Se não anexou nada, salva sem anexo
-                salvarNoBanco(nome, local, tipo, textoIA, null);
-            }
-        });
-
-        // A função que manda pro Firebase
-        function salvarNoBanco(nome, local, tipo, textoIA, anexoBase64) {
-            const arquivosRef = db.ref('arquivos');
-            arquivosRef.push({
-                nome: nome,
-                localizacao: local,
-                tipo: tipo,
-                dataCadastro: firebase.database.ServerValue.TIMESTAMP,
-                anexoUrl: anexoBase64, // <-- ISSO É O QUE FAZ OS BOTÕES APARECEREM!
-                textoExtraido: textoIA || null 
-            })
-            .then((snapshot) => {
-                const docId = snapshot.key;
-                
-                // Limpa os campos
-                if(nomeArquivoInput) nomeArquivoInput.value = "";
-                if(localizacaoInput) localizacaoInput.value = "";
-                if(arquivoUploadInput) arquivoUploadInput.value = null;
-                if(textoExtraidoIA) textoExtraidoIA.value = "";
-                if(iaStatus) iaStatus.innerText = "";
-                
-                // Gera o QR Code
-                if(qrcodeDiv) qrcodeDiv.innerHTML = "";
-                const urlParaQR = `${window.location.origin}/html/arquivo.html?id=${docId}`;
-                new QRCode(qrcodeDiv, { text: urlParaQR, width: 150, height: 150 });
-                
-                alert("Arquivo salvo com sucesso!");
-                btnSalvar.innerText = "Salvar e Gerar QR Code";
-                btnSalvar.disabled = false;
-            })
-            .catch((error) => {
-                 console.error("Erro ao salvar:", error);
-                 btnSalvar.innerText = "Salvar e Gerar QR Code";
-                 btnSalvar.disabled = false;
-             });
-        }
-
-
-        }
-    });
-
-    // =======================================================
-    //     LÓGICA DA PÁGINA 'listar.html'
-    // =======================================================
-    document.addEventListener('DOMContentLoaded', function() {
-        const containerDaLista = document.getElementById('containerDaLista');
-        if (containerDaLista) {
-            console.log("DEBUG: Iniciando lógica da página listar.html.");
-            const arquivosRef = db.ref('arquivos');
-            arquivosRef.once('value', (snapshot) => {
-                const dados = snapshot.val();
-                containerDaLista.innerHTML = "";
-                if (dados) {
-                    console.log("DEBUG: Montando lista...");
-                    Object.keys(dados).forEach(key => {
-                        const arquivo = dados[key];
-                        const itemHtml = `
-                            <div class="item-lista-arquivo">
-                                <div class="item-info">
-                                    <strong>Nome:</strong> ${arquivo.nome || 'Sem nome'} <br>
-                                    <strong>Local:</strong> ${arquivo.localizacao || 'Não informado'}
-                                </div>
-                                <div class="item-link">
-                                    <a href="arquivo.html?id=${key}" class="btn-detalhes">
-                                        Ver Detalhes
-                                    </a>
-                                </div>
-                            </div>
-                        `;
-                        containerDaLista.innerHTML += itemHtml;
+                const finalizarSalvamento = (base64) => {
+                    db.ref('workspaces/' + window.idEmpresa + '/arquivos').push({
+                        nome: nome,
+                        localizacao: local,
+                        tipo: tipoArquivoInput.value,
+                        visibilidade: visibilidade,
+                        anexoUrl: base64,
+                        textoExtraido: textoExtraidoIA ? textoExtraidoIA.value : null,
+                        dataCadastro: firebase.database.ServerValue.TIMESTAMP
+                    }).then((snap) => {
+                        if(qrcodeDiv) {
+                            qrcodeDiv.innerHTML = "";
+                            const urlParaQR = `${window.location.origin}/html/arquivo.html?id=${snap.key}`;
+                            new QRCode(qrcodeDiv, { text: urlParaQR, width: 150, height: 150 });
+                        }
+                        alert("Arquivo salvo com sucesso!");
+                        btnSalvar.innerText = "Salvar e Gerar QR Code";
+                        btnSalvar.disabled = false;
+                        
+                        // Limpa os campos
+                        if(nomeArquivoInput) nomeArquivoInput.value = "";
+                        if(localizacaoInput) localizacaoInput.value = "";
+                        if(arquivoUploadInput) arquivoUploadInput.value = null;
                     });
-                } else {
-                    containerDaLista.innerHTML = "<p>Nenhum arquivo cadastrado.</p>";
-                }
-            }).catch((error) => { console.error("Erro lista:", error); });
-        }
-    });
+                };
 
-    // =======================================================
-//     LÓGICA DA PÁGINA 'arquivo.html' (TUDO INTEGRADO)
+                if (file) {
+                    const reader = new FileReader();
+                    reader.readAsDataURL(file);
+                    reader.onload = () => finalizarSalvamento(reader.result);
+                } else {
+                    finalizarSalvamento(null);
+                }
+            });
+        } 
+    }); // Fim do bloco principal da automação
+            // =======================================================
+//     LÓGICA DA PÁGINA 'listar.html' (COM TRAVA DE SIGILO)
 // =======================================================
 document.addEventListener('DOMContentLoaded', function() {
-    const nomeDisplay = document.getElementById('nomeArquivoDisplay');
+    const containerDaLista = document.getElementById('containerDaLista');
     
-    if (nomeDisplay) {
-        const params = new URLSearchParams(window.location.search);
-        const arquivoId = params.get('id');
-
-        if (!arquivoId) {
-            nomeDisplay.innerText = "Erro: ID não encontrado na URL.";
+    if (containerDaLista) {
+        console.log("DEBUG: Iniciando listagem segura...");
+        
+        // Bloqueio de segurança caso a sessão não esteja carregada
+        if (!window.idEmpresa) {
+            containerDaLista.innerHTML = "<p>Erro: Sessão não identificada. Recarregue a página.</p>";
             return;
         }
 
-        const arquivoRef = db.ref('arquivos/' + arquivoId);
-        let dadosArquivoAtual = null;
+        // Busca apenas na gaveta da empresa atual
+        const arquivosRef = db.ref('workspaces/' + window.idEmpresa + '/arquivos');
+        
+        arquivosRef.once('value', (snapshot) => {
+            const dados = snapshot.val();
+            containerDaLista.innerHTML = ""; // Limpa a tela
+            
+            if (dados) {
+                Object.keys(dados).forEach(key => {
+                    const arquivo = dados[key];
+                    
+                    // --- O DECRETO DE SIGILO ---
+                    // Se o arquivo for CONFIDENCIAL e quem está vendo NÃO for o CHEFE:
+                    if (arquivo.visibilidade === 'confidencial' && window.cargoAtual !== 'chefe') {
+                        return; // O sistema ignora este arquivo e pula para o próximo
+                    }
 
-        // 1. CARREGAR DADOS
-        arquivoRef.on('value', (snapshot) => {
-            const data = snapshot.val();
-            if (data) {
-                dadosArquivoAtual = data;
-                
-                // Preenche os dados
-                nomeDisplay.innerText = data.nome;
-                document.getElementById('localizacaoAtualDisplay').innerText = data.localizacao;
-                document.getElementById('tipoArquivoDisplay').innerText = data.tipo;
-                document.getElementById('dataCadastroDisplay').innerText = new Date(data.dataCadastro).toLocaleString('pt-BR');
+                    // Se passou pela trava, desenha o item na tela
+                    const iconeSigilo = arquivo.visibilidade === 'confidencial' ? '🔒' : '📂';
+                    
+                    const itemHtml = `
+                        <div class="item-lista-arquivo" style="${arquivo.visibilidade === 'confidencial' ? 'border-left: 4px solid #ff4757;' : ''}">
+                            <div class="item-info">
+                                <span style="margin-right: 8px;">${iconeSigilo}</span>
+                                <strong>Nome:</strong> ${arquivo.nome || 'Sem nome'} <br>
+                                <strong>Local:</strong> ${arquivo.localizacao || 'Não informado'}
+                                ${arquivo.visibilidade === 'confidencial' ? '<br><small style="color: #ff4757; font-weight: bold;">ACESSO RESTRITO</small>' : ''}
+                            </div>
+                            <div class="item-link">
+                                <a href="arquivo.html?id=${key}" class="btn-detalhes">
+                                    Ver Detalhes
+                                </a>
+                            </div>
+                        </div>
+                    `;
+                    containerDaLista.innerHTML += itemHtml;
+                });
 
-                // IA
-                if (data.textoExtraido) {
-                    document.getElementById('areaTextoIA').style.display = 'block';
-                    document.getElementById('textoIADisplay').value = data.textoExtraido;
-                }
-
-                // Botões de Ver e Baixar
-                if (data.anexoUrl) {
-                    document.getElementById('btnVisualizar').style.display = 'inline-block';
-                    document.getElementById('btnBaixar').style.display = 'inline-block';
-                }
-
-                // Gera QR Code na tela de detalhes
-                const qrcodeDiv = document.getElementById('qrcodeDetalhes');
-                if (qrcodeDiv) {
-                    qrcodeDiv.innerHTML = ""; 
-                    const urlParaQR = window.location.href; // A própria URL atual
-                    new QRCode(qrcodeDiv, { text: urlParaQR, width: 128, height: 128 });
+                // Caso a empresa tenha arquivos, mas todos sejam confidenciais para o usuário atual
+                if (containerDaLista.innerHTML === "") {
+                    containerDaLista.innerHTML = "<p>Nenhum arquivo disponível para o seu nível de acesso.</p>";
                 }
 
             } else {
-                nomeDisplay.innerText = "Arquivo não encontrado ou deletado.";
+                containerDaLista.innerHTML = "<p>Nenhum arquivo cadastrado no acervo da sua empresa.</p>";
             }
+        }).catch((error) => { 
+            console.error("Erro ao listar:", error);
+            containerDaLista.innerHTML = "<p>Erro ao carregar acervo. Verifique sua conexão.</p>";
         });
-
-        // 2. BOTÃO DELETAR
-        const btnDeletar = document.getElementById('btnDeletar');
-        if (btnDeletar) {
-            btnDeletar.addEventListener('click', function() {
-                if (confirm("CUIDADO: Tem certeza que deseja DELETAR permanentemente este registro?")) {
-                    arquivoRef.remove().then(() => {
-                        alert("Arquivo deletado!");
-                        window.location.href = "listar.html";
-                    }).catch(error => alert("Erro ao deletar: " + error));
-                }
-            });
-        }
-
-        // 3. BOTÃO VISUALIZAR
-        const areaVisualizador = document.getElementById('areaVisualizador');
-        const iframeVisualizador = document.getElementById('iframeVisualizador');
-        
-        document.getElementById('btnVisualizar').addEventListener('click', function() {
-            if (dadosArquivoAtual && dadosArquivoAtual.anexoUrl) {
-                iframeVisualizador.src = dadosArquivoAtual.anexoUrl;
-                areaVisualizador.style.display = 'block';
-            }
-        });
-
-        document.getElementById('btnFecharVisualizador').addEventListener('click', function() {
-            areaVisualizador.style.display = 'none';
-            iframeVisualizador.src = "";
-        });
-
-        // 4. BOTÃO BAIXAR
-        document.getElementById('btnBaixar').addEventListener('click', function() {
-            if (dadosArquivoAtual && dadosArquivoAtual.anexoUrl) {
-                let extensao = ".pdf";
-                if (dadosArquivoAtual.anexoUrl.includes("image/jpeg")) extensao = ".jpg";
-                if (dadosArquivoAtual.anexoUrl.includes("image/png")) extensao = ".png";
-
-                const linkDownload = document.createElement("a");
-                linkDownload.href = dadosArquivoAtual.anexoUrl;
-                linkDownload.download = dadosArquivoAtual.nome + extensao;
-                document.body.appendChild(linkDownload);
-                linkDownload.click();
-                document.body.removeChild(linkDownload);
-            }
-        });
-
-        // 5. ATUALIZAR LOCALIZAÇÃO
-        const btnAtualizar = document.getElementById('btnAtualizarLocal');
-        const novaLocalizacaoInput = document.getElementById('novaLocalizacaoInput');
-
-        if (btnAtualizar && novaLocalizacaoInput) {
-            btnAtualizar.addEventListener('click', function() {
-                const novaLocalizacao = novaLocalizacaoInput.value;
-                if (!novaLocalizacao) {
-                    alert("Digite a nova localização.");
-                    return;
-                }
-                btnAtualizar.innerText = "Salvando...";
-                arquivoRef.update({ localizacao: novaLocalizacao })
-                .then(() => {
-                    alert("Localização atualizada com sucesso!");
-                    novaLocalizacaoInput.value = "";
-                    btnAtualizar.innerText = "Salvar Novo Local";
-                })
-                .catch((error) => {
-                    alert("Erro ao atualizar: " + error);
-                    btnAtualizar.innerText = "Salvar Novo Local";
-                });
-            });
-        }
     }
 });
+   
+// =======================================================
+    //     LÓGICA DA PÁGINA 'arquivo.html' (TUDO INTEGRADO + PROTEÇÃO)
+    // =======================================================
+    document.addEventListener('DOMContentLoaded', function() {
+        const nomeDisplay = document.getElementById('nomeArquivoDisplay');
+        
+        if (nomeDisplay) {
+            const params = new URLSearchParams(window.location.search);
+            const arquivoId = params.get('id');
+
+            if (!arquivoId || !window.idEmpresa) {
+                nomeDisplay.innerText = "Erro: Arquivo não encontrado ou Sessão expirada.";
+                return;
+            }
+
+            // --- A MÁGICA 3: ENCONTRA O DETALHE NA GAVETA DA EMPRESA ---
+            const arquivoRef = db.ref('workspaces/' + window.idEmpresa + '/arquivos/' + arquivoId);
+            let dadosArquivoAtual = null;
+
+            arquivoRef.on('value', (snapshot) => {
+                const data = snapshot.val();
+                
+                if (data) {
+                    // ==========================================
+                    // 🛡️ O BLOQUEIO DE SEGURANÇA CONTRA LINK DIRETO
+                    // ==========================================
+                    if (data.visibilidade === 'confidencial' && window.cargoAtual !== 'chefe') {
+                        alert("⚠️ ACESSO NEGADO: Este documento é confidencial e restrito ao Arquivista Chefe.");
+                        // Destrói a tela inteira para esconder os dados e expulsa o usuário
+                        document.body.innerHTML = "<h2 style='text-align: center; margin-top: 20%; color: #ff4757; font-family: sans-serif;'>Acesso Negado. Redirecionando...</h2>";
+                        window.location.href = "listar.html";
+                        return; // O 'return' garante que o código abaixo NÃO seja executado!
+                    }
+                    // ==========================================
+
+                    dadosArquivoAtual = data;
+                    nomeDisplay.innerText = data.nome;
+                    document.getElementById('localizacaoAtualDisplay').innerText = data.localizacao;
+                    document.getElementById('tipoArquivoDisplay').innerText = data.tipo;
+                    document.getElementById('dataCadastroDisplay').innerText = new Date(data.dataCadastro).toLocaleString('pt-BR');
+
+                    if (data.textoExtraido) {
+                        document.getElementById('areaTextoIA').style.display = 'block';
+                        document.getElementById('textoIADisplay').value = data.textoExtraido;
+                    }
+
+                    if (data.anexoUrl) {
+                        document.getElementById('btnVisualizar').style.display = 'inline-block';
+                        document.getElementById('btnBaixar').style.display = 'inline-block';
+                    }
+
+                    const qrcodeDiv = document.getElementById('qrcodeDetalhes');
+                    if (qrcodeDiv) {
+                        qrcodeDiv.innerHTML = ""; 
+                        const urlParaQR = window.location.href; 
+                        new QRCode(qrcodeDiv, { text: urlParaQR, width: 128, height: 128 });
+                    }
+                } else {
+                    nomeDisplay.innerText = "Arquivo não encontrado ou deletado.";
+                }
+            });
+
+            const btnDeletar = document.getElementById('btnDeletar');
+            if (btnDeletar) {
+                btnDeletar.addEventListener('click', function() {
+                    if (confirm("CUIDADO: Tem certeza que deseja DELETAR permanentemente este registro?")) {
+                        arquivoRef.remove().then(() => {
+                            alert("Arquivo deletado!");
+                            window.location.href = "listar.html";
+                        }).catch(error => alert("Erro ao deletar: " + error));
+                    }
+                });
+            }
+
+            const areaVisualizador = document.getElementById('areaVisualizador');
+            const iframeVisualizador = document.getElementById('iframeVisualizador');
+            
+            document.getElementById('btnVisualizar').addEventListener('click', function() {
+                if (dadosArquivoAtual && dadosArquivoAtual.anexoUrl) {
+                    iframeVisualizador.src = dadosArquivoAtual.anexoUrl;
+                    areaVisualizador.style.display = 'block';
+                }
+            });
+
+            document.getElementById('btnFecharVisualizador').addEventListener('click', function() {
+                areaVisualizador.style.display = 'none';
+                iframeVisualizador.src = "";
+            });
+
+            document.getElementById('btnBaixar').addEventListener('click', function() {
+                if (dadosArquivoAtual && dadosArquivoAtual.anexoUrl) {
+                    let extensao = ".pdf";
+                    if (dadosArquivoAtual.anexoUrl.includes("image/jpeg")) extensao = ".jpg";
+                    if (dadosArquivoAtual.anexoUrl.includes("image/png")) extensao = ".png";
+
+                    const linkDownload = document.createElement("a");
+                    linkDownload.href = dadosArquivoAtual.anexoUrl;
+                    linkDownload.download = dadosArquivoAtual.nome + extensao;
+                    document.body.appendChild(linkDownload);
+                    linkDownload.click();
+                    document.body.removeChild(linkDownload);
+                }
+            });
+
+            const btnAtualizar = document.getElementById('btnAtualizarLocal');
+            const novaLocalizacaoInput = document.getElementById('novaLocalizacaoInput');
+
+            if (btnAtualizar && novaLocalizacaoInput) {
+                btnAtualizar.addEventListener('click', function() {
+                    const novaLocalizacao = novaLocalizacaoInput.value;
+                    if (!novaLocalizacao) { alert("Digite a nova localização."); return; }
+                    btnAtualizar.innerText = "Salvando...";
+                    arquivoRef.update({ localizacao: novaLocalizacao })
+                    .then(() => {
+                        alert("Localização atualizada com sucesso!");
+                        novaLocalizacaoInput.value = "";
+                        btnAtualizar.innerText = "Salvar Novo Local";
+                    })
+                    .catch((error) => {
+                        alert("Erro ao atualizar: " + error);
+                        btnAtualizar.innerText = "Salvar Novo Local";
+                    });
+                });
+            }
+        }
+    });
+
     // =======================================================
     //     LÓGICA DA PÁGINA 'monitor.html' (LER TEMPERATURA) - ATUALIZADO 2 SALAS!
     // =======================================================
     document.addEventListener('DOMContentLoaded', function() {
-        
-        // Procura o elemento da SALA 1. Se ele existir, estamos na página monitor.html
         const tempDisplaySala1 = document.getElementById('temp-display-sala1');
         
-        if (tempDisplaySala1) { // Estamos na página monitor.html
+        if (tempDisplaySala1) { 
             console.log("DEBUG: Iniciando lógica da página monitor.html (2 salas).");
 
-            // Função auxiliar para não repetir código
             function atualizarPainel(temperatura, display, unit, status) {
                 if (temperatura !== null && !isNaN(temperatura)) {
-                    display.innerText = temperatura.toFixed(1); // Mostra com 1 casa decimal
-                    
+                    display.innerText = temperatura.toFixed(1); 
                     if (temperatura < 18) {
                         status.innerText = "Status: Muito Frio";
-                        display.style.color = "#00ccff"; // Azul
-                        unit.style.color = "#00ccff";
+                        display.style.color = "#00ccff"; unit.style.color = "#00ccff";
                     } else if (temperatura > 26) {
                         status.innerText = "Status: Muito Quente!";
-                        display.style.color = "#ff6600"; // Laranja
-                        unit.style.color = "#ff6600";
+                        display.style.color = "#ff6600"; unit.style.color = "#ff6600";
                     } else {
                         status.innerText = "Status: Ideal";
-                        display.style.color = "#00ff00"; // Verde
-                        unit.style.color = "#00ff00";
+                        display.style.color = "#00ff00"; unit.style.color = "#00ff00";
                     }
                 } else {
                     display.innerText = "--";
                     status.innerText = "Sem dados do sensor.";
-                    display.style.color = "#aaa";
-                    unit.style.color = "#aaa";
+                    display.style.color = "#aaa"; unit.style.color = "#aaa";
                 }
             }
 
-            // --- Lógica para a SALA 1 ---
             const tempStatusSala1 = document.getElementById('temp-status-sala1');
             const tempUnitSala1 = document.getElementById('temp-unit-sala1');
-            const tempRefSala1 = db.ref('sensores/sala_principal/temperatura'); // Caminho 1
+            const tempRefSala1 = db.ref('sensores/sala_principal/temperatura'); 
 
             tempRefSala1.on('value', (snapshot) => {
-                const temperatura = snapshot.val();
-                console.log("DEBUG: Novo dado de temperatura (Sala 1) recebido:", temperatura);
-                atualizarPainel(temperatura, tempDisplaySala1, tempUnitSala1, tempStatusSala1);
-                
+                atualizarPainel(snapshot.val(), tempDisplaySala1, tempUnitSala1, tempStatusSala1);
             }, (errorObject) => {
-                console.error("DEBUG: Erro ao ler (Sala 1):", errorObject.code);
                 if(tempStatusSala1) tempStatusSala1.innerText = "Erro de conexão.";
                 if(tempDisplaySala1) tempDisplaySala1.innerText = "X";
             });
 
-            // --- Lógica para a SALA 2 ---
             const tempDisplaySala2 = document.getElementById('temp-display-sala2');
             const tempStatusSala2 = document.getElementById('temp-status-sala2');
             const tempUnitSala2 = document.getElementById('temp-unit-sala2');
-            const tempRefSala2 = db.ref('sensores/sala_secundaria/temperatura'); // Caminho 2
+            const tempRefSala2 = db.ref('sensores/sala_secundaria/temperatura'); 
 
             tempRefSala2.on('value', (snapshot) => {
-                const temperatura = snapshot.val();
-                console.log("DEBUG: Novo dado de temperatura (Sala 2) recebido:", temperatura);
-                atualizarPainel(temperatura, tempDisplaySala2, tempUnitSala2, tempStatusSala2);
-
+                atualizarPainel(snapshot.val(), tempDisplaySala2, tempUnitSala2, tempStatusSala2);
             }, (errorObject) => {
-                console.error("DEBUG: Erro ao ler (Sala 2):", errorObject.code);
                 if(tempStatusSala2) tempStatusSala2.innerText = "Erro de conexão.";
                 if(tempDisplaySala2) tempDisplaySala2.innerText = "X";
             });
         }
-    });
-    // =======================================================
-    //     LÓGICA DO BOTÃO "SAIR" (LOGOUT)
-    // =======================================================
-    document.addEventListener('DOMContentLoaded', function() {
-        const btnLogout = document.getElementById('btn-logout');
-        if (btnLogout) {
-            console.log("DEBUG: Botão Logout encontrado.");
-            btnLogout.addEventListener('click', function(e) {
-                e.preventDefault();
-                console.log("Usuário clicou em Sair...");
-                auth.signOut().then(() => {
-                    console.log("Logout feito com sucesso.");
-                    window.location.href = "index.html";
-                }).catch((error) => {
-                    console.error("Erro no logout:", error);
-                });
+    }); 
+ // =======================================================
+// LÓGICA DO BOTÃO "SAIR" (LOGOUT)
+// =======================================================
+document.addEventListener('DOMContentLoaded', function() {
+    const btnSair = document.getElementById('btn-logout');
+
+    if (btnSair) {
+        btnSair.addEventListener('click', function(e) {
+            e.preventDefault(); 
+            btnSair.style.opacity = "0.5"; 
+            
+            localStorage.removeItem('userCargo');
+            
+            auth.signOut().then(() => {
+                // A MÁGICA ESTÁ AQUI: ../ manda ele voltar pra pasta raiz!
+                window.location.replace("../index.html"); 
+            }).catch((error) => {
+                console.error("Erro ao sair do sistema:", error);
+                alert("Erro ao tentar sair. Tente novamente.");
+                btnSair.style.opacity = "1";
             });
-        } else {
-            console.log("DEBUG: Botão Logout NÃO encontrado.");
-        }
-    });
+        });
+    }
+});
 
     // =======================================================
     //     LÓGICA DA PÁGINA 'suporte.html' (ABRIR CHAMADO)
@@ -1003,8 +983,9 @@ if (emailUsuarioConta) {
                     let corBadge = "#95a5a6"; // Cinza
                     let nomeCargo = "Funcionário";
                     
-                    if (user.cargo === 'chefe') { corBadge = "#e74c3c"; nomeCargo = "Arquivista Chefe"; }
-                    if (user.cargo === 'ti') { corBadge = "#3498db"; nomeCargo = "Equipe de TI"; }
+                   if (user.cargo === 'chefe') { corBadge = "#e74c3c"; nomeCargo = "Arquivista Chefe"; }
+else if (user.cargo === 'ti') { corBadge = "#3498db"; nomeCargo = "Equipe de TI"; }
+else if (user.cargo === 'consulta') { corBadge = "#f39c12"; nomeCargo = "Consulta"; } // Cor laranja
 
                     listaEquipe.innerHTML += `
                         <div style="background-color: #f8f9fa; padding: 12px 15px; border-radius: 8px; border-left: 4px solid ${corBadge}; display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
@@ -1019,66 +1000,85 @@ if (emailUsuarioConta) {
         });
     }
 
-    // --- 3. CRIAR USUÁRIO ---
-    const btnCriarUsuario = document.getElementById('btnCriarUsuario');
-    if (btnCriarUsuario) {
-        btnCriarUsuario.addEventListener('click', function() {
-            const email = document.getElementById('novoEmailUser').value;
-            const senha = document.getElementById('novaSenhaUser').value; 
-            const cargo = document.getElementById('nivelAcessoUser').value;
+  // --- 3. CRIAR USUÁRIO ---
 
-            if (!email || !senha) { alert("Preencha o e-mail e a senha."); return; }
-            if (senha.length < 6) { alert("A senha deve ter no mínimo 6 caracteres."); return; }
+// Adiciona as opções de cargo no select, incluindo o novo usuário de Consulta
+setTimeout(() => {
+    const selectNivel = document.getElementById('nivelAcessoUser');
+    if (selectNivel) {
+        selectNivel.innerHTML = `
+            <option value="consulta">Usuário de Consulta (Apenas visualização)</option>
+            <option value="funcionario">Funcionário / Arquivista</option>
+            <option value="ti">Equipe de TI</option>
+            <option value="chefe">Arquivista Chefe</option>
+        `;
+    }
+}, 1000);
 
-            btnCriarUsuario.innerText = "Processando...";
-            btnCriarUsuario.disabled = true;
+const btnCriarUsuario = document.getElementById('btnCriarUsuario');
+if (btnCriarUsuario) {
+    btnCriarUsuario.addEventListener('click', function() {
+        // ---> TRAVA DE SEGURANÇA: SÓ O CHEFE PASSA DAKI <---
+        if (window.cargoAtual !== 'chefe') {
+            alert("Acesso Negado: Apenas o Arquivista Chefe tem permissão para criar novos usuários.");
+            return; // O 'return' cancela tudo e impede a criação da conta
+        }
+        // ---------------------------------------------------
 
-            // Cria o App Secundário com try/catch
-            let appSecundario;
-            try {
-                appSecundario = firebase.app("AppCriador");
-            } catch (e) {
-                appSecundario = firebase.initializeApp(firebaseConfig, "AppCriador");
-            }
-            
-            const authSecundario = appSecundario.auth();
+        const email = document.getElementById('novoEmailUser').value;
+        const senha = document.getElementById('novaSenhaUser').value; 
+        const cargo = document.getElementById('nivelAcessoUser').value;
 
-            // Tenta criar na Autenticação
-            authSecundario.createUserWithEmailAndPassword(email, senha)
-                .then((userCredential) => {
-                    const novoUid = userCredential.user.uid;
+        if (!email || !senha) { alert("Preencha o e-mail e a senha."); return; }
+        if (senha.length < 6) { alert("A senha deve ter no mínimo 6 caracteres."); return; }
+
+        btnCriarUsuario.innerText = "Processando...";
+        btnCriarUsuario.disabled = true;
+
+        // Cria o App Secundário com try/catch
+        let appSecundario;
+        try {
+            appSecundario = firebase.app("AppCriador");
+        } catch (e) {
+            appSecundario = firebase.initializeApp(firebaseConfig, "AppCriador");
+        }
+        
+        const authSecundario = appSecundario.auth();
+
+        // Tenta criar na Autenticação
+        authSecundario.createUserWithEmailAndPassword(email, senha)
+            .then((userCredential) => {
+                const novoUid = userCredential.user.uid;
+                
+                // Tenta salvar no Banco de Dados
+                db.ref('usuarios/' + novoUid).set({
+                    email: email,
+                    cargo: cargo,
+                    dataCriacao: firebase.database.ServerValue.TIMESTAMP
+                }).then(() => {
+                    authSecundario.signOut();
+                    alert(`SUCESSO!\nO usuário ${email} foi criado como ${cargo}.`);
                     
-                    // Tenta salvar no Banco de Dados
-                    db.ref('usuarios/' + novoUid).set({
-                        email: email,
-                        cargo: cargo,
-                        dataCriacao: firebase.database.ServerValue.TIMESTAMP
-                    }).then(() => {
-                        authSecundario.signOut();
-                        alert(`SUCESSO!\nO usuário ${email} foi criado como ${cargo}.`);
-                        
-                        document.getElementById('novoEmailUser').value = "";
-                        document.getElementById('novaSenhaUser').value = ""; 
-                        
-                        btnCriarUsuario.innerText = "Criar Conta e Atribuir Permissões";
-                        btnCriarUsuario.disabled = false;
-                    }).catch((error) => {
-                        console.error("Erro no Banco:", error);
-                        alert("Usuário criado, mas houve erro de permissão no banco: " + error.message);
-                        btnCriarUsuario.innerText = "Criar Conta e Atribuir Permissões";
-                        btnCriarUsuario.disabled = false;
-                    });
-                })
-                .catch((error) => {
-                    console.error("Erro Auth:", error);
-                    alert("Erro ao criar: " + error.message);
+                    document.getElementById('novoEmailUser').value = "";
+                    document.getElementById('novaSenhaUser').value = ""; 
+                    
+                    btnCriarUsuario.innerText = "Criar Conta e Atribuir Permissões";
+                    btnCriarUsuario.disabled = false;
+                }).catch((error) => {
+                    console.error("Erro no Banco:", error);
+                    alert("Usuário criado, mas houve erro de permissão no banco: " + error.message);
                     btnCriarUsuario.innerText = "Criar Conta e Atribuir Permissões";
                     btnCriarUsuario.disabled = false;
                 });
-        });
-    }
-});
-
+            })
+            .catch((error) => {
+                console.error("Erro Auth:", error);
+                alert("Erro ao criar: " + error.message);
+                btnCriarUsuario.innerText = "Criar Conta e Atribuir Permissões";
+                btnCriarUsuario.disabled = false;
+            });
+    });
+}
 
 // =======================================================
 //     LÓGICA DA BARRA LATERAL DIREITA (PÁGINA INICIAL)
@@ -1138,6 +1138,220 @@ window.addEventListener('load', function() {
                 });
             } else {
                 listaUltimosArquivos.innerHTML = '<li style="text-align: center; color: #999; font-size: 12px;">Nenhum arquivo no acervo.</li>';
+            }
+        });
+    }
+})});
+
+// =======================================================
+// FUNCIONALIDADES DO CABEÇALHO (PESQUISA, SINO E CONFIG)
+// =======================================================
+document.addEventListener('DOMContentLoaded', function() {
+    
+    // 1. Clicar nos Ícones (Sino e Configurações)
+    const icones = document.querySelectorAll('.icones-cabecalho i');
+    if (icones.length >= 2) {
+        // Ícone 1 (Configurações / Sliders)
+        icones[0].style.cursor = 'pointer';
+        icones[0].addEventListener('click', function() {
+            window.location.href = 'configuracoes.html';
+        });
+
+        // Ícone 2 (Sino de Notificações)
+        icones[1].style.cursor = 'pointer';
+        icones[1].addEventListener('click', function() {
+            window.location.href = 'mensagem.html';
+        });
+    }
+
+    // 2. Funcionalidade de Pesquisa (Apertar Enter)
+    const inputPesquisa = document.querySelector('.barra-pesquisa input');
+    if (inputPesquisa) {
+        inputPesquisa.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') { 
+                e.preventDefault(); // Evita recarregar a tela do zero
+                const palavraBuscada = inputPesquisa.value.trim();
+                
+                if (palavraBuscada !== "") {
+                    // Joga o usuário para a página de listar com a palavra na URL
+                    window.location.href = `listar.html?busca=${encodeURIComponent(palavraBuscada)}`;
+                }
+            }
+        });
+    }
+});
+
+// =======================================================
+// LÓGICA DA BARRA DE PESQUISA (COM RECOMENDAÇÕES)
+// =======================================================
+document.addEventListener('DOMContentLoaded', function() {
+    const barraPesquisaContainer = document.querySelector('.cabecalho-principal .barra-pesquisa');
+    const inputPesquisa = document.querySelector('.cabecalho-principal .barra-pesquisa input');
+    
+    if (inputPesquisa && barraPesquisaContainer) {
+        
+        // --- DICIONÁRIO DE ROTAS ---
+        const rotasDoSistema = {
+            "inicio": "inicial.html", "home": "inicial.html",
+            "arquivos": "listar.html", "lista": "listar.html", "acervo": "listar.html",
+            "cadastro": "automacao.html", "cadastrar": "automacao.html", "novo": "automacao.html",
+            "suporte": "suporte.html", "chamado": "suporte.html",
+            "chamados": "painel-chamados.html",
+            "equipe": "configuracoes.html", "configurações": "configuracoes.html",
+            "relatório": "relatorio.html", "relatorio": "relatorio.html",
+            "auditoria": "seguranca.html", "segurança": "seguranca.html",
+            "temperatura": "monitor.html", "monitor": "monitor.html",
+            "mensagem": "mensagem.html", "notificação": "mensagem.html"
+        };
+
+        // --- FUNÇÃO DE SEGURANÇA E REDIRECIONAMENTO ---
+        function irParaPagina(paginaDestino) {
+            const cargo = window.cargoAtual; 
+            
+            // Travas de Segurança
+            if (cargo === 'consulta' && (paginaDestino.includes('automacao') || paginaDestino.includes('relatorio') || paginaDestino.includes('painel-chamados') || paginaDestino.includes('monitor') || paginaDestino.includes('seguranca') || paginaDestino.includes('configuracoes'))) {
+                alert("Acesso Negado: Você não tem permissão para acessar esta página."); return;
+            }
+            if (cargo === 'funcionario' && (paginaDestino.includes('relatorio') || paginaDestino.includes('painel-chamados') || paginaDestino.includes('monitor') || paginaDestino.includes('seguranca') || paginaDestino.includes('configuracoes'))) {
+                alert("Acesso Negado: Você não tem permissão para acessar esta página."); return;
+            }
+            if (cargo === 'ti' && (paginaDestino.includes('automacao') || paginaDestino.includes('relatorio') || paginaDestino.includes('seguranca') || paginaDestino.includes('configuracoes'))) {
+                alert("Acesso Negado: Você não tem permissão para acessar esta página."); return;
+            }
+
+            window.location.href = paginaDestino;
+        }
+
+        // --- 1. CRIAR O MENU DE RECOMENDAÇÕES ---
+        barraPesquisaContainer.style.position = 'relative'; // Segura o menu no lugar certo
+        
+        const menuRecomendacoes = document.createElement('div');
+        menuRecomendacoes.className = 'menu-recomendacoes-pesquisa';
+        
+        // HTML das opções que vão aparecer
+        menuRecomendacoes.innerHTML = `
+            <div class="titulo-recomenda">Sugestões Rápidas</div>
+            <ul style="list-style: none; padding: 0; margin: 0;">
+                <li data-link="automacao.html"><i class="fa-solid fa-file-circle-plus"></i> Cadastrar Novo Arquivo</li>
+                <li data-link="listar.html"><i class="fa-solid fa-folder-open"></i> Ver Acervo Completo</li>
+                <li data-link="painel-chamados.html"><i class="fa-solid fa-headset"></i> Painel de Chamados</li>
+                <li data-link="configuracoes.html"><i class="fa-solid fa-users"></i> Gerenciar Equipe</li>
+            </ul>
+        `;
+        barraPesquisaContainer.appendChild(menuRecomendacoes);
+
+        // --- 2. MOSTRAR E ESCONDER O MENU ---
+        inputPesquisa.addEventListener('focus', () => {
+            menuRecomendacoes.style.display = 'block';
+        });
+
+        // Esconde o menu se o usuário clicar em qualquer outro lugar da tela
+        document.addEventListener('click', (e) => {
+            if (!barraPesquisaContainer.contains(e.target)) {
+                menuRecomendacoes.style.display = 'none';
+            }
+        });
+
+        // --- 3. AÇÃO AO CLICAR EM UMA RECOMENDAÇÃO ---
+        const itensMenu = menuRecomendacoes.querySelectorAll('li');
+        itensMenu.forEach(item => {
+            item.addEventListener('click', function() {
+                const destino = this.getAttribute('data-link');
+                menuRecomendacoes.style.display = 'none';
+                inputPesquisa.value = ""; 
+                irParaPagina(destino); // Manda o usuário (se ele tiver permissão)
+            });
+        });
+
+        // --- 4. AÇÃO AO DIGITAR E APERTAR ENTER ---
+        inputPesquisa.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') { 
+                e.preventDefault(); 
+                const busca = inputPesquisa.value.trim().toLowerCase();
+                if (busca !== "") {
+                    const paginaDestino = rotasDoSistema[busca];
+                    if (paginaDestino) {
+                        irParaPagina(paginaDestino);
+                    } else {
+                        alert(`Página "${inputPesquisa.value}" não encontrada. \nTente: "cadastro", "arquivos", "suporte", "equipe", etc.`);
+                    }
+                }
+            }
+        });
+    }
+});
+
+// =======================================================
+// LÓGICA DA BARRA LATERAL DIREITA (PERFIL E FEED)
+// =======================================================
+document.addEventListener('DOMContentLoaded', function() {
+    
+    // 1. CARREGAR NOME E CARGO DO USUÁRIO LOGADO
+    auth.onAuthStateChanged((user) => {
+        if (user) {
+            // Procura o local de colocar o nome e cargo (tenta por ID ou pela Classe do CSS)
+            const nomeEl = document.getElementById('nomeUsuarioSidebar') || document.querySelector('.info-perfil strong') || document.querySelector('.info-perfil h4');
+            const cargoEl = document.getElementById('cargoUsuarioSidebar') || document.querySelector('.info-perfil span');
+
+            if (nomeEl) {
+                // Vai no banco ver se o usuário já salvou um nome personalizado
+                db.ref('usuarios/' + user.uid).once('value').then((snapshot) => {
+                    const dados = snapshot.val();
+                    
+                    // Se tiver nome no banco, usa. Se não, usa a primeira parte do e-mail
+                    if (dados && dados.nome) {
+                        nomeEl.innerText = dados.nome;
+                    } else {
+                        nomeEl.innerText = user.email.split('@')[0];
+                    }
+
+                    // Formata o cargo bonitinho
+                    if (cargoEl) {
+                        const cargo = dados ? dados.cargo : 'chefe';
+                        let nomeCargoFormatado = "Funcionário";
+                        if (cargo === 'chefe') nomeCargoFormatado = "Arquivista Chefe";
+                        else if (cargo === 'ti') nomeCargoFormatado = "Equipe de TI";
+                        else if (cargo === 'consulta') nomeCargoFormatado = "Consulta";
+
+                        cargoEl.innerText = nomeCargoFormatado;
+                    }
+                });
+            }
+        }
+    });
+
+    // 2. CARREGAR OS ARQUIVOS RECENTES DO ACERVO
+    const listaUltimosArquivos = document.getElementById('listaUltimosArquivosSidebar') || document.querySelector('.atividades-disponiveis ul');
+
+    if (listaUltimosArquivos) {
+        db.ref('arquivos').limitToLast(3).on('value', (snapshot) => {
+            listaUltimosArquivos.innerHTML = ""; // Limpa o "Buscando arquivos..."
+            const dados = snapshot.val();
+
+            if (dados) {
+                const chaves = Object.keys(dados).reverse(); // Inverte para mostrar o mais novo no topo
+                chaves.forEach(key => {
+                    const arq = dados[key];
+
+                    let icone = "fa-file";
+                    let cor = "#6f42c1"; // Roxo
+                    if(arq.tipo === 'documento') { icone = 'fa-file-pdf'; cor = '#28a745'; } // Verde
+                    if(arq.tipo === 'imagem') { icone = 'fa-file-image'; cor = '#ffc107'; } // Amarelo
+
+                    listaUltimosArquivos.innerHTML += `
+                        <li class="item-atividade" style="display: flex; align-items: center; gap: 15px; padding: 12px 0; border-bottom: 1px solid #f0f0f0;">
+                            <div class="fundo-icone" style="background-color: ${cor}20; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 8px; flex-shrink: 0;">
+                                <i class="fa-solid ${icone}" style="color: ${cor}; font-size: 18px;"></i>
+                            </div>
+                            <div style="overflow: hidden; width: 100%;">
+                                <strong style="display: block; font-size: 13px; color: #333; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${arq.nome}</strong>
+                                <span style="font-size: 11px; color: #888;"><i class="fa-solid fa-location-dot" style="margin-right:3px;"></i>${arq.localizacao}</span>
+                            </div>
+                        </li>
+                    `;
+                });
+            } else {
+                listaUltimosArquivos.innerHTML = '<li style="text-align: center; color: #999; padding: 15px; font-size: 12px;">Nenhum arquivo no acervo.</li>';
             }
         });
     }
