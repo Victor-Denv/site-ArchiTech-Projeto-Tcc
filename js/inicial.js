@@ -1,13 +1,13 @@
     // Comentário para forçar deploy v33 - FINAL COM MONITORAMENTO
     const firebaseConfig = {
-    apiKey: "AIzaSyCPym-OjXGXY7IhA1u3DDPIOPi5tECDhR8",
-    authDomain: "architeck-e92b4.firebaseapp.com",
-    databaseURL: "https://architeck-e92b4-default-rtdb.firebaseio.com/",
-    projectId: "architeck-e92b4",
-    storageBucket: "architeck-e92b4.firebasestorage.app",
-    messagingSenderId: "97992394607",
-    appId: "1:97992394607:web:130d060bdfff02d8474a9a",
-    measurementId: "G-N7T7B468Z9"
+      apiKey: "AIzaSyCPym-OjXGXY7IhA1u3DDPIOPi5tECDhR8",
+  authDomain: "architeck-e92b4.firebaseapp.com",
+  databaseURL: "https://architeck-e92b4-default-rtdb.firebaseio.com",
+  projectId: "architeck-e92b4",
+  storageBucket: "architeck-e92b4.firebasestorage.app",
+  messagingSenderId: "97992394607",
+  appId: "1:97992394607:web:5407c85e8a8f1859474a9a",
+  measurementId: "G-TWL8FMM830"
     };
 
     // Inicializa o Firebase
@@ -23,40 +23,48 @@
 window.cargoAtual = localStorage.getItem('userCargo') || 'funcionario';
 window.idEmpresa = localStorage.getItem('userIdEmpresa') || null;
 
-auth.onAuthStateChanged(function(user) {
+// --- QUEM ESTÁ LOGADO? ---
+firebase.auth().onAuthStateChanged(function(user) {
     const isLoginPage = window.location.pathname.endsWith('/') || window.location.pathname.endsWith('index.html') || window.location.pathname.endsWith('login.html');
     
     if (user) {
         if (isLoginPage) window.location.href = "inicial.html";
 
+        // VAI NO BANCO E LÊ A FICHA DO USUÁRIO
         db.ref('usuarios/' + user.uid).once('value').then((snapshot) => {
             const dadosUsuario = snapshot.val();
             
-            // --- A MÁGICA MULTI-EMPRESA ACONTECE AQUI ---
-            if (!dadosUsuario) {
-                // Se a conta não existe no banco, é um cadastro novo na tela de Login. Vira Chefe!
-                window.cargoAtual = 'chefe';
-                window.idEmpresa = user.uid; // O ID da empresa é o ID do próprio chefe
-
-                // Salva esse novo chefe no banco para ele não ficar "fantasma"
-                db.ref('usuarios/' + user.uid).set({
-                    email: user.email,
-                    cargo: 'chefe',
-                    id_empresa: user.uid,
-                    dataCriacao: firebase.database.ServerValue.TIMESTAMP
-                });
-            } else {
-                // Se já existe, pega os dados normais
+            // REGRA NOVA: ELE SÓ PODE LER. NÃO PODE MAIS SALVAR AQUI.
+            if (dadosUsuario) {
                 window.cargoAtual = dadosUsuario.cargo;
                 window.idEmpresa = dadosUsuario.id_empresa;
-            }
+                window.nomeUsuario = dadosUsuario.nome || user.email;
+                
+                // Trava de Segurança
+                if (!window.idEmpresa) {
+                    alert("ERRO: Sua empresa não foi registrada corretamente. Refaça o cadastro.");
+                    firebase.auth().signOut().then(() => window.location.replace("../index.html"));
+                    return;
+                }
 
-            // Salva no navegador para as outras telas usarem
-            localStorage.setItem('userCargo', window.cargoAtual);
-            localStorage.setItem('userIdEmpresa', window.idEmpresa);
-            
-            aplicarFiltrosDeMenu(window.cargoAtual);
-            aplicarTravasDeConsulta(window.cargoAtual);
+                // Atualiza o menu e as telas
+                localStorage.setItem('userCargo', window.cargoAtual);
+                localStorage.setItem('userIdEmpresa', window.idEmpresa);
+                
+                const userEmailDisplay = document.getElementById('user-email-display');
+                if (userEmailDisplay) userEmailDisplay.innerHTML = `<i class="fa-solid fa-user-circle"></i> Olá, ${window.nomeUsuario}`;
+
+                if (typeof aplicarFiltrosDeMenu === 'function') aplicarFiltrosDeMenu(window.cargoAtual);
+                if (typeof aplicarTravasDeConsulta === 'function') aplicarTravasDeConsulta(window.cargoAtual);
+
+                // Agora sim ele libera para carregar as coisas da tela!
+                if (typeof listarEquipe === 'function') listarEquipe();
+                if (typeof carregarArquivos === 'function') carregarArquivos();
+                
+            } else {
+                alert("Acesso revogado ou perfil não encontrado.");
+                firebase.auth().signOut().then(() => window.location.replace("../index.html"));
+            }
         });
     } else {
         if (!isLoginPage) window.location.href = "../index.html";
@@ -509,6 +517,9 @@ document.addEventListener('DOMContentLoaded', function() {
             localStorage.removeItem('userCargo');
             
             auth.signOut().then(() => {
+                localStorage.clear();
+              window.idEmpresa = null;
+                window.cargoAtual = null;
                 // A MÁGICA ESTÁ AQUI: ../ manda ele voltar pra pasta raiz!
                 window.location.replace("../index.html"); 
             }).catch((error) => {
@@ -668,313 +679,280 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     });
-    // =======================================================
-    //     LÓGICA DA PÁGINA 'relatorio.html'
-    // =======================================================
-    document.addEventListener('DOMContentLoaded', function() {
-        const ctx = document.getElementById('graficoTipos');
-        
-        // Só executa se estivermos na página relatorio.html (se o canvas existir)
-        if (ctx) {
-            console.log("Página de relatório carregada. Buscando dados...");
-            const arquivosRef = db.ref('arquivos');
-
-            arquivosRef.once('value', (snapshot) => {
-                const dados = snapshot.val();
-                
-                let qtdDocs = 0;
-                let qtdImagens = 0;
-                let qtdOutros = 0;
-                let total = 0;
-
-                if (dados) {
-                    // Conta quantos arquivos de cada tipo existem no banco
-                    Object.values(dados).forEach(arquivo => {
-                        total++;
-                        if (arquivo.tipo === 'documento') qtdDocs++;
-                        else if (arquivo.tipo === 'imagem') qtdImagens++;
-                        else qtdOutros++;
-                    });
-                }
-
-                // Atualiza os cartões na tela
-                document.getElementById('totalArquivos').innerText = total;
-                document.getElementById('totalDocs').innerText = qtdDocs;
-                document.getElementById('totalImagens').innerText = qtdImagens;
-
-                // Desenha o gráfico
-                new Chart(ctx, {
-                    type: 'doughnut', // Tipo do gráfico (rosca)
-                    data: {
-                        labels: ['Documentos (PDF)', 'Imagens (JPG/PNG)', 'Outros'],
-                        datasets: [{
-                            label: 'Quantidade',
-                            data: [qtdDocs, qtdImagens, qtdOutros],
-                            backgroundColor: [
-                                '#28a745', // Verde
-                                '#ffc107', // Amarelo
-                                '#6f42c1'  // Roxo da sua paleta
-                            ],
-                            borderWidth: 0
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        plugins: {
-                            legend: { position: 'bottom' }
-                        }
-                    }
-                });
-            }).catch(error => {
-                console.error("Erro ao puxar dados do relatório:", error);
-                document.getElementById('totalArquivos').innerText = "Erro";
-            });
+  // =======================================================
+//      LÓGICA DA PÁGINA 'relatorio.html'
+// =======================================================
+document.addEventListener('DOMContentLoaded', function() {
+    const ctx = document.getElementById('graficoTipos');
+    
+    // Só executa se estivermos na página relatorio.html (se o canvas existir)
+    if (ctx) {
+        // SEGURANÇA: Só busca se o ID da empresa existir
+        if (!window.idEmpresa) {
+            console.log("Aguardando ID da empresa para carregar relatório...");
+            return;
         }
-    });
-    // =======================================================
-    //     LÓGICA DA PÁGINA 'mensagem.html' (Notificações)
-    // =======================================================
-    document.addEventListener('DOMContentLoaded', function() {
-        const containerNotificacoes = document.getElementById('containerNotificacoes');
-        
-        // Só roda se estivermos na página de notificações
-        if (containerNotificacoes) {
-            const arquivosRef = db.ref('arquivos');
-            
-            // Puxa os últimos 15 arquivos cadastrados para gerar os alertas
-            arquivosRef.limitToLast(15).on('value', (snapshot) => {
-                const dados = snapshot.val();
-                containerNotificacoes.innerHTML = ""; // Limpa a tela de "Carregando"
-                
-                if (dados) {
-                    // Inverte para a mensagem mais nova ficar no topo
-                    const chaves = Object.keys(dados).reverse(); 
-                    
-                    chaves.forEach(key => {
-                        const arquivo = dados[key];
-                        
-                        // Formata a data (Ex: "Hoje às 14:30" ou a data completa)
-                        const dataObj = new Date(arquivo.dataCadastro);
-                        const dataFormatada = dataObj.toLocaleDateString('pt-BR') + ' às ' + dataObj.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-                        
-                        // Define cor e ícone baseados no tipo do arquivo
-                        let corBorda = "#6f42c1"; // Roxo padrão
-                        let icone = "fa-file";
-                        
-                        if(arquivo.tipo === "documento") { corBorda = "#28a745"; icone = "fa-file-pdf"; } // Verde
-                        if(arquivo.tipo === "imagem") { corBorda = "#ffc107"; icone = "fa-file-image"; } // Amarelo
-                        
-                        const notitificacaoHTML = `
-                            <div style="background: white; padding: 20px; border-left: 4px solid ${corBorda}; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); position: relative;">
-                                <span style="position: absolute; top: 15px; right: 20px; font-size: 11px; color: #999;">${dataFormatada}</span>
-                                <div style="display: flex; gap: 15px; align-items: start;">
-                                    <div style="background-color: #f8f9fa; padding: 10px; border-radius: 50%; color: ${corBorda};">
-                                        <i class="fa-solid ${icone} fa-lg"></i>
-                                    </div>
-                                    <div>
-                                        <h4 style="color: #333; margin-bottom: 5px; font-size: 15px;">Novo arquivo indexado</h4>
-                                        <p style="color: #666; font-size: 13px; margin: 0;">
-                                            O arquivo <strong>"${arquivo.nome}"</strong> foi catalogado com sucesso na localização <strong>"${arquivo.localizacao}"</strong>.
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                        `;
-                        containerNotificacoes.innerHTML += notitificacaoHTML;
-                    });
-                } else {
-                    containerNotificacoes.innerHTML = `
-                        <div style="text-align: center; padding: 40px; color: #999;">
-                            <i class="fa-solid fa-bell-slash fa-2x" style="margin-bottom: 15px;"></i>
-                            <p>Nenhuma notificação no momento.</p>
-                        </div>`;
-                }
-            });
 
-            // Botão para limpar a tela (apenas visual, não deleta do banco)
-            const btnLimpar = document.getElementById('btnLimparNotificacoes');
-            if(btnLimpar) {
-                btnLimpar.addEventListener('click', () => {
-                    containerNotificacoes.innerHTML = `
-                    <div style="text-align: center; padding: 40px; color: #999;">
-                        <i class="fa-solid fa-check-double fa-2x" style="margin-bottom: 15px;"></i>
-                        <p>Você não tem novas notificações.</p>
-                    </div>`;
+        console.log("Página de relatório carregada. Buscando dados da empresa:", window.idEmpresa);
+        
+        // BUSCA NA GAVETA CORRETA: workspaces/ID/arquivos
+        const arquivosRef = db.ref('workspaces/' + window.idEmpresa + '/arquivos');
+
+        // .on('value') garante atualização em TEMPO REAL
+        arquivosRef.on('value', (snapshot) => {
+            const dados = snapshot.val();
+            
+            let qtdDocs = 0;
+            let qtdImagens = 0;
+            let qtdOutros = 0;
+            let total = 0;
+
+            if (dados) {
+                // Conta os arquivos da empresa logada
+                Object.values(dados).forEach(arquivo => {
+                    total++;
+                    if (arquivo.tipo === 'documento') qtdDocs++;
+                    else if (arquivo.tipo === 'imagem') qtdImagens++;
+                    else qtdOutros++;
                 });
             }
-        }
-    });
 
-    // =======================================================
-    //     LÓGICA DA PÁGINA 'seguranca.html' (Auditoria)
-    // =======================================================
-    document.addEventListener('DOMContentLoaded', function() {
-        const tabelaAuditoria = document.getElementById('tabelaAuditoria');
-        
-        if (tabelaAuditoria) {
-            const arquivosRef = db.ref('arquivos');
-            
-            // Puxa os dados dos arquivos para preencher a auditoria
-            arquivosRef.limitToLast(5).once('value', (snapshot) => {
-                const dados = snapshot.val();
-                tabelaAuditoria.innerHTML = ""; // Limpa a tabela
-                
-                if (dados) {
-                    // Inverte para mostrar do mais novo para o mais velho
-                    const chaves = Object.keys(dados).reverse(); 
-                    
-                    chaves.forEach(key => {
-                        const arquivo = dados[key];
-                        const dataFormatada = new Date(arquivo.dataCadastro).toLocaleString('pt-BR');
-                        
-                        const linha = `
-                            <tr style="border-bottom: 1px solid #eee;">
-                                <td style="padding: 12px; color: #555;"><strong>${arquivo.nome}</strong></td>
-                                <td style="padding: 12px; color: #555;">${arquivo.localizacao}</td>
-                                <td style="padding: 12px; color: #888; font-size: 12px;">${dataFormatada}</td>
-                            </tr>
-                        `;
-                        tabelaAuditoria.innerHTML += linha;
-                    });
-                } else {
-                    tabelaAuditoria.innerHTML = `<tr><td colspan="3" style="padding: 12px; text-align: center;">Nenhum registro de auditoria encontrado.</td></tr>`;
+            // Atualiza os cartões na tela
+            if (document.getElementById('totalArquivos')) document.getElementById('totalArquivos').innerText = total;
+            if (document.getElementById('totalDocs')) document.getElementById('totalDocs').innerText = qtdDocs;
+            if (document.getElementById('totalImagens')) document.getElementById('totalImagens').innerText = qtdImagens;
+
+            // Gerenciamento do Gráfico (destrói o anterior para não sobrepor)
+            if (window.meuGraficoTipos) {
+                window.meuGraficoTipos.destroy();
+            }
+
+            window.meuGraficoTipos = new Chart(ctx, {
+                type: 'doughnut', 
+                data: {
+                    labels: ['Documentos (PDF)', 'Imagens (JPG/PNG)', 'Outros'],
+                    datasets: [{
+                        label: 'Quantidade',
+                        data: [qtdDocs, qtdImagens, qtdOutros],
+                        backgroundColor: ['#28a745', '#ffc107', '#6f42c1'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { position: 'bottom' }
+                    }
                 }
-            }).catch(error => {
-                console.error("Erro ao puxar auditoria:", error);
-                tabelaAuditoria.innerHTML = `<tr><td colspan="3" style="padding: 12px; text-align: center; color: red;">Erro ao carregar dados.</td></tr>`;
+            });
+        }, (error) => {
+            console.error("Erro ao puxar dados do relatório:", error);
+            if (document.getElementById('totalArquivos')) document.getElementById('totalArquivos').innerText = "Erro";
+        });
+    }
+});
+ // =======================================================
+//      LÓGICA DA PÁGINA 'mensagem.html' (Notificações)
+// =======================================================
+document.addEventListener('DOMContentLoaded', function() {
+    const containerNotificacoes = document.getElementById('containerNotificacoes');
+    
+    // Só roda se estivermos na página de notificações
+    if (containerNotificacoes) {
+        
+        // SEGURANÇA: Se o ID da empresa ainda não carregou, esperamos um pouco
+        if (!window.idEmpresa) {
+            containerNotificacoes.innerHTML = "<p style='text-align:center; padding:20px; color:#999;'>Identificando sua empresa...</p>";
+            return; 
+        }
+
+        // AGORA BUSCA NA GAVETA CORRETA: workspaces/ID/arquivos
+        const arquivosRef = db.ref('workspaces/' + window.idEmpresa + '/arquivos');
+        
+        // Puxa os últimos 15 arquivos cadastrados para gerar os alertas
+        arquivosRef.limitToLast(15).on('value', (snapshot) => {
+            const dados = snapshot.val();
+            containerNotificacoes.innerHTML = ""; // Limpa a tela
+            
+            if (dados) {
+                const chaves = Object.keys(dados).reverse(); 
+                
+                chaves.forEach(key => {
+                    const arquivo = dados[key];
+                    const dataObj = new Date(arquivo.dataCadastro);
+                    const dataFormatada = dataObj.toLocaleDateString('pt-BR') + ' às ' + dataObj.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+                    
+                    let corBorda = "#6f42c1"; 
+                    let icone = "fa-file";
+                    
+                    if(arquivo.tipo === "documento") { corBorda = "#28a745"; icone = "fa-file-pdf"; } 
+                    if(arquivo.tipo === "imagem") { corBorda = "#ffc107"; icone = "fa-file-image"; } 
+                    
+                    const notitificacaoHTML = `
+                        <div style="background: white; padding: 20px; border-left: 4px solid ${corBorda}; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); position: relative; margin-bottom: 15px;">
+                            <span style="position: absolute; top: 15px; right: 20px; font-size: 11px; color: #999;">${dataFormatada}</span>
+                            <div style="display: flex; gap: 15px; align-items: start;">
+                                <div style="background-color: #f8f9fa; padding: 10px; border-radius: 50%; color: ${corBorda};">
+                                    <i class="fa-solid ${icone} fa-lg"></i>
+                                </div>
+                                <div>
+                                    <h4 style="color: #333; margin-bottom: 5px; font-size: 15px;">Novo arquivo indexado</h4>
+                                    <p style="color: #666; font-size: 13px; margin: 0;">
+                                        O arquivo <strong>"${arquivo.nome}"</strong> foi catalogado com sucesso na localização <strong>"${arquivo.localizacao}"</strong>.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    containerNotificacoes.innerHTML += notitificacaoHTML;
+                });
+            } else {
+                containerNotificacoes.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: #999;">
+                        <i class="fa-solid fa-bell-slash fa-2x" style="margin-bottom: 15px;"></i>
+                        <p>Sua empresa ainda não possui notificações de arquivos.</p>
+                    </div>`;
+            }
+        });
+
+        // Botão para limpar a tela (visual)
+        const btnLimpar = document.getElementById('btnLimparNotificacoes');
+        if(btnLimpar) {
+            btnLimpar.addEventListener('click', () => {
+                containerNotificacoes.innerHTML = `
+                <div style="text-align: center; padding: 40px; color: #999;">
+                    <i class="fa-solid fa-check-double fa-2x" style="margin-bottom: 15px;"></i>
+                    <p>Notificações removidas da visualização.</p>
+                </div>`;
             });
         }
-    });
+    }
+});
+
+   // =======================================================
+//     LÓGICA DA PÁGINA 'seguranca.html' (Auditoria)
+// =======================================================
+document.addEventListener('DOMContentLoaded', function() {
+    const tabelaAuditoria = document.getElementById('tabelaAuditoria');
+    
+    if (tabelaAuditoria) {
+        // SEGURANÇA: Só prossegue se o ID da empresa estiver disponível
+        if (!window.idEmpresa) {
+            tabelaAuditoria.innerHTML = `<tr><td colspan="3" style="padding: 20px; text-align: center; color: #999;">Carregando credenciais de segurança...</td></tr>`;
+            return;
+        }
+
+        // AGORA BUSCA NA GAVETA CORRETA: workspaces/ID/arquivos
+        const arquivosRef = db.ref('workspaces/' + window.idEmpresa + '/arquivos');
+        
+        // Puxa os últimos 5 arquivos cadastrados para preencher a auditoria
+        arquivosRef.limitToLast(5).on('value', (snapshot) => {
+            const dados = snapshot.val();
+            tabelaAuditoria.innerHTML = ""; // Limpa a tabela
+            
+            if (dados) {
+                // Inverte para mostrar do mais novo para o mais velho no topo
+                const chaves = Object.keys(dados).reverse(); 
+                
+                chaves.forEach(key => {
+                    const arquivo = dados[key];
+                    const dataFormatada = new Date(arquivo.dataCadastro).toLocaleString('pt-BR');
+                    
+                    const linha = `
+                        <tr style="border-bottom: 1px solid #eee;">
+                            <td style="padding: 12px; color: #555;"><strong>${arquivo.nome}</strong></td>
+                            <td style="padding: 12px; color: #555;">${arquivo.localizacao}</td>
+                            <td style="padding: 12px; color: #888; font-size: 12px;">${dataFormatada}</td>
+                        </tr>
+                    `;
+                    tabelaAuditoria.innerHTML += linha;
+                });
+            } else {
+                tabelaAuditoria.innerHTML = `<tr><td colspan="3" style="padding: 20px; text-align: center; color: #999;">Nenhum registro de auditoria encontrado para esta empresa.</td></tr>`;
+            }
+        }, (error) => {
+            console.error("Erro ao puxar auditoria:", error);
+            tabelaAuditoria.innerHTML = `<tr><td colspan="3" style="padding: 12px; text-align: center; color: #ff4757;">Erro de permissão ao acessar registros.</td></tr>`;
+        });
+    }
+});
 
     // =======================================================
     //     LÓGICA DO GRÁFICO DA PÁGINA INICIAL ('inicial.html')
     // =======================================================
     document.addEventListener('DOMContentLoaded', function() {
-        const ctxCapacidade = document.getElementById('graficoCapacidade');
-        
-        // Só executa se o gráfico de capacidade existir na tela (ou seja, se estivermos na inicial.html)
-        if (ctxCapacidade) {
-            const arquivosRef = db.ref('arquivos');
-            const capacidadeMaxima = 1000; // Defina a capacidade máxima do seu arquivo físico aqui
+    const ctxCapacidade = document.getElementById('graficoCapacidade');
+    
+    if (ctxCapacidade) {
+        // AQUI ESTAVA O ERRO: Mudamos de 'arquivos' para o caminho da sua empresa
+        if (!window.idEmpresa) {
+            console.error("ID da empresa não encontrado para o gráfico.");
+            return;
+        }
 
-            arquivosRef.on('value', (snapshot) => {
-                const dados = snapshot.val();
-                let totalArquivos = 0;
+        const arquivosRef = db.ref('workspaces/' + window.idEmpresa + '/arquivos');
+        const capacidadeMaxima = 1000; 
 
-                if (dados) {
-                    totalArquivos = Object.keys(dados).length; // Conta quantos arquivos existem no banco
-                }
+        arquivosRef.on('value', (snapshot) => {
+            const dados = snapshot.val();
+            let totalArquivos = 0;
 
-                const espacoLivre = capacidadeMaxima - totalArquivos;
-                
-                // Atualiza o texto na tela
-                document.getElementById('qtdArquivosOcupados').innerText = totalArquivos;
+            if (dados) {
+                totalArquivos = Object.keys(dados).length; 
+            }
 
-                // Se o gráfico já existir, destrói para criar um novo atualizado (evita sobreposição)
-                if (window.meuGraficoCapacidade) {
-                    window.meuGraficoCapacidade.destroy();
-                }
+            const espacoLivre = capacidadeMaxima - totalArquivos;
+            
+            // Atualiza o texto na tela
+            const displayQtd = document.getElementById('qtdArquivosOcupados');
+            if (displayQtd) displayQtd.innerText = totalArquivos;
 
-                // Desenha o Gráfico de Rosca (Doughnut)
-                window.meuGraficoCapacidade = new Chart(ctxCapacidade, {
-                    type: 'doughnut',
-                    data: {
-                        labels: ['Ocupado', 'Espaço Livre'],
-                        datasets: [{
-                            data: [totalArquivos, espacoLivre],
-                            backgroundColor: [
-                                '#6f42c1', // Roxo (Ocupado)
-                                '#e9ecef'  // Cinza Claro (Livre)
-                            ],
-                            borderWidth: 0,
-                            hoverOffset: 4
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        cutout: '75%', // Deixa a rosca mais fina
-                        plugins: {
-                            legend: {
-                                display: false // Esconde a legenda padrão para ficar mais limpo
-                            },
-                            tooltip: {
-                                callbacks: {
-                                    label: function(context) {
-                                        let label = context.label || '';
-                                        if (label) {
-                                            label += ': ';
-                                        }
-                                        if (context.parsed !== null) {
-                                            label += context.parsed + ' arquivos';
-                                        }
-                                        return label;
-                                    }
+            // Gerenciamento do Gráfico
+            if (window.meuGraficoCapacidade) {
+                window.meuGraficoCapacidade.destroy();
+            }
+
+            window.meuGraficoCapacidade = new Chart(ctxCapacidade, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Ocupado', 'Espaço Livre'],
+                    datasets: [{
+                        data: [totalArquivos, espacoLivre],
+                        backgroundColor: ['#6f42c1', '#e9ecef'],
+                        borderWidth: 0,
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '75%',
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return (context.label || '') + ': ' + context.parsed + ' arquivos';
                                 }
                             }
                         }
                     }
-                });
-            });
-        }
-    });
-    
-
-// =======================================================
-//     LÓGICA ISOLADA: PERFIL (CONTA) E EQUIPE (CONFIG)
-// =======================================================
-window.addEventListener('load', function() {
-    
-    // --- 1. MOSTRAR E-MAIL NA TELA DE CONTA ---
-   // --- 1. MOSTRAR E EDITAR NOME/E-MAIL NA TELA DE CONTA ---
-const emailUsuarioConta = document.getElementById('emailUsuarioConta');
-const nomeExibicaoAtual = document.getElementById('nomeExibicaoAtual');
-const inputNomeUsuario = document.getElementById('inputNomeUsuario');
-const btnSalvarNome = document.getElementById('btnSalvarNome');
-
-if (emailUsuarioConta) {
-    auth.onAuthStateChanged(function(user) {
-        if (user) {
-            emailUsuarioConta.innerText = user.email;
-
-            // Busca o nome do usuário no Realtime Database
-            db.ref('usuarios/' + user.uid).on('value', (snapshot) => {
-                const dados = snapshot.val();
-                if (dados && dados.nome) {
-                    nomeExibicaoAtual.innerText = dados.nome;
-                    if(inputNomeUsuario) inputNomeUsuario.value = dados.nome;
-                } else {
-                    nomeExibicaoAtual.innerText = "Usuário sem nome";
                 }
             });
+        });
+    }
+});
+    
 
-            // Salva o novo nome quando clicar no botão
-            if(btnSalvarNome) {
-                btnSalvarNome.addEventListener('click', () => {
-                    const novoNome = inputNomeUsuario.value;
-                    if(!novoNome) { alert("Digite um nome válido."); return; }
-                    
-                    btnSalvarNome.innerText = "Salvando...";
-                    db.ref('usuarios/' + user.uid).update({ nome: novoNome })
-                        .then(() => {
-                            alert("Perfil atualizado com sucesso!");
-                            btnSalvarNome.innerText = "Salvar Nome";
-                        })
-                        .catch(err => alert("Erro ao salvar: " + err));
-                });
-            }
-        } else {
-            emailUsuarioConta.innerText = "Usuário desconectado";
-        }
-    });
-}
-
-    // --- 2. LISTAR EQUIPE NA TELA DE CONFIGURAÇÕES ---
-    const listaEquipe = document.getElementById('listaUsuariosCadastrados');
-    if (listaEquipe) {
+// --- 2. LISTAR EQUIPE NA TELA DE CONFIGURAÇÕES ---
+    window.listarEquipe = function() {
+        const listaEquipe = document.getElementById('listaUsuariosCadastrados');
         
-        // Puxa a equipe direto (removi a trava de expulsão para você conseguir se promover)
-        db.ref('usuarios').on('value', (snapshot) => {
+        // O CADEADO: Só puxa se já souber a empresa
+        if (!listaEquipe || !window.idEmpresa) return;
+
+        // O FILTRO: Busca SÓ quem tem o id_empresa igual ao do chefe logado
+        db.ref('usuarios').orderByChild('id_empresa').equalTo(window.idEmpresa).on('value', (snapshot) => {
             listaEquipe.innerHTML = "";
             const dados = snapshot.val();
             if (dados) {
@@ -983,9 +961,9 @@ if (emailUsuarioConta) {
                     let corBadge = "#95a5a6"; // Cinza
                     let nomeCargo = "Funcionário";
                     
-                   if (user.cargo === 'chefe') { corBadge = "#e74c3c"; nomeCargo = "Arquivista Chefe"; }
-else if (user.cargo === 'ti') { corBadge = "#3498db"; nomeCargo = "Equipe de TI"; }
-else if (user.cargo === 'consulta') { corBadge = "#f39c12"; nomeCargo = "Consulta"; } // Cor laranja
+                    if (user.cargo === 'chefe') { corBadge = "#e74c3c"; nomeCargo = "Arquivista Chefe"; }
+                    else if (user.cargo === 'ti') { corBadge = "#3498db"; nomeCargo = "Equipe de TI"; }
+                    else if (user.cargo === 'consulta') { corBadge = "#f39c12"; nomeCargo = "Consulta"; } 
 
                     listaEquipe.innerHTML += `
                         <div style="background-color: #f8f9fa; padding: 12px 15px; border-radius: 8px; border-left: 4px solid ${corBadge}; display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
@@ -998,87 +976,83 @@ else if (user.cargo === 'consulta') { corBadge = "#f39c12"; nomeCargo = "Consult
                 listaEquipe.innerHTML = "<div style='color: #7f8c8d; font-size: 14px;'>Você ainda não tem uma equipe cadastrada.</div>"; 
             }
         });
-    }
+    };
 
-  // --- 3. CRIAR USUÁRIO ---
+    // Caso a variável já esteja pronta, ele chama a lista na hora
+    if (window.idEmpresa) window.listarEquipe();
 
-// Adiciona as opções de cargo no select, incluindo o novo usuário de Consulta
-setTimeout(() => {
-    const selectNivel = document.getElementById('nivelAcessoUser');
-    if (selectNivel) {
-        selectNivel.innerHTML = `
-            <option value="consulta">Usuário de Consulta (Apenas visualização)</option>
-            <option value="funcionario">Funcionário / Arquivista</option>
-            <option value="ti">Equipe de TI</option>
-            <option value="chefe">Arquivista Chefe</option>
-        `;
-    }
-}, 1000);
 
-const btnCriarUsuario = document.getElementById('btnCriarUsuario');
-if (btnCriarUsuario) {
-    btnCriarUsuario.addEventListener('click', function() {
-        // ---> TRAVA DE SEGURANÇA: SÓ O CHEFE PASSA DAKI <---
-        if (window.cargoAtual !== 'chefe') {
-            alert("Acesso Negado: Apenas o Arquivista Chefe tem permissão para criar novos usuários.");
-            return; // O 'return' cancela tudo e impede a criação da conta
+    // --- 3. CRIAR USUÁRIO ---
+
+    // Adiciona as opções de cargo no select
+    setTimeout(() => {
+        const selectNivel = document.getElementById('nivelAcessoUser');
+        if (selectNivel) {
+            selectNivel.innerHTML = `
+                <option value="consulta">Usuário de Consulta (Apenas visualização)</option>
+                <option value="funcionario">Funcionário / Arquivista</option>
+                <option value="ti">Equipe de TI</option>
+            `;
         }
-        // ---------------------------------------------------
+    }, 1000);
 
-        const email = document.getElementById('novoEmailUser').value;
-        const senha = document.getElementById('novaSenhaUser').value; 
-        const cargo = document.getElementById('nivelAcessoUser').value;
+    const btnCriarUsuario = document.getElementById('btnCriarUsuario');
+    if (btnCriarUsuario) {
+        btnCriarUsuario.addEventListener('click', function() {
+            
+            if (window.cargoAtual !== 'chefe') {
+                alert("Acesso Negado: Apenas o Arquivista Chefe tem permissão para criar novos usuários.");
+                return; 
+            }
 
-        if (!email || !senha) { alert("Preencha o e-mail e a senha."); return; }
-        if (senha.length < 6) { alert("A senha deve ter no mínimo 6 caracteres."); return; }
+            const email = document.getElementById('novoEmailUser').value;
+            const senha = document.getElementById('novaSenhaUser').value; 
+            const cargo = document.getElementById('nivelAcessoUser').value;
 
-        btnCriarUsuario.innerText = "Processando...";
-        btnCriarUsuario.disabled = true;
+            if (!email || !senha) { alert("Preencha o e-mail e a senha."); return; }
+            if (senha.length < 6) { alert("A senha deve ter no mínimo 6 caracteres."); return; }
 
-        // Cria o App Secundário com try/catch
-        let appSecundario;
-        try {
-            appSecundario = firebase.app("AppCriador");
-        } catch (e) {
-            appSecundario = firebase.initializeApp(firebaseConfig, "AppCriador");
-        }
-        
-        const authSecundario = appSecundario.auth();
+            btnCriarUsuario.innerText = "Processando...";
+            btnCriarUsuario.disabled = true;
 
-        // Tenta criar na Autenticação
-        authSecundario.createUserWithEmailAndPassword(email, senha)
-            .then((userCredential) => {
-                const novoUid = userCredential.user.uid;
-                
-                // Tenta salvar no Banco de Dados
-                db.ref('usuarios/' + novoUid).set({
-                    email: email,
-                    cargo: cargo,
-                    dataCriacao: firebase.database.ServerValue.TIMESTAMP
-                }).then(() => {
-                    authSecundario.signOut();
-                    alert(`SUCESSO!\nO usuário ${email} foi criado como ${cargo}.`);
+            let appSecundario;
+            try { appSecundario = firebase.app("AppCriador"); } 
+            catch (e) { appSecundario = firebase.initializeApp(firebaseConfig, "AppCriador"); }
+            
+            const authSecundario = appSecundario.auth();
+
+            authSecundario.createUserWithEmailAndPassword(email, senha)
+                .then((userCredential) => {
+                    const novoUid = userCredential.user.uid;
                     
-                    document.getElementById('novoEmailUser').value = "";
-                    document.getElementById('novaSenhaUser').value = ""; 
-                    
-                    btnCriarUsuario.innerText = "Criar Conta e Atribuir Permissões";
-                    btnCriarUsuario.disabled = false;
-                }).catch((error) => {
-                    console.error("Erro no Banco:", error);
-                    alert("Usuário criado, mas houve erro de permissão no banco: " + error.message);
+                    // O CARIMBO: Agora o id_empresa é gravado junto com a ficha!
+                    db.ref('usuarios/' + novoUid).set({
+                        email: email,
+                        cargo: cargo,
+                        id_empresa: window.idEmpresa, // <--- A MÁGICA ACONTECE AQUI
+                        dataCriacao: firebase.database.ServerValue.TIMESTAMP
+                    }).then(() => {
+                        authSecundario.signOut();
+                        alert(`SUCESSO!\nO usuário ${email} foi criado como ${cargo}.`);
+                        
+                        document.getElementById('novoEmailUser').value = "";
+                        document.getElementById('novaSenhaUser').value = ""; 
+                        
+                        btnCriarUsuario.innerText = "Criar Conta e Atribuir Permissões";
+                        btnCriarUsuario.disabled = false;
+                    }).catch((error) => {
+                        alert("Houve erro de permissão no banco: " + error.message);
+                        btnCriarUsuario.innerText = "Criar Conta e Atribuir Permissões";
+                        btnCriarUsuario.disabled = false;
+                    });
+                })
+                .catch((error) => {
+                    alert("Erro ao criar: " + error.message);
                     btnCriarUsuario.innerText = "Criar Conta e Atribuir Permissões";
                     btnCriarUsuario.disabled = false;
                 });
-            })
-            .catch((error) => {
-                console.error("Erro Auth:", error);
-                alert("Erro ao criar: " + error.message);
-                btnCriarUsuario.innerText = "Criar Conta e Atribuir Permissões";
-                btnCriarUsuario.disabled = false;
-            });
-    });
-}
+        });
+    }
 
 // =======================================================
 //     LÓGICA DA BARRA LATERAL DIREITA (PÁGINA INICIAL)
@@ -1098,50 +1072,58 @@ window.addEventListener('load', function() {
                 nomeUsuarioSidebar.innerText = user.email.split('@')[0]; 
                 
                 db.ref('usuarios/' + user.uid).once('value').then((snapshot) => {
-                    const cargo = snapshot.val() ? snapshot.val().cargo : 'chefe';
+                    const dados = snapshot.val();
+                    const cargo = dados ? dados.cargo : 'funcionario';
+                    
                     let nomeCargoFormatado = "Funcionário";
                     if (cargo === 'chefe') nomeCargoFormatado = "Arquivista Chefe";
-                    if (cargo === 'ti') nomeCargoFormatado = "Equipe de TI";
+                    else if (cargo === 'ti') nomeCargoFormatado = "Equipe de TI";
+                    else if (cargo === 'consulta') nomeCargoFormatado = "Consulta";
                     
                     cargoUsuarioSidebar.innerText = nomeCargoFormatado;
-                });
-            }
-        });
 
-        // 2. Puxa os últimos 3 arquivos cadastrados para o Feed
-        db.ref('arquivos').limitToLast(3).on('value', (snapshot) => {
-            listaUltimosArquivos.innerHTML = "";
-            const dados = snapshot.val();
-            
-            if (dados) {
-                const chaves = Object.keys(dados).reverse(); // Mais novos primeiro
-                chaves.forEach(key => {
-                    const arq = dados[key];
-                    
-                    // Escolhe o ícone e a cor dependendo do tipo
-                    let icone = "fa-file";
-                    let cor = "#6f42c1"; // Roxo padrão
-                    if(arq.tipo === 'documento') { icone = 'fa-file-pdf'; cor = '#28a745'; } // Verde
-                    if(arq.tipo === 'imagem') { icone = 'fa-file-image'; cor = '#ffc107'; } // Amarelo
+                    // --- A MÁGICA DO ISOLAMENTO NO FEED ---
+                    // Só busca os arquivos se o ID da empresa estiver na ficha do usuário
+                    const idEmpresaLogada = dados ? dados.id_empresa : null;
 
-                    listaUltimosArquivos.innerHTML += `
-                        <li style="display: flex; align-items: center; gap: 12px; padding-bottom: 12px; border-bottom: 1px solid #f0f0f0;">
-                            <div style="background: ${cor}20; color: ${cor}; width: 35px; height: 35px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0;">
-                                <i class="fa-solid ${icone}"></i>
-                            </div>
-                            <div style="overflow: hidden; width: 100%;">
-                                <strong style="display: block; font-size: 13px; color: #333; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${arq.nome}</strong>
-                                <span style="font-size: 11px; color: #888;"><i class="fa-solid fa-location-dot" style="margin-right:3px;"></i>${arq.localizacao}</span>
-                            </div>
-                        </li>
-                    `;
+                    if (idEmpresaLogada) {
+                        // 2. Puxa os últimos 3 arquivos cadastrados APENAS desta empresa
+                        db.ref('workspaces/' + idEmpresaLogada + '/arquivos').limitToLast(3).on('value', (snapArquivos) => {
+                            listaUltimosArquivos.innerHTML = "";
+                            const dadosArqs = snapArquivos.val();
+                            
+                            if (dadosArqs) {
+                                const chaves = Object.keys(dadosArqs).reverse(); // Mais novos primeiro
+                                chaves.forEach(key => {
+                                    const arq = dadosArqs[key];
+                                    
+                                    let icone = "fa-file";
+                                    let cor = "#6f42c1"; 
+                                    if(arq.tipo === 'documento') { icone = 'fa-file-pdf'; cor = '#28a745'; } 
+                                    if(arq.tipo === 'imagem') { icone = 'fa-file-image'; cor = '#ffc107'; } 
+
+                                    listaUltimosArquivos.innerHTML += `
+                                        <li style="display: flex; align-items: center; gap: 12px; padding-bottom: 12px; border-bottom: 1px solid #f0f0f0; margin-bottom: 10px;">
+                                            <div style="background: ${cor}20; color: ${cor}; width: 35px; height: 35px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0;">
+                                                <i class="fa-solid ${icone}"></i>
+                                            </div>
+                                            <div style="overflow: hidden; width: 100%;">
+                                                <strong style="display: block; font-size: 13px; color: #333; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${arq.nome}</strong>
+                                                <span style="font-size: 11px; color: #888;"><i class="fa-solid fa-location-dot" style="margin-right:3px;"></i>${arq.localizacao}</span>
+                                            </div>
+                                        </li>
+                                    `;
+                                });
+                            } else {
+                                listaUltimosArquivos.innerHTML = '<li style="text-align: center; color: #999; font-size: 12px; padding: 10px;">Nenhum arquivo recente.</li>';
+                            }
+                        });
+                    }
                 });
-            } else {
-                listaUltimosArquivos.innerHTML = '<li style="text-align: center; color: #999; font-size: 12px;">Nenhum arquivo no acervo.</li>';
             }
         });
     }
-})});
+});
 
 // =======================================================
 // FUNCIONALIDADES DO CABEÇALHO (PESQUISA, SINO E CONFIG)
@@ -1356,3 +1338,51 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+// =======================================================
+//   PODERES DO ARQUIVISTA CHEFE (EXPULSAR E RESETAR)
+// =======================================================
+
+window.expulsarUsuario = function(uidUsuario, emailUsuario) {
+    if (window.cargoAtual !== 'chefe') {
+        alert("Ação negada: Apenas o Arquivista Chefe pode remover membros.");
+        return;
+    }
+
+    if (confirm(`Deseja remover ${emailUsuario} da sua equipe? A conta será banida.`)) {
+        db.ref('usuarios/' + uidUsuario).remove()
+            .then(() => {
+                alert("Usuário removido com sucesso!");
+            })
+            .catch(error => alert("Erro ao remover: " + error.message));
+    }
+};
+
+window.resetTotalEmpresa = function() {
+    if (window.cargoAtual !== 'chefe') {
+        alert("Apenas o Arquivista Chefe pode dissolver a empresa."); return;
+    }
+    
+    const confirmacao = prompt("⚠️ PERIGO: ESTA AÇÃO É IRREVERSÍVEL! ⚠️\nApagará TODOS os arquivos, equipe e deletará a sua conta.\nPara confirmar, digite seu e-mail de login abaixo:");
+    
+    if (confirmacao === auth.currentUser.email) {
+        const idEmpresa = window.idEmpresa;
+        alert("Iniciando a exclusão de dados. Por favor, aguarde...");
+
+        db.ref('workspaces/' + idEmpresa).remove();
+
+        db.ref('usuarios').orderByChild('id_empresa').equalTo(idEmpresa).once('value', (snapshot) => {
+            snapshot.forEach((child) => { child.ref.remove(); });
+        }).then(() => {
+            auth.currentUser.delete().then(() => {
+                alert("Sua empresa foi apagada. Até logo!");
+                window.location.replace("../index.html");
+            }).catch((error) => {
+                alert("Dados apagados. Por segurança, saia do sistema e faça login para concluir a exclusão do seu perfil.");
+                auth.signOut().then(() => window.location.replace("../index.html"));
+            });
+        });
+    } else {
+        alert("E-mail incorreto. Reset cancelado.");
+    }
+};

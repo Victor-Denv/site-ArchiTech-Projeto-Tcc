@@ -1,136 +1,111 @@
-// Espera o HTML carregar
 document.addEventListener('DOMContentLoaded', function() {
 
-    // =======================================================
-    //     !!! ATENÇÃO !!!
-    //     COPIE E COLE O SEU 'firebaseConfig' DO 'inicial.js' AQUI DENTRO
-    // =======================================================
-const firebaseConfig = {
-  apiKey: "AIzaSyCPym-OjXGXY7IhA1u3DDPIOPi5tECDhR8",
-  authDomain: "architeck-e92b4.firebaseapp.com",
-  databaseURL: "https://architeck-e92b4-default-rtdb.firebaseio.com/",
-  projectId: "architeck-e92b4",
-  storageBucket: "architeck-e92b4.firebasestorage.app",
-  messagingSenderId: "97992394607",
-  appId: "1:97992394607:web:130d060bdfff02d8474a9a",
-  measurementId: "G-N7T7B468Z9"
-};
-    // Inicializa o Firebase
-    firebase.initializeApp(firebaseConfig);
-    // Inicializa o serviço de Autenticação
+    localStorage.clear();
+    window.idEmpresa = null;
+    window.cargoAtual = null;
+        
+    const firebaseConfig = {
+        apiKey: "AIzaSyCPym-OjXGXY7IhA1u3DDPIOPi5tECDhR8",
+        authDomain: "architeck-e92b4.firebaseapp.com",
+        databaseURL: "https://architeck-e92b4-default-rtdb.firebaseio.com",
+        projectId: "architeck-e92b4",
+        storageBucket: "architeck-e92b4.firebasestorage.app",
+        messagingSenderId: "97992394607",
+        appId: "1:97992394607:web:5407c85e8a8f1859474a9a",
+        measurementId: "G-TWL8FMM830"
+    };
+    
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
+    const db = firebase.database(); 
 
-    // =======================================================
-    //     PEGANDO OS ELEMENTOS DO HTML
-    // =======================================================
     const emailInput = document.getElementById('email');
     const passwordInput = document.getElementById('password');
     const loginButton = document.getElementById('btn-login');
-    const signupLinkContainer = document.querySelector('.signup-link'); // Pega o 'div'
+    const signupLinkContainer = document.querySelector('.signup-link'); 
     const title = document.getElementById('form-title');
     const subtitle = document.getElementById('subtitle-text');
     const errorMessage = document.getElementById('auth-error');
+    const camposCadastro = document.getElementById('campos-cadastro'); 
 
-    // Variável para saber se estamos em modo "Login" ou "Criar Conta"
     let isLoginMode = true;
 
-    // =======================================================
-    //     FUNÇÃO PARA MUDAR O FORMULÁRIO (LOGIN / CRIAR CONTA)
-    // =======================================================
     function toggleMode(e) {
-        // e.preventDefault() impede o link '#' de pular a página
         if(e) e.preventDefault(); 
         
         if (isLoginMode) {
-            // Mudar para "Criar Conta"
-            title.innerText = "Crie sua conta";
-            subtitle.innerText = "Insira seus dados para começar.";
+            title.innerText = "Crie sua Empresa";
+            subtitle.innerText = "Insira seus dados para registrar sua conta de Chefe.";
             loginButton.innerText = "Criar Conta";
-            // Muda o link lá embaixo para "Faça login"
+            camposCadastro.style.display = "block"; 
             signupLinkContainer.innerHTML = '<p>Já tem uma conta? <a href="#" id="login-link">Faça login</a></p>';
             isLoginMode = false;
-            
-            // Adiciona o 'ouvinte' para o novo link "Faça login"
             document.getElementById('login-link').addEventListener('click', toggleMode);
         } else {
-            // Mudar de volta para "Login"
             title.innerText = "Acesse sua conta";
             subtitle.innerText = "Bem-vindo de volta! Por favor, insira seus dados.";
             loginButton.innerText = "Entrar";
-            // Muda o link lá embaixo para "Cadastre-se"
+            camposCadastro.style.display = "none"; 
             signupLinkContainer.innerHTML = '<p>Não tem uma conta? <a href="#" id="signup-link">Cadastre-se</a></p>';
             isLoginMode = true;
-            
-            // Adiciona o 'ouvinte' para o novo link "Cadastre-se"
             document.getElementById('signup-link').addEventListener('click', toggleMode);
         }
-        errorMessage.innerText = ""; // Limpa qualquer erro antigo
+        errorMessage.innerText = ""; 
     }
 
-    // Ouvinte inicial para o link "Cadastre-se"
     document.getElementById('signup-link').addEventListener('click', toggleMode);
 
-    // =======================================================
-    //     FUNÇÃO PRINCIPAL (O QUE O BOTÃO FAZ)
-    // =======================================================
     loginButton.addEventListener('click', function() {
         const email = emailInput.value;
         const password = passwordInput.value;
-        errorMessage.innerText = ""; // Limpa erros
+        errorMessage.innerText = ""; 
 
         if (!email || !password) {
-            errorMessage.innerText = "Por favor, preencha o e-mail e a senha.";
-            return;
+            errorMessage.innerText = "Por favor, preencha o e-mail e a senha."; return;
         }
 
         loginButton.innerText = "Carregando...";
         loginButton.disabled = true;
 
         if (isLoginMode) {
-            // --- MODO LOGIN ---
             auth.signInWithEmailAndPassword(email, password)
-                .then((userCredential) => {
-                    // Login com sucesso!
-                    console.log("Login feito com sucesso:", userCredential.user);
-                    // Redireciona para a página principal do seu sistema
-                    // (Pode ser 'inicial.html' ou 'listar.html')
-                    window.location.href = "html/inicial.html"; 
-                })
-                .catch((error) => {
-                    // Deu erro
-                    console.error("Erro no login:", error.message);
-                    if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
-                        errorMessage.innerText = "E-mail ou senha incorretos.";
-                    } else {
-                        errorMessage.innerText = "Ocorreu um erro. Tente novamente.";
-                    }
+                .then(() => { window.location.href = "html/inicial.html"; })
+                .catch(() => {
+                    errorMessage.innerText = "E-mail ou senha incorretos.";
                     loginButton.innerText = "Entrar";
                     loginButton.disabled = false;
                 });
-
         } else {
-            // --- MODO CRIAR CONTA ---
-            auth.createUserWithEmailAndPassword(email, password)
-                .then((userCredential) => {
-                    // Conta criada com sucesso!
-                    console.log("Conta criada com sucesso:", userCredential.user);
-                    // Redireciona para a página principal
-                    window.location.href = "html/inicial.html";
-                })
-                .catch((error) => {
-                    // Deu erro
-                    console.error("Erro ao criar conta:", error.message);
-                    if (error.code === 'auth/email-already-in-use') {
-                        errorMessage.innerText = "Este e-mail já está em uso.";
-                    } else if (error.code === 'auth/weak-password') {
-                        errorMessage.innerText = "A senha deve ter pelo menos 6 caracteres.";
-                    } else {
-                        errorMessage.innerText = "Ocorreu um erro. Tente novamente.";
-                    }
-                    loginButton.innerText = "Criar Conta";
-                    loginButton.disabled = false;
-                });
+            const nome = document.getElementById('nomeCadastro').value;
+            const cpf = document.getElementById('cpfCadastro').value;
+            const telefone = document.getElementById('telCadastro').value;
+            const endereco = document.getElementById('endCadastro').value;
+
+            if (!nome || !cpf) {
+                errorMessage.innerText = "Por favor, preencha Nome e CPF.";
+                loginButton.innerText = "Criar Conta"; loginButton.disabled = false; return;
+            }
+
+            // O DETETIVE: Só deixa criar se o CPF não existir.
+            db.ref('usuarios').orderByChild('cpf').equalTo(cpf).once('value').then((snapshot) => {
+                if (snapshot.exists()) {
+                    errorMessage.innerText = "Este CPF já está cadastrado.";
+                    loginButton.innerText = "Criar Conta"; loginButton.disabled = false;
+                } else {
+                    auth.createUserWithEmailAndPassword(email, password)
+                        .then((userCredential) => {
+                            const uid = userCredential.user.uid;
+                            // Salva a ficha PERFEITA e isola a empresa.
+                            db.ref('usuarios/' + uid).set({
+                                email: email, nome: nome, cpf: cpf, telefone: telefone, endereco: endereco,
+                                cargo: 'chefe', id_empresa: uid, dataCriacao: firebase.database.ServerValue.TIMESTAMP
+                            }).then(() => { window.location.href = "html/inicial.html"; });
+                        }).catch((error) => {
+                            errorMessage.innerText = "Erro: " + error.message;
+                            loginButton.innerText = "Criar Conta"; loginButton.disabled = false;
+                        });
+                }
+            });
         }
     });
-
 });

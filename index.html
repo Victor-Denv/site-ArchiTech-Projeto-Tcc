@@ -23,6 +23,25 @@
             <p class="subtitle" id="subtitle-text">Bem-vindo de volta! Por favor, insira seus dados.</p>
 
             <form id="login-form">
+                
+                <div id="campos-cadastro" style="display: none;">
+                    <div class="input-group">
+                        <i class="fa-solid fa-user"></i>
+                        <input type="text" id="nomeCadastro" placeholder="Nome Completo">
+                    </div>
+                    <div class="input-group">
+                        <i class="fa-solid fa-id-card"></i>
+                        <input type="text" id="cpfCadastro" placeholder="CPF">
+                    </div>
+                    <div class="input-group">
+                        <i class="fa-solid fa-phone"></i>
+                        <input type="text" id="telCadastro" placeholder="Telefone">
+                    </div>
+                    <div class="input-group">
+                        <i class="fa-solid fa-map-location-dot"></i>
+                        <input type="text" id="endCadastro" placeholder="Endereço Completo">
+                    </div>
+                </div>
                 <div class="input-group">
                     <i class="fa-solid fa-envelope"></i>
                     <input type="email" id="email" placeholder="Email" required>
@@ -53,7 +72,8 @@
 
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
-    
-    <script src="js/login.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script> <script src="js/login.js"></script>
+</body>
+</html>
 </body>
 </html>
