@@ -36,7 +36,8 @@ firebase.auth().onAuthStateChanged(function(user) {
             
             // REGRA NOVA: ELE SÓ PODE LER. NÃO PODE MAIS SALVAR AQUI.
             if (dadosUsuario) {
-                window.cargoAtual = dadosUsuario.cargo;
+                // Se por acaso o banco falhar, ele assume "visitante" por segurança extrema
+                window.cargoAtual = dadosUsuario.cargo || 'visitante';
                 window.idEmpresa = dadosUsuario.id_empresa;
                 window.nomeUsuario = dadosUsuario.nome || user.email;
                 
@@ -54,7 +55,10 @@ firebase.auth().onAuthStateChanged(function(user) {
                 const userEmailDisplay = document.getElementById('user-email-display');
                 if (userEmailDisplay) userEmailDisplay.innerHTML = `<i class="fa-solid fa-user-circle"></i> Olá, ${window.nomeUsuario}`;
 
-                if (typeof aplicarFiltrosDeMenu === 'function') aplicarFiltrosDeMenu(window.cargoAtual);
+                // ==========================================
+                // AQUI ESTÁ A MÁGICA: APENAS AS DUAS TRAVAS QUE IMPORTAM!
+                // ==========================================
+                if (typeof aplicarPermissoes === 'function') aplicarPermissoes(window.cargoAtual);
                 if (typeof aplicarTravasDeConsulta === 'function') aplicarTravasDeConsulta(window.cargoAtual);
 
                 // Agora sim ele libera para carregar as coisas da tela!
@@ -70,46 +74,79 @@ firebase.auth().onAuthStateChanged(function(user) {
         if (!isLoginPage) window.location.href = "../index.html";
     }
 });
+window.aplicarPermissoes = function(cargo) {
+    console.log("🔐 Aplicando travas para o nível:", cargo);
 
-function aplicarFiltrosDeMenu(cargo) {
-    const linksMenu = document.querySelectorAll('.menu-navegacao a');
+    const linksMenu = document.querySelectorAll('.menu-navegacao a, nav a, .sidebar a');
+    const cardsDashboard = document.querySelectorAll('.card, .item-acesso-rapido, a.box-atalho');
 
-    linksMenu.forEach(link => {
-        const href = link.getAttribute('href');
-        const liPai = link.parentElement;
+    // Função interna para facilitar o esconderijo
+    const esconderElemento = (el) => {
+        if (!el) return;
+        // Se for um link dentro de uma lista (li), esconde o li inteiro
+        const alvo = (el.tagName === 'A' && el.parentElement.tagName === 'LI') ? el.parentElement : el;
+        alvo.style.setProperty('display', 'none', 'important');
+    };
 
-        // REGRA OURO: Só o 'chefe' vê a aba de Configurações (onde cria usuários)
-        if (cargo !== 'chefe') {
-            if (href.includes('configuracoes.html')) {
-                liPai.style.display = 'none';
-            }
-        }
+    // --- REGRAS PARA VISITANTE OU CONSULTA ---
+    if (cargo === 'visitante' || cargo === 'consulta') {
+        [...linksMenu, ...cardsDashboard].forEach(el => {
+            const href = el.getAttribute('href') || '';
+            const texto = (el.innerText || '').toLowerCase();
 
-        // Restrições específicas do Usuário de Consulta
-        if (cargo === 'consulta') {
+            // O Visitante NÃO PODE ver nada que envolva automação, relatórios, config ou segurança
             if (href.includes('automacao.html') || href.includes('relatorio.html') || 
-                href.includes('painel-chamados.html') || href.includes('monitor.html') || 
-                href.includes('seguranca.html') || href.includes('mensagem.html')) {
-                liPai.style.display = 'none';
+                href.includes('configuracoes.html') || href.includes('monitor.html') || 
+                href.includes('seguranca.html') || href.includes('mensagem.html') ||
+                texto.includes('arquivista') || texto.includes('painel') || 
+                texto.includes('segurança') || texto.includes('visitas')) {
+                
+                esconderElemento(el);
             }
-        }
-        // Restrições do Funcionário e TI (mantendo sua lógica original)
-        else if (cargo === 'funcionario' || cargo === 'ti') {
-            if (href.includes('relatorio.html') || href.includes('painel-chamados.html') || 
-                href.includes('monitor.html') || href.includes('seguranca.html')) {
-                liPai.style.display = 'none';
-            }
-        }
-    });
-}
+        });
+    } 
+    
+    // --- REGRAS PARA FUNCIONÁRIO ---
+    // (Ele é mais potente que o visitante, então a lista de bloqueio é MENOR)
+    else if (cargo === 'funcionario') {
+        [...linksMenu, ...cardsDashboard].forEach(el => {
+            const href = el.getAttribute('href') || '';
+            const texto = (el.innerText || '').toLowerCase();
 
+            // O Funcionário PODE ver Automacao e Visitas, mas NÃO vê Painel, Relatório e Segurança
+            if (href.includes('relatorio.html') || href.includes('configuracoes.html') || 
+                href.includes('monitor.html') || href.includes('seguranca.html') ||
+                texto.includes('painel') || texto.includes('segurança')) {
+                
+                esconderElemento(el);
+            }
+        });
+    }
+
+    // --- REGRAS PARA TI ---
+    else if (cargo === 'ti') {
+        [...linksMenu, ...cardsDashboard].forEach(el => {
+            const href = el.getAttribute('href') || '';
+            // TI vê tudo, exceto as Configurações de Equipe (aba restrita ao Chefe)
+            if (href.includes('configuracoes.html')) {
+                esconderElemento(el);
+            }
+        });
+    }
+    
+    // Se o cargo for 'chefe', ele ignora todos os IFs acima e vê TUDO normalmente.
+};
 function aplicarTravasDeConsulta(cargo) {
-    // Esconde os botões perigosos se o usuário for apenas de leitura
-    if (cargo === 'consulta') {
+    // REGRA DE BLOQUEIO DE TELA:
+    // Se for Visitante (público) OU Consulta (leitura interna), esconde os botões de edição
+    if (cargo === 'consulta' || cargo === 'visitante') {
+        
+        // Pega os botões da tela
         const btnDeletar = document.getElementById('btnDeletar');
         const boxAtualizarLocal = document.getElementById('btnAtualizarLocal')?.parentElement;
         const btnSalvarArquivo = document.getElementById('btnSalvarArquivo'); 
         
+        // Se eles existirem na tela, faz eles sumirem (display = 'none')
         if (btnDeletar) btnDeletar.style.display = 'none'; 
         if (boxAtualizarLocal) boxAtualizarLocal.style.display = 'none'; 
         if (btnSalvarArquivo) btnSalvarArquivo.style.display = 'none'; 
@@ -530,153 +567,214 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+// =======================================================
+//      LÓGICA DA PÁGINA 'suporte.html' (ABRIR CHAMADO)
+// =======================================================
+document.addEventListener('DOMContentLoaded', function() {
+    const btnSalvarChamado = document.getElementById('btnSalvarChamado');
+    
+    if (btnSalvarChamado) {
+        const descInput = document.getElementById('descChamado');
+        const impactoInput = document.getElementById('impactoChamado');
 
-    // =======================================================
-    //     LÓGICA DA PÁGINA 'suporte.html' (ABRIR CHAMADO)
-    // =======================================================
-    document.addEventListener('DOMContentLoaded', function() {
-        const btnSalvarChamado = document.getElementById('btnSalvarChamado');
-        
-        if (btnSalvarChamado) { // Verifica se estamos na página de suporte
-            console.log("DEBUG: Iniciando lógica da página suporte.html.");
-            const descInput = document.getElementById('descChamado');
-            const impactoInput = document.getElementById('impactoChamado');
+        btnSalvarChamado.addEventListener('click', function() {
+            // TRAVA DE SEGURANÇA: Só salva se soubermos a qual biblioteca o usuário pertence
+            if (!window.idEmpresa) { 
+                alert("Erro de sessão. Recarregue a página."); 
+                return; 
+            }
 
-            btnSalvarChamado.addEventListener('click', function() {
-                const descricao = descInput.value;
-                const impacto = impactoInput.value;
+            const descricao = descInput.value;
+            const impacto = impactoInput.value;
 
-                if (!descricao || !impacto) { 
-                    alert("Por favor, preencha a Descrição e o Impacto do problema."); 
-                    return; 
-                }
+            if (!descricao || !impacto) { 
+                alert("Por favor, preencha a Descrição e o Impacto do problema."); 
+                return; 
+            }
 
-                btnSalvarChamado.innerText = "Enviando...";
-                btnSalvarChamado.disabled = true;
+            btnSalvarChamado.innerText = "Enviando...";
+            btnSalvarChamado.disabled = true;
 
-                // Salvando no Firebase conforme modelo de incidente da Aula 06
-                const chamadosRef = db.ref('chamados');
-                chamadosRef.push({
-                    descricao: descricao,
-                    impacto: impacto,
-                    status: 'Aberto', // Controle de status exigido na Aula 06
-                    prioridade: 'Não definida', // Líder define depois
-                    solucao: '',
-                    teste_aplicado: '',
-                    evidencia: '',
-                    data_abertura: firebase.database.ServerValue.TIMESTAMP
-                })
-                .then((snapshot) => {
-                    const docId = snapshot.key;
-                    console.log("Chamado aberto com ID: ", docId);
-                    alert("Chamado de suporte enviado com sucesso!");
-                    descInput.value = "";
-                    impactoInput.value = "";
-                    btnSalvarChamado.innerText = "Enviar Chamado";
-                    btnSalvarChamado.disabled = false;
-                })
-                .catch((error) => {
-                    console.error("Erro ao abrir chamado: ", error);
-                    alert("Ocorreu um erro ao enviar. Tente novamente.");
-                    btnSalvarChamado.innerText = "Enviar Chamado";
-                    btnSalvarChamado.disabled = false;
-                });
+            // QUEM ESTÁ LOGADO? Pega o e-mail do usuário atual
+            const usuarioLogado = firebase.auth().currentUser;
+            const emailDoUsuario = usuarioLogado ? usuarioLogado.email : "Usuário Desconhecido";
+
+            // ISOLAMENTO (Parte 4): Salva na gaveta 'chamados' DENTRO da sua 'workspace'
+            db.ref('workspaces/' + window.idEmpresa + '/chamados').push({
+                aberto_por: emailDoUsuario, // IDENTIFICAÇÃO (Parte 1)
+                descricao: descricao,
+                impacto: impacto,
+                status: 'Aberto', 
+                data_abertura: firebase.database.ServerValue.TIMESTAMP
+            }).then(() => {
+                alert("Chamado enviado com sucesso! A equipe de TI já foi notificada.");
+                descInput.value = "";
+                impactoInput.value = "";
+                btnSalvarChamado.innerText = "Enviar Chamado";
+                btnSalvarChamado.disabled = false;
+            }).catch((error) => {
+                console.error("Erro ao salvar chamado:", error);
+                alert("Ocorreu um erro ao enviar.");
+                btnSalvarChamado.innerText = "Enviar Chamado";
+                btnSalvarChamado.disabled = false;
             });
-        }
-    });
+        });
+    }
+});
 
-    // =======================================================
-    //     LÓGICA DA PÁGINA 'painel-chamados.html' (EQUIPE)
+ // =======================================================
+    //      LÓGICA DA PÁGINA 'painel-chamados.html' (SUPORTE E TI)
     // =======================================================
     document.addEventListener('DOMContentLoaded', function() {
         const listaDeChamados = document.getElementById('listaDeChamados');
         const areaEdicaoChamado = document.getElementById('areaEdicaoChamado');
         
         if (listaDeChamados) {
-            console.log("DEBUG: Iniciando Painel de Chamados.");
-            const chamadosRef = db.ref('chamados');
+            
+            // A CORREÇÃO DO CARREGAMENTO INFINITO: Esperamos o Firebase confirmar quem está logado primeiro
+            auth.onAuthStateChanged((user) => {
+                if (user) {
+                    db.ref('usuarios/' + user.uid).once('value').then((snapUser) => {
+                        const dadosUser = snapUser.val();
+                        if (!dadosUser) return;
 
-            // Carregar lista de chamados
-            chamadosRef.on('value', (snapshot) => {
-                listaDeChamados.innerHTML = "";
-                const dados = snapshot.val();
-                
-                if (dados) {
-                    Object.keys(dados).forEach(key => {
-                        const chamado = dados[key];
-                        // Define cor baseada no status
-                        let corStatus = "#ccc";
-                        if(chamado.status === "Resolvido") corStatus = "#28a745"; // Verde
-                        if(chamado.status === "Em correção" || chamado.status === "Em teste") corStatus = "#ffc107"; // Amarelo
-                        if(chamado.status === "Aberto" || chamado.status === "Reaberto") corStatus = "#dc3545"; // Vermelho
+                        const idEmpresaReal = dadosUser.id_empresa;
+                        const cargoReal = dadosUser.cargo || 'visitante';
+                        const meuEmail = user.email;
+                        const isEquipeTI = (cargoReal === 'chefe' || cargoReal === 'ti');
 
-                        const itemHtml = `
-                            <div style="background-color: #333; padding: 15px; border-radius: 5px; margin-bottom: 10px; border-left: 5px solid ${corStatus}; display: flex; justify-content: space-between; align-items: center;">
-                                <div>
-                                    <strong>Descrição:</strong> ${chamado.descricao} <br>
-                                    <span style="font-size: 12px; color: #aaa;">Status: <span style="color:${corStatus}; font-weight:bold;">${chamado.status}</span> | Impacto: ${chamado.impacto} | Prioridade: ${chamado.prioridade || 'Não definida'}</span>
-                                </div>
-                                <button onclick="editarChamado('${key}')" style="padding: 8px 15px; background-color: #6f42c1; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">Atender</button>
-                            </div>
-                        `;
-                        listaDeChamados.innerHTML += itemHtml;
+                        const chamadosRef = db.ref('workspaces/' + idEmpresaReal + '/chamados');
+
+                        // 1. CARREGA OS USUÁRIOS DE TI PARA O DROPDOWN (Só para a TI)
+                        let opcoesTI = '<option value="">Ninguém (Aberto)</option>';
+                        if (isEquipeTI) {
+                            db.ref('usuarios').orderByChild('id_empresa').equalTo(idEmpresaReal).once('value', snapEquipe => {
+                                if(snapEquipe.exists()) {
+                                    Object.values(snapEquipe.val()).forEach(u => {
+                                        if(u.cargo === 'ti' || u.cargo === 'chefe') {
+                                            opcoesTI += `<option value="${u.email}">${u.email} (${u.cargo.toUpperCase()})</option>`;
+                                        }
+                                    });
+                                }
+                            });
+                        }
+
+                        // 2. BUSCA OS CHAMADOS (Agora com a gaveta certa garantida)
+                        chamadosRef.on('value', (snapshot) => {
+                            listaDeChamados.innerHTML = "";
+                            const dados = snapshot.val();
+                            let chamadosEncontrados = 0;
+                            
+                            if (dados) {
+                                Object.keys(dados).reverse().forEach(key => {
+                                    const chamado = dados[key];
+                                    
+                                    // FILTRO: Se NÃO for TI e não for o chamado dele, esconde.
+                                    if (!isEquipeTI && chamado.aberto_por !== meuEmail) return; 
+
+                                    chamadosEncontrados++;
+                                    const idCurto = key.slice(-6).toUpperCase(); 
+                                    
+                                    let corStatus = "#ccc";
+                                    if(chamado.status === "Resolvido") corStatus = "#28a745"; 
+                                    if(chamado.status === "Em correção" || chamado.status === "Em teste") corStatus = "#ffc107"; 
+                                    if(chamado.status === "Aberto" || chamado.status === "Reaberto") corStatus = "#dc3545"; 
+
+                                    const responsavelTexto = chamado.responsavel ? `<span style="color: #3498db; font-weight: bold;"><i class="fa-solid fa-user-gear"></i> ${chamado.responsavel}</span>` : `<span style="color: #e74c3c;">Aguardando Atendimento</span>`;
+                                    const anexoIcone = chamado.anexoUrl ? `<a href="${chamado.anexoUrl}" target="_blank" title="Ver anexo" style="color: #3498db; margin-left: 10px;"><i class="fa-solid fa-paperclip"></i></a>` : '';
+
+                                    const botaoAcao = isEquipeTI 
+                                        ? `<button onclick="editarChamado('${key}')" style="padding: 10px 15px; background-color: #6f42c1; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;"><i class="fa-solid fa-pen-to-square"></i> Atender</button>`
+                                        : `<div style="padding: 8px 12px; background-color: #333; color: ${corStatus}; border: 1px solid ${corStatus}; border-radius: 5px; font-weight: bold; text-align: center;">${chamado.status}</div>`;
+
+                                    const infoSolucao = (!isEquipeTI && chamado.solucao) 
+                                        ? `<div style="margin-top: 10px; padding: 10px; background: #1e1e2d; border-left: 3px solid #28a745; border-radius: 4px; font-size: 13px;"><strong>Resposta da TI:</strong> ${chamado.solucao}</div>` : '';
+
+                                    listaDeChamados.innerHTML += `
+                                        <div style="background-color: #2c2c3e; padding: 15px; border-radius: 8px; margin-bottom: 10px; border-left: 5px solid ${corStatus}; display: flex; justify-content: space-between; align-items: flex-start; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                                            <div style="width: 80%;">
+                                                <div style="margin-bottom: 5px;">
+                                                    <strong style="color: #fff; font-size: 16px;">[#${idCurto}] ${chamado.descricao}</strong> ${anexoIcone}
+                                                </div>
+                                                <div style="font-size: 13px; color: #a2a2ba; line-height: 1.5;">
+                                                    <strong>Impacto:</strong> ${chamado.impacto} | <strong>Responsável:</strong> ${responsavelTexto}<br>
+                                                    ${isEquipeTI ? `<strong>Por:</strong> ${chamado.aberto_por} | <strong>Dependência:</strong> ${chamado.dependencia || '<em>Nenhuma</em>'}` : ''}
+                                                </div>
+                                                ${infoSolucao}
+                                            </div>
+                                            <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 10px;">
+                                                ${botaoAcao}
+                                            </div>
+                                        </div>
+                                    `;
+                                });
+                            } 
+
+                            if (chamadosEncontrados === 0) {
+                                listaDeChamados.innerHTML = isEquipeTI 
+                                    ? "<p style='color: #a2a2ba; text-align: center; padding: 20px;'>Nenhum chamado registrado na biblioteca.</p>"
+                                    : "<p style='color: #a2a2ba; text-align: center; padding: 20px;'>Você ainda não abriu nenhum chamado de suporte.</p>";
+                            }
+                        });
+
+                        // 3. FUNÇÕES DE EDIÇÃO DA TI
+                        window.editarChamado = function(id) {
+                            if (!isEquipeTI) return;
+                            db.ref('workspaces/' + idEmpresaReal + '/chamados/' + id).once('value').then((snapshot) => {
+                                const data = snapshot.val();
+                                if(data) {
+                                    document.getElementById('editChamadoId').value = id;
+                                    document.getElementById('displayDescricao').innerText = data.descricao;
+                                    document.getElementById('displayImpacto').innerText = data.impacto;
+                                    document.getElementById('editStatus').value = data.status || "Aberto";
+                                    document.getElementById('editPrioridade').value = data.prioridade || "Baixa";
+                                    document.getElementById('editSolucao').value = data.solucao || "";
+                                    
+                                    if (document.getElementById('editResponsavel')) {
+                                        document.getElementById('editResponsavel').innerHTML = opcoesTI;
+                                        document.getElementById('editResponsavel').value = data.responsavel || "";
+                                    }
+                                    if (document.getElementById('editDependencia')) document.getElementById('editDependencia').value = data.dependencia || "";
+
+                                    const linkAnexo = document.getElementById('linkAnexoChamado');
+                                    if (linkAnexo) {
+                                        if (data.anexoUrl) { linkAnexo.href = data.anexoUrl; linkAnexo.style.display = "inline-block"; } 
+                                        else { linkAnexo.style.display = "none"; }
+                                    }
+                                    
+                                    areaEdicaoChamado.style.display = "block";
+                                }
+                            });
+                        };
+
+                        const btnAtualizarChamado = document.getElementById('btnAtualizarChamado');
+                        if (btnAtualizarChamado) {
+                            // Limpa eventos antigos para não duplicar cliques
+                            const novoBtn = btnAtualizarChamado.cloneNode(true);
+                            btnAtualizarChamado.parentNode.replaceChild(novoBtn, btnAtualizarChamado);
+                            
+                            novoBtn.addEventListener('click', function() {
+                                const id = document.getElementById('editChamadoId').value;
+                                db.ref('workspaces/' + idEmpresaReal + '/chamados/' + id).update({
+                                    status: document.getElementById('editStatus').value,
+                                    prioridade: document.getElementById('editPrioridade').value,
+                                    solucao: document.getElementById('editSolucao').value,
+                                    responsavel: document.getElementById('editResponsavel')?.value || "",
+                                    dependencia: document.getElementById('editDependencia')?.value || ""
+                                }).then(() => {
+                                    alert("Chamado atualizado com sucesso!");
+                                    areaEdicaoChamado.style.display = "none";
+                                });
+                            });
+                        }
+                        
+                        const btnCancelarEdicao = document.getElementById('btnCancelarEdicao');
+                        if(btnCancelarEdicao) btnCancelarEdicao.addEventListener('click', () => areaEdicaoChamado.style.display = "none");
                     });
                 } else {
-                    listaDeChamados.innerHTML = "<p>Nenhum chamado registrado no momento.</p>";
+                    listaDeChamados.innerHTML = "<p style='color: #a2a2ba; text-align: center; padding: 20px;'>Acesso negado. Faça login.</p>";
                 }
             });
-
-            // Função global para abrir o editor (disponível no clique do botão HTML gerado acima)
-            window.editarChamado = function(id) {
-                db.ref('chamados/' + id).once('value').then((snapshot) => {
-                    const data = snapshot.val();
-                    if(data) {
-                        document.getElementById('editChamadoId').value = id;
-                        document.getElementById('displayDescricao').innerText = data.descricao;
-                        document.getElementById('displayImpacto').innerText = data.impacto;
-                        document.getElementById('editStatus').value = data.status || "Aberto";
-                        document.getElementById('editPrioridade').value = data.prioridade || "Baixa";
-                        document.getElementById('editSolucao').value = data.solucao || "";
-                        document.getElementById('editTeste').value = data.teste_aplicado || "";
-                        
-                        areaEdicaoChamado.style.display = "block";
-                        window.scrollTo(0, document.body.scrollHeight); // Rola para baixo
-                    }
-                });
-            };
-
-            // Salvar as atualizações
-            const btnAtualizarChamado = document.getElementById('btnAtualizarChamado');
-            if (btnAtualizarChamado) {
-                btnAtualizarChamado.addEventListener('click', function() {
-                    const id = document.getElementById('editChamadoId').value;
-                    const novoStatus = document.getElementById('editStatus').value;
-                    const novaPrioridade = document.getElementById('editPrioridade').value;
-                    const novaSolucao = document.getElementById('editSolucao').value;
-                    const novoTeste = document.getElementById('editTeste').value;
-
-                    db.ref('chamados/' + id).update({
-                        status: novoStatus,
-                        prioridade: novaPrioridade,
-                        solucao: novaSolucao,
-                        teste_aplicado: novoTeste
-                    }).then(() => {
-                        alert("Chamado atualizado com sucesso!");
-                        areaEdicaoChamado.style.display = "none";
-                    }).catch((error) => {
-                        console.error("Erro ao atualizar chamado:", error);
-                        alert("Erro ao salvar.");
-                    });
-                });
-            }
-
-            // Cancelar edição
-            const btnCancelarEdicao = document.getElementById('btnCancelarEdicao');
-            if(btnCancelarEdicao) {
-                btnCancelarEdicao.addEventListener('click', () => {
-                    areaEdicaoChamado.style.display = "none";
-                });
-            }
         }
     });
   // =======================================================
@@ -947,48 +1045,118 @@ document.addEventListener('DOMContentLoaded', function() {
 // --- 2. LISTAR EQUIPE NA TELA DE CONFIGURAÇÕES ---
     window.listarEquipe = function() {
         const listaEquipe = document.getElementById('listaUsuariosCadastrados');
-        
-        // O CADEADO: Só puxa se já souber a empresa
         if (!listaEquipe || !window.idEmpresa) return;
 
-        // O FILTRO: Busca SÓ quem tem o id_empresa igual ao do chefe logado
         db.ref('usuarios').orderByChild('id_empresa').equalTo(window.idEmpresa).on('value', (snapshot) => {
             listaEquipe.innerHTML = "";
             const dados = snapshot.val();
+            
             if (dados) {
                 Object.keys(dados).forEach(uid => {
                     const user = dados[uid];
-                    let corBadge = "#95a5a6"; // Cinza
-                    let nomeCargo = "Funcionário";
-                    
-                    if (user.cargo === 'chefe') { corBadge = "#e74c3c"; nomeCargo = "Arquivista Chefe"; }
-                    else if (user.cargo === 'ti') { corBadge = "#3498db"; nomeCargo = "Equipe de TI"; }
-                    else if (user.cargo === 'consulta') { corBadge = "#f39c12"; nomeCargo = "Consulta"; } 
+                    const isEuMesmo = uid === firebase.auth().currentUser.uid;
+
+                    let corBadge = "#95a5a6"; 
+                    if (user.cargo === 'chefe') corBadge = "#e74c3c";
+                    else if (user.cargo === 'ti') corBadge = "#3498db";
+                    else if (user.cargo === 'consulta') corBadge = "#f39c12";
+                    else if (user.cargo === 'funcionario') corBadge = "#2ecc71";
+
+                    let controlesHTML = "";
+                    if (isEuMesmo) {
+                        controlesHTML = `<span style="background-color: ${corBadge}; color: white; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600;">VOCÊ (CHEFE)</span>`;
+                    } else {
+                        // DROPDOWN BONITÃO (Estilo moderno)
+                        controlesHTML = `
+                            <select onchange="abrirModalPromocao('${uid}', this.value)" style="padding: 8px 12px; border-radius: 8px; border: 1px solid #d1d5db; background-color: #f8f9fa; color: #4b5563; font-size: 13px; font-weight: 600; cursor: pointer; outline: none; box-shadow: 0 2px 4px rgba(0,0,0,0.02); transition: all 0.2s;">
+                                <option value="visitante" ${user.cargo === 'visitante' ? 'selected' : ''}>Visitante</option>
+                                <option value="consulta" ${user.cargo === 'consulta' ? 'selected' : ''}>Consulta</option>
+                                <option value="funcionario" ${user.cargo === 'funcionario' ? 'selected' : ''}>Funcionário</option>
+                                <option value="ti" ${user.cargo === 'ti' ? 'selected' : ''}>Equipe TI</option>
+                            </select>
+                        `;
+                    }
 
                     listaEquipe.innerHTML += `
-                        <div style="background-color: #f8f9fa; padding: 12px 15px; border-radius: 8px; border-left: 4px solid ${corBadge}; display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <div style="background-color: #ffffff; padding: 12px 15px; border-radius: 8px; border-left: 4px solid ${corBadge}; display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); border-top: 1px solid #f1f1f1; border-right: 1px solid #f1f1f1; border-bottom: 1px solid #f1f1f1;">
                             <span style="color: #2c3e50; font-weight: 500; font-size: 14px;">${user.email}</span>
-                            <span style="background-color: ${corBadge}; color: white; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600;">${nomeCargo}</span>
+                            <div style="display: flex; gap: 10px; align-items: center;">
+                                ${controlesHTML}
+                            </div>
                         </div>
                     `;
                 });
             } else { 
-                listaEquipe.innerHTML = "<div style='color: #7f8c8d; font-size: 14px;'>Você ainda não tem uma equipe cadastrada.</div>"; 
+                listaEquipe.innerHTML = "<div style='color: #7f8c8d; font-size: 14px;'>Ninguém cadastrado na sua biblioteca ainda.</div>"; 
             }
         });
     };
 
-    // Caso a variável já esteja pronta, ele chama a lista na hora
     if (window.idEmpresa) window.listarEquipe();
 
 
-    // --- 3. CRIAR USUÁRIO ---
+    // --- MODAL CUSTOMIZADO (Adeus Confirm Feio!) ---
+    window.abrirModalPromocao = function(uidUsuario, novoCargo) {
+        if (window.cargoAtual !== 'chefe') {
+            alert("Acesso Negado: Apenas o Arquivista Chefe pode alterar cargos.");
+            window.listarEquipe(); 
+            return;
+        }
 
-    // Adiciona as opções de cargo no select
+        // Cria a película escura do fundo (Overlay)
+        const overlay = document.createElement('div');
+        overlay.id = "modalPromocaoOverlay";
+        overlay.style.cssText = "position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; z-index: 9999; backdrop-filter: blur(3px); animation: fadeIn 0.2s ease-in-out;";
+
+        // Cria a caixinha branca do Modal
+        const modal = document.createElement('div');
+        modal.style.cssText = "background: white; padding: 30px; border-radius: 12px; width: 350px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.2);";
+
+        modal.innerHTML = `
+            <div style="font-size: 40px; color: #6f42c1; margin-bottom: 15px;">
+                <i class="fa-solid fa-circle-exclamation"></i>
+            </div>
+            <h3 style="color: #2c3e50; margin-bottom: 10px; font-size: 18px; font-family: sans-serif;">Alterar Nível de Acesso</h3>
+            <p style="color: #666; font-size: 14px; margin-bottom: 25px; font-family: sans-serif; line-height: 1.5;">
+                Você tem certeza que deseja alterar o cargo deste usuário para <strong style="color: #6f42c1;">${novoCargo.toUpperCase()}</strong>?
+            </p>
+            <div style="display: flex; gap: 10px; justify-content: center;">
+                <button id="btnCancelarModal" style="padding: 10px; border: none; border-radius: 6px; background: #f1f5f9; color: #475569; font-weight: bold; cursor: pointer; flex: 1; transition: 0.2s;">Cancelar</button>
+                <button id="btnConfirmarModal" style="padding: 10px; border: none; border-radius: 6px; background: #6f42c1; color: white; font-weight: bold; cursor: pointer; flex: 1; transition: 0.2s;">Confirmar</button>
+            </div>
+        `;
+
+        overlay.appendChild(modal);
+        document.body.appendChild(overlay);
+
+        // Se o chefe clicar em Cancelar
+        document.getElementById('btnCancelarModal').addEventListener('click', () => {
+            document.body.removeChild(overlay);
+            window.listarEquipe(); // Atualiza a lista para o dropdown voltar pro valor antigo
+        });
+
+        // Se o chefe clicar em Confirmar
+        document.getElementById('btnConfirmarModal').addEventListener('click', () => {
+            document.getElementById('btnConfirmarModal').innerText = "Salvando...";
+            
+            db.ref('usuarios/' + uidUsuario).update({ cargo: novoCargo })
+            .then(() => {
+                document.body.removeChild(overlay);
+                // Não precisa de alerta, a lista atualiza sozinha na tela e a cor muda na hora!
+            })
+            .catch(error => {
+                alert("Erro ao atualizar: " + error.message);
+                document.body.removeChild(overlay);
+            });
+        });
+    };
+
+    // --- 3. CRIAR USUÁRIO MANUALMENTE (OPCIONAL PARA O CHEFE) ---
     setTimeout(() => {
         const selectNivel = document.getElementById('nivelAcessoUser');
         if (selectNivel) {
             selectNivel.innerHTML = `
+                <option value="visitante">Visitante (Público)</option>
                 <option value="consulta">Usuário de Consulta (Apenas visualização)</option>
                 <option value="funcionario">Funcionário / Arquivista</option>
                 <option value="ti">Equipe de TI</option>
@@ -1025,11 +1193,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 .then((userCredential) => {
                     const novoUid = userCredential.user.uid;
                     
-                    // O CARIMBO: Agora o id_empresa é gravado junto com a ficha!
                     db.ref('usuarios/' + novoUid).set({
                         email: email,
                         cargo: cargo,
-                        id_empresa: window.idEmpresa, // <--- A MÁGICA ACONTECE AQUI
+                        id_empresa: window.idEmpresa,
                         dataCriacao: firebase.database.ServerValue.TIMESTAMP
                     }).then(() => {
                         authSecundario.signOut();
@@ -1073,12 +1240,15 @@ window.addEventListener('load', function() {
                 
                 db.ref('usuarios/' + user.uid).once('value').then((snapshot) => {
                     const dados = snapshot.val();
-                    const cargo = dados ? dados.cargo : 'funcionario';
                     
-                    let nomeCargoFormatado = "Funcionário";
+                    // SE O BANCO NÃO TIVER CARGO, ELE É VISITANTE POR PADRÃO
+                    const cargo = dados ? dados.cargo : 'visitante';
+                    
+                    let nomeCargoFormatado = "Visitante";
                     if (cargo === 'chefe') nomeCargoFormatado = "Arquivista Chefe";
                     else if (cargo === 'ti') nomeCargoFormatado = "Equipe de TI";
-                    else if (cargo === 'consulta') nomeCargoFormatado = "Consulta";
+                    else if (cargo === 'consulta') nomeCargoFormatado = "Usuário de Consulta";
+                    else if (cargo === 'funcionario') nomeCargoFormatado = "Funcionário";
                     
                     cargoUsuarioSidebar.innerText = nomeCargoFormatado;
 

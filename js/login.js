@@ -34,8 +34,9 @@ document.addEventListener('DOMContentLoaded', function() {
         if(e) e.preventDefault(); 
         
         if (isLoginMode) {
-            title.innerText = "Crie sua Empresa";
-            subtitle.innerText = "Insira seus dados para registrar sua conta de Chefe.";
+            // MUDANÇA DE TEXTO: Agora faz mais sentido para uma biblioteca
+            title.innerText = "Cadastre-se no Acervo";
+            subtitle.innerText = "Insira seus dados para acessar a biblioteca pública.";
             loginButton.innerText = "Criar Conta";
             camposCadastro.style.display = "block"; 
             signupLinkContainer.innerHTML = '<p>Já tem uma conta? <a href="#" id="login-link">Faça login</a></p>';
@@ -54,6 +55,11 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     document.getElementById('signup-link').addEventListener('click', toggleMode);
+
+    // ==========================================================
+    // AQUI VOCÊ COLA O SEU UID DE CHEFE (A CHAVE DA BIBLIOTECA)
+    // ==========================================================
+    const ID_DA_BIBLIOTECA = "eXfbSrTONARpSk1ePURpjN0oAE72"; 
 
     loginButton.addEventListener('click', function() {
         const email = emailInput.value;
@@ -86,7 +92,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 loginButton.innerText = "Criar Conta"; loginButton.disabled = false; return;
             }
 
-            // O DETETIVE: Só deixa criar se o CPF não existir.
             db.ref('usuarios').orderByChild('cpf').equalTo(cpf).once('value').then((snapshot) => {
                 if (snapshot.exists()) {
                     errorMessage.innerText = "Este CPF já está cadastrado.";
@@ -95,10 +100,17 @@ document.addEventListener('DOMContentLoaded', function() {
                     auth.createUserWithEmailAndPassword(email, password)
                         .then((userCredential) => {
                             const uid = userCredential.user.uid;
-                            // Salva a ficha PERFEITA e isola a empresa.
+                            
+                            // A MÁGICA: Ele nasce como VISITANTE e é jogado na SUA biblioteca
                             db.ref('usuarios/' + uid).set({
-                                email: email, nome: nome, cpf: cpf, telefone: telefone, endereco: endereco,
-                                cargo: 'chefe', id_empresa: uid, dataCriacao: firebase.database.ServerValue.TIMESTAMP
+                                email: email, 
+                                nome: nome, 
+                                cpf: cpf, 
+                                telefone: telefone, 
+                                endereco: endereco,
+                                cargo: 'visitante',                // <--- PULSEIRA DE VISITANTE
+                                id_empresa: ID_DA_BIBLIOTECA,      // <--- ENTRA NA SUA BIBLIOTECA
+                                dataCriacao: firebase.database.ServerValue.TIMESTAMP
                             }).then(() => { window.location.href = "html/inicial.html"; });
                         }).catch((error) => {
                             errorMessage.innerText = "Erro: " + error.message;
