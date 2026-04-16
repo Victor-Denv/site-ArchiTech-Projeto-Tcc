@@ -76,25 +76,7 @@ A arquitetura de interface utiliza um padrão de três colunas (Dashboard Estend
 └── README.md         # Documentação técnica
 ```
 
-### 🚀 Acesso e Execução
 
-#### 🌐 Domínio Oficial (Recomendado)
-O projeto está em produção com certificado SSL ativo:
-* [➡️ **Acessar o Architech App**](https://www.architechapp.com.br/)
-
-#### 🐳 Execução Local (Docker)
-1. Certifique-se de ter o **Docker** instalado.
-2. Clone o repositório e navegue até a pasta.
-3. No terminal, execute o comando:
- ``` 
- docker-compose up -d --build
- ```
-
-Com certeza! O problema é que, sem os símbolos de marcação (#, *, ```), o GitHub lê tudo como uma linha só de texto corrido.
-
-Aqui está o seu texto com a formatação Markdown completa. Copie o bloco abaixo integralmente e substitua o que está no seu arquivo:
-
-Markdown
 ### 🚀 Acesso e Execução
 
 #### 🌐 Domínio Oficial (Recomendado)
