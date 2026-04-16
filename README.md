@@ -27,19 +27,29 @@ A arquitetura de interface utiliza um padrão de três colunas (Dashboard Estend
 
 #### 🤖 Inteligência Artificial Documental
 * **Categorização por IA (Google Gemini):** Sistema de upload assistido que identifica automaticamente se um documento é administrativo, financeiro ou confidencial.
-* **Extração de Metadados:** Processamento de linguagem natural para preenchimento automático de campos, reduzindo o erro humano.
+* **Extração de Metadados:** Processamento de linguagem natural (NLP) para leitura e preenchimento automático de campos, minimizando erros de digitação manual.
 
 #### 🔐 Segurança e Governança
-* **Recuperação de Senha Segura:** Fluxo de redefinição de senha via e-mail com integração Firebase e verificação de domínio autorizado.
-* **Controle de Acesso (RBAC):** Níveis hierárquicos (Arquivista Chefe, TI e Funcionários) que limitam a visualização de documentos confidenciais.
+* **Recuperação de Senha Segura:** Fluxo de redefinição via e-mail com integração Firebase e proteção contra domínios não autorizados.
+* **Controle de Acesso (RBAC):** Níveis hierárquicos (Arquivista Chefe, TI e Funcionários) que restringem o acesso a documentos sensíveis.
 
 #### 📦 Gestão e Rastreabilidade
-* **Protocolo QR Code:** Geração de códigos exclusivos para cada registro, permitindo a vinculação imediata entre a pasta física e o arquivo digital.
-* **Central de Ajuda Integrada:** Modais de FAQ e Suporte ao Cliente estilizados para auxiliar o usuário sem interromper o fluxo de trabalho.
+* **Protocolo QR Code:** Geração de códigos únicos para vinculação imediata entre pastas físicas e registros digitais.
+* **Central de Ajuda Integrada:** Modais de FAQ e Suporte ao Cliente estilizados para assistência em tempo real.
 
-#### 📱 Experiência do Usuário
-* **Responsividade:** Interface adaptada para tablets e smartphones via CSS Grid e Flexbox.
-* **Saudação Adaptativa:** Lógica em tempo real que altera a interface e saudações conforme o período do dia (Manhã, Tarde ou Noite).
+#### 📱 Experiência do Usuário (UX/UI)
+* **Responsividade:** Interface 100% adaptável para mobile e tablets via CSS Grid e Flexbox.
+* **Saudação Adaptativa:** Lógica em tempo real que altera temas e mensagens conforme o horário (Manhã, Tarde ou Noite).
+
+---
+
+### 🛠️ Fluxo de Trabalho (Workflow)
+
+1. **Autenticação:** O usuário acessa o sistema via Firebase Auth.
+2. **Digitalização/Upload:** O documento é enviado ao sistema.
+3. **Análise IA:** O Google Gemini processa a imagem/texto e sugere a categoria.
+4. **Indexação:** O sistema gera um QR Code e armazena os metadados no Realtime Database.
+5. **Consulta:** Busca rápida e filtragem por categorias automatizadas.
 
 ---
 
@@ -47,23 +57,24 @@ A arquitetura de interface utiliza um padrão de três colunas (Dashboard Estend
 
 * **Frontend:** HTML5 semântico, CSS3 (Variáveis, Grid, Flexbox) e JavaScript Vanilla (ES6+).
 * **Backend & Cloud:** Firebase (Authentication, Realtime Database e Hosting).
-* **Inteligência Artificial:** Google Gemini API para visão computacional e análise de texto.
-* **Infraestrutura:** Docker e Docker Compose para padronização do ambiente de desenvolvimento.
+* **Inteligência Artificial:** Google Gemini API (Vision e Pro).
+* **Infraestrutura:** Docker e Docker Compose para containerização.
 * **Iconografia:** Font Awesome 6.0 e Google Fonts (Poppins/Inter).
 
 ---
 
 ### 📂 Estrutura de Arquivos
 
-
+```text
 /projeto-architech
-├── .docker/          # Configurações de containers e Dockerfile
-├── html/             # Páginas internas (Arquivos, Configurações, FAQ)
-├── css/              # Folhas de estilo modulares (Login, Dashboard, Modais)
-├── js/               # Motores do sistema (Firebase, IA, UI logic)
-├── img/              # Ativos visuais, logotipos e previews
-├── index.html        # Página principal de autenticação
-└── README.md         # Documentação técnica do projeto
+├── .docker/          # Dockerfile e arquivos de configuração de container
+├── html/             # Páginas internas (Configurações, Arquivos, FAQ)
+├── css/              # Estilização modular (Login, Dashboard, Modais, FAQ)
+├── js/               # Motores (Firebase, IA, UI logic, Validações)
+├── img/              # Assets, logotipos e capturas de tela
+├── index.html        # Portal de autenticação (Entry Point)
+└── README.md         # Documentação técnica
+
 
 🚀 Acesso e Execução
 Domínio Oficial (Recomendado)
@@ -71,14 +82,15 @@ O projeto está em produção com certificado SSL ativo:
 ➡️ Acessar o Architech App
 
 Execução Local (Docker)
-Para rodar o ambiente espelhado ao de produção:
-
 Certifique-se de ter o Docker instalado.
 
-Execute o comando no terminal:
+Clone o repositório e navegue até a pasta.
 
+No terminal, execute:
+
+Bash
 docker-compose up -d --build
-Acesse http://localhost:8080.
+Acesse http://localhost:8080 no navegador.
 
 👥 Equipe e Contribuições
 🎨 Design Visual & Prototipagem: Adriane Barreto
@@ -97,4 +109,4 @@ Testes de usabilidade, QA (Quality Assurance) e refinamento de interface.
 Projeto desenvolvido no SENAI Camaçari para fins acadêmicos.
 
 © 2026 - Todos os direitos reservados.
-A reprodução ou plágio deste conteúdo sem autorização prévia dos autores é estritamente proibida e sujeita a penalidades acadêmicas.
+A reprodução ou plágio deste conteúdo sem autorização prévia dos autores é estritamente proibida e sujeita a penalidades acadêmicas conforme o regimento interno da instituição.
