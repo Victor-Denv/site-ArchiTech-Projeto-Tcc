@@ -55,7 +55,7 @@ A arquitetura de interface utiliza um padrão de três colunas (Dashboard Estend
 
 ### 📂 Estrutura de Arquivos
 
-```text
+
 /projeto-architech
 ├── .docker/          # Configurações de containers e Dockerfile
 ├── html/             # Páginas internas (Arquivos, Configurações, FAQ)
