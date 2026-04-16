@@ -65,12 +65,6 @@ A arquitetura de interface utiliza um padrão de três colunas (Dashboard Estend
 
 ### 📂 Estrutura de Arquivos
 
-# 🏛️ Dashboard Architech - Gestão Arquivística Inteligente
-
----
-
-### 📂 Estrutura de Arquivos
-
 ```text
 /projeto-architech
 ├── .docker/          # Dockerfile e configurações de container
@@ -82,21 +76,43 @@ A arquitetura de interface utiliza um padrão de três colunas (Dashboard Estend
 └── README.md         # Documentação técnica
 ```
 
-🚀 Acesso e Execução
-Domínio Oficial (Recomendado)
+### 🚀 Acesso e Execução
+
+#### 🌐 Domínio Oficial (Recomendado)
 O projeto está em produção com certificado SSL ativo:
-➡️ Acessar o Architech App
+* [➡️ **Acessar o Architech App**](https://www.architechapp.com.br/)
 
-Execução Local (Docker)
-Certifique-se de ter o Docker instalado.
+#### 🐳 Execução Local (Docker)
+1. Certifique-se de ter o **Docker** instalado.
+2. Clone o repositório e navegue até a pasta.
+3. No terminal, execute o comando:
+ ``` 
+ docker-compose up -d --build
+ ```
 
-Clone o repositório e navegue até a pasta.
+Com certeza! O problema é que, sem os símbolos de marcação (#, *, ```), o GitHub lê tudo como uma linha só de texto corrido.
 
-No terminal, execute:
+Aqui está o seu texto com a formatação Markdown completa. Copie o bloco abaixo integralmente e substitua o que está no seu arquivo:
 
-Bash
+Markdown
+### 🚀 Acesso e Execução
+
+#### 🌐 Domínio Oficial (Recomendado)
+O projeto está em produção com certificado SSL ativo:
+* [➡️ **Acessar o Architech App**](https://www.architechapp.com.br/)
+
+#### 🐳 Execução Local (Docker)
+1. Certifique-se de ter o **Docker** instalado.
+2. Clone o repositório e navegue até a pasta.
+3. No terminal, execute o comando:
+
+```
 docker-compose up -d --build
-Acesse http://localhost:8080 no navegador.
+```
+4. Acesse: http://localhost:8080 no seu navegador. 
+
+
+---
 
 👥 Equipe e Contribuições
 🎨 Design Visual & Prototipagem: Adriane Barreto
@@ -111,8 +127,10 @@ Arquitetura de software, integração Firebase/IA, DevOps e responsividade.
 
 Testes de usabilidade, QA (Quality Assurance) e refinamento de interface.
 
+
+---
+
 ©️ Direitos Autorais e Licença
 Projeto desenvolvido no SENAI Camaçari para fins acadêmicos.
 
-© 2026 - Todos os direitos reservados.
-A reprodução ou plágio deste conteúdo sem autorização prévia dos autores é estritamente proibida e sujeita a penalidades acadêmicas conforme o regimento interno da instituição.
+© 2026 - Todos os direitos reservados. A reprodução ou plágio deste conteúdo sem autorização prévia dos autores é estritamente proibida e sujeita a penalidades acadêmicas conforme o regimento interno da instituição.
