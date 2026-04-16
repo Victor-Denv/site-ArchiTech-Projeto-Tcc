@@ -65,16 +65,22 @@ A arquitetura de interface utiliza um padrão de três colunas (Dashboard Estend
 
 ### 📂 Estrutura de Arquivos
 
+# 🏛️ Dashboard Architech - Gestão Arquivística Inteligente
+
+---
+
+### 📂 Estrutura de Arquivos
+
 ```text
 /projeto-architech
-├── .docker/          # Dockerfile e arquivos de configuração de container
+├── .docker/          # Dockerfile e configurações de container
 ├── html/             # Páginas internas (Configurações, Arquivos, FAQ)
-├── css/              # Estilização modular (Login, Dashboard, Modais, FAQ)
-├── js/               # Motores (Firebase, IA, UI logic, Validações)
+├── css/              # Estilização modular (Login, Dashboard, Modais)
+├── js/               # Motores (Firebase, IA Gemini, UI logic)
 ├── img/              # Assets, logotipos e capturas de tela
 ├── index.html        # Portal de autenticação (Entry Point)
 └── README.md         # Documentação técnica
-
+```
 
 🚀 Acesso e Execução
 Domínio Oficial (Recomendado)
