@@ -19,8 +19,8 @@
                 <i class="fa-solid fa-layer-group"></i>
                 <h1>ARCHITECH</h1>
             </div>
-            <nav class="menu-navegacao">
-                  <ul>
+          <nav class="menu-navegacao">
+                <ul>
                    <li><a href="inicial.html"><i class="fa-solid fa-house"></i> Início</a></li>
                     <li><a href="relatorio.html"><i class="fa-solid fa-chart-pie"></i> Relatório de gestão</a></li>
                     <li><a href="automacao.html"><i class="fa-solid fa-robot"></i> Gestão de documentos</a></li>
@@ -30,16 +30,16 @@
                     
                     <li><a href="mensagem.html"><i class="fa-solid fa-message"></i> Mensagem</a></li>
                     <li><a href="seguranca.html"><i class="fa-solid fa-shield-halved"></i> Segurança e Compliance</a></li>
-                    <li><a href="configuracoes.html"><i class="fa-solid fa-gear"></i> Configuração</a></li>
+                    <li><a href="configuracoes.html"><i class="fa-solid fa-gear"></i> Gerenciar Equipe</a></li>
                 </ul>
             </nav>
            <div class="rodape-barra-lateral">
-                    <ul>
-                        <li class="ativo"><a href="conta.html"><i class="fa-solid fa-user"></i> Conta</a></li>
-                      <a href="#" id="btn-logout"> <i class="fa-solid fa-right-from-bracket"></i> Sair </a>
-                        <li><a href="suporte.html"><i class="fa-solid fa-circle-question"></i> Ajuda</a></li>
-                    </ul>
-                </div>
+    <ul>
+        <li><a href="conta.html"><i class="fa-solid fa-user"></i> Conta</a></li>
+       <a href="#" id="btn-logout"> <i class="fa-solid fa-right-from-bracket"></i> Sair </a>
+        <li><a href="ajuda.html"><i class="fa-solid fa-circle-info"></i> Ajuda</a></li>
+    </ul>
+</div>
         </aside>
 
         <main class="conteudo-principal">
@@ -58,6 +58,10 @@
                     <input type="hidden" id="editChamadoId">
                     
                     <p><strong>Problema relatado:</strong> <span id="displayDescricao" style="color: #ccc;"></span></p>
+
+                    <div id="containerImagemChamado"></div>
+
+
                     <p style="margin-bottom: 15px;"><strong>Impacto:</strong> <span id="displayImpacto" style="color: #ccc;"></span></p>
 
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">

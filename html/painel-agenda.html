@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestão de Visitas | ARCHITECH</title>
+    <link rel="icon" type="image/png" href="img/Design sem nome (5).png">
+    <link rel="stylesheet" href="../css/inicial.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        /* Estilos para a Tabela Profissional */
+        .container-gestao {
+            padding: 30px;
+            background: #f8f9fa;
+            min-height: 100vh;
+        }
+
+        .cartao-tabela {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            padding: 25px;
+            border-top: 5px solid #6f42c1;
+        }
+
+        .header-tabela {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: #f3ebff;
+            color: #6f42c1;
+            text-align: left;
+            padding: 15px;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            color: #444;
+            font-size: 14px;
+        }
+
+        tr:hover {
+            background-color: #fdfbff;
+        }
+
+        /* Status Badges */
+        .badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+        .pendente { background: #fff3cd; color: #856404; }
+        .confirmado { background: #d4edda; color: #155724; }
+
+        /* Botões de Ação */
+        .btn-acao {
+            padding: 8px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-right: 5px;
+        }
+        .btn-check { background: #28a745; color: white; }
+        .btn-check:hover { background: #218838; }
+        .btn-del { background: #dc3545; color: white; }
+        .btn-del:hover { background: #c82333; }
+    </style>
+</head>
+<body>
+    <div class="painel-container" id="main-content">
+        <aside class="barra-lateral-esquerda">
+            <div class="logotipo">
+                <i class="fa-solid fa-layer-group"></i>
+                <h1>ARCHITECH</h1>
+            </div>
+            <nav class="menu-navegacao">
+                <ul>
+                    <li><a href="inicial.html"><i class="fa-solid fa-house"></i> Início</a></li>
+                    <li><a href="relatorio.html"><i class="fa-solid fa-chart-pie"></i> Relatório de gestão</a></li>
+                    <li><a href="automacao.html"><i class="fa-solid fa-robot"></i> Gestão de documentos</a></li>
+                    <li><a href="suporte.html"><i class="fa-solid fa-circle-question"></i> Suporte</a></li>
+                    <li class="ativo"><a href="painel-agenda.html"><i class="fa-solid fa-calendar-check"></i> Gestão de Agenda</a></li>
+                    <li><a href="monitor.html"><i class="fa-solid fa-temperature-half"></i> Monitoramento</a></li>
+                    <li><a href="mensagem.html"><i class="fa-solid fa-message"></i> Mensagem</a></li>
+                    <li><a href="seguranca.html"><i class="fa-solid fa-shield-halved"></i> Segurança e Compliance</a></li>
+                    <li><a href="configuracoes.html"><i class="fa-solid fa-gear"></i> Gerenciar Equipe</a></li>
+                </ul>
+            </nav>
+            <div class="rodape-barra-lateral">
+                <ul>
+                    <li><a href="conta.html"><i class="fa-solid fa-user"></i> Conta</a></li>
+                    <li><a href="#" id="btn-logout"><i class="fa-solid fa-right-from-bracket"></i> Sair</a></li>
+                    <li><a href="ajuda.html"><i class="fa-solid fa-circle-info"></i> Ajuda</a></li>
+                </ul>
+            </div>
+        </aside>
+
+       <main class="conteudo-principal">
+    <div class="container-gestao">
+        
+        <div class="cartao-tabela" style="margin-bottom: 30px;">
+            <h3 style="color: #6f42c1; margin-bottom: 20px;"><i class="fa-solid fa-plus-circle"></i> Cadastrar Novo Evento/Visita</h3>
+            <form id="formEvento" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <input type="text" id="tituloEv" placeholder="Título do Evento (Ex: Exposição de Fotos)" required style="padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                <input type="text" id="dataEv" placeholder="Data (Ex: 20 de Junho)" required style="padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                <input type="text" id="localEv" placeholder="Local (Ex: Sala de Restauro)" style="padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                <input type="text" id="capaEv" placeholder="URL da Imagem de Capa" style="padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                <textarea id="descEv" placeholder="Breve descrição do evento..." style="grid-column: span 2; padding: 10px; border: 1px solid #ddd; border-radius: 5px; height: 80px;"></textarea>
+                <button type="submit" style="grid-column: span 2; background: #6f42c1; color: white; padding: 12px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">
+                    Publicar Evento na Agenda
+                </button>
+            </form>
+        </div>
+
+        <div class="cartao-tabela">
+            <div class="header-tabela">
+                <h2 style="color: #333;"><i class="fa-solid fa-users-list"></i> Pedidos de Agendamento</h2>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Usuário</th>
+                        <th>Evento</th>
+                        <th>Data Pedido</th>
+                        <th>Status</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="tabelaAgendamentos">
+                    </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-storage-compat.js"></script>
+
+<script src="../js/inicial.js"></script>
+</body>
+</html>

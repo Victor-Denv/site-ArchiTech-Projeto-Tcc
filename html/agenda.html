@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agenda & Eventos | ARCHITECH</title>
+    <link rel="icon" type="image/png" href="img/Design sem nome (5).png">
+    <link rel="stylesheet" href="../css/inicial.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        .agenda-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .card-evento {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #eee;
+        }
+
+        .evento-banner {
+            height: 150px;
+            background: #6f42c1;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 10px;
+        }
+
+        .evento-banner i { font-size: 40px; margin-bottom: 10px; }
+        .evento-data { font-weight: bold; font-size: 18px; text-transform: uppercase; }
+
+        .evento-info { padding: 20px; flex-grow: 1; }
+        .evento-info h3 { color: #333; margin-bottom: 10px; font-size: 18px; }
+        .evento-info p { color: #666; font-size: 14px; line-height: 1.5; }
+
+        .evento-detalhes {
+            display: flex;
+            gap: 15px;
+            margin-top: 15px;
+            font-size: 13px;
+            color: #6f42c1;
+            font-weight: 500;
+        }
+
+        .btn-agendar {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background: #f8f5ff;
+            color: #6f42c1;
+            text-align: center;
+            text-decoration: none;
+            font-weight: bold;
+            border-top: 1px solid #eee;
+            transition: background 0.3s;
+        }
+
+        .btn-agendar:hover { background: #6f42c1; color: white; }
+
+        .badge-visita { background: #28a745; color: white; padding: 4px 8px; border-radius: 4px; font-size: 10px; float: right; }
+        .badge-evento { background: #fd7e14; color: white; padding: 4px 8px; border-radius: 4px; font-size: 10px; float: right; }
+    </style>
+</head>
+<body>
+    <div class="painel-container" id="main-content">
+        <aside class="barra-lateral-esquerda">
+            <div class="logotipo">
+                <i class="fa-solid fa-layer-group"></i>
+                <h1>ARCHITECH</h1>
+            </div>
+            <nav class="menu-navegacao">
+                <ul>
+                    <li><a href="inicial.html"><i class="fa-solid fa-house"></i> Início</a></li>
+                    <li><a href="automacao.html"><i class="fa-solid fa-robot"></i> Gestão de documentos</a></li>
+                    <li class="ativo"><a href="agenda.html"><i class="fa-solid fa-calendar-days"></i> Agenda</a></li>
+                    <li><a href="suporte.html"><i class="fa-solid fa-circle-question"></i> Suporte</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <main class="conteudo-principal">
+            <header style="padding: 30px 40px; display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h2 style="color: #333;">Agenda do Acervo</h2>
+                    <p style="color: #888;">Confira as visitas técnicas e eventos culturais programados.</p>
+                </div>
+                <button onclick="registrarInteresse('Solicitação de Visita Técnica', 'A combinar')" style="padding: 12px 20px; background: #6f42c1; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">
+    <i class="fa-solid fa-plus"></i> Solicitar Visita
+</button>
+            </header>
+            <div id="alertaConfirmacao" style="display:none; margin: 20px; padding: 15px; background: #d4edda; color: #155724; border-left: 5px solid #28a745; border-radius: 8px; align-items: center; gap: 15px;">
+    <i class="fa-solid fa-calendar-check" style="font-size: 24px;"></i>
+    <div>
+        <strong>Sua visita foi confirmada!</strong>
+        <p style="font-size: 13px; margin: 0;" id="textoConfirmacao"></p>
+    </div>
+</div>
+
+            <div class="agenda-grid">
+                <div class="card-evento">
+                    <div class="evento-banner" style="background: #28a745;">
+                        <i class="fa-solid fa-users-viewfinder"></i>
+                        <span class="evento-data">25 ABRIL</span>
+                    </div>
+                    <div class="evento-info">
+                        <span class="badge-visita">VISITA TÉCNICA</span>
+                        <h3>Visita Acadêmica - História USP</h3>
+                        <p>Visita guiada para estudantes do curso de história para conhecer o processo de digitalização de documentos raros.</p>
+                        <div class="evento-detalhes">
+                            <span><i class="fa-solid fa-clock"></i> 14:00</span>
+                            <span><i class="fa-solid fa-location-dot"></i> Sala de Restauro</span>
+                        </div>
+                    </div>
+                  <button onclick="registrarInteresse('Visita Acadêmica - História USP', '25 de Abril')" class="btn-agendar" style="border:none; cursor:pointer; width:100%;">
+    Tenho interesse
+</button>
+                </div>
+
+                <div class="card-evento">
+                    <div class="evento-banner" style="background: #fd7e14;">
+                        <i class="fa-solid fa-masks-theater"></i>
+                        <span class="evento-data">15 MAIO</span>
+                    </div>
+                    <div class="evento-info">
+                        <span class="badge-evento">CULTURAL</span>
+                        <h3>Exposição: O Papel do Tempo</h3>
+                        <p>Abertura da exposição fotográfica que retrata a evolução urbana da cidade através de plantas e ofícios antigos.</p>
+                        <div class="evento-detalhes">
+                            <span><i class="fa-solid fa-clock"></i> 19:30</span>
+                            <span><i class="fa-solid fa-location-dot"></i> Hall de Entrada</span>
+                        </div>
+                    </div>
+                   <button onclick="registrarInteresse('Exposição: O Papel do Tempo', '15 de Maio')" class="btn-agendar" style="border:none; cursor:pointer; width:100%;">
+    Ver detalhes
+</button>
+                </div>
+            </div>
+        </main>
+    </div>
+    <div id="modalInscricao" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:999; align-items:center; justify-content:center;">
+    <div style="background:white; padding:30px; border-radius:12px; width:90%; max-width:500px; position:relative;">
+        <h3 id="tituloModal" style="color:#6f42c1; margin-bottom:15px;">Inscrição na Atividade</h3>
+        <p id="dataModal" style="font-size:14px; color:#666; margin-bottom:20px;"></p>
+        
+        <form id="formConfirmarInscricao">
+            <input type="hidden" id="eventoIdModal">
+            
+            <label style="display:block; margin-bottom:5px; font-weight:bold;">Seu Nome Completo:</label>
+            <input type="text" id="nomeInscrito" required style="width:100%; padding:10px; margin-bottom:15px; border:1px solid #ddd; border-radius:5px;">
+            
+            <label style="display:block; margin-bottom:5px; font-weight:bold;">Quantidade de Pessoas:</label>
+            <input type="number" id="qtdInscritos" value="1" min="1" required style="width:100%; padding:10px; margin-bottom:15px; border:1px solid #ddd; border-radius:5px;">
+            
+            <label style="display:block; margin-bottom:5px; font-weight:bold;">Observações (Opcional):</label>
+            <textarea id="obsInscrito" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:5px; height:60px; margin-bottom:20px;"></textarea>
+            
+            <div style="display:flex; gap:10px;">
+                <button type="button" onclick="fecharModal()" style="flex:1; padding:12px; background:#eee; border:none; border-radius:5px; cursor:pointer;">Cancelar</button>
+                <button type="submit" style="flex:1; padding:12px; background:#6f42c1; color:white; border:none; border-radius:5px; cursor:pointer; font-weight:bold;">Confirmar Inscrição</button>
+            </div>
+        </form>
+    </div>
+</div>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-storage-compat.js"></script>
+
+<script src="../js/inicial.js"></script>
+</body>
+</html>

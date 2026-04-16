@@ -101,15 +101,14 @@ document.addEventListener('DOMContentLoaded', function() {
                         .then((userCredential) => {
                             const uid = userCredential.user.uid;
                             
-                            // A MÁGICA: Ele nasce como VISITANTE e é jogado na SUA biblioteca
                             db.ref('usuarios/' + uid).set({
                                 email: email, 
                                 nome: nome, 
                                 cpf: cpf, 
                                 telefone: telefone, 
                                 endereco: endereco,
-                                cargo: 'visitante',                // <--- PULSEIRA DE VISITANTE
-                                id_empresa: ID_DA_BIBLIOTECA,      // <--- ENTRA NA SUA BIBLIOTECA
+                                cargo: 'visitante',                // <--- TEM QUE ESTAR ESCRITO ASSIM
+                                id_empresa: ID_DA_BIBLIOTECA,
                                 dataCriacao: firebase.database.ServerValue.TIMESTAMP
                             }).then(() => { window.location.href = "html/inicial.html"; });
                         }).catch((error) => {
@@ -120,4 +119,28 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
     });
+});
+
+
+// =======================================================
+// LÓGICA DA TECLA ENTER (PÁGINA DE LOGIN)
+// =======================================================
+document.addEventListener('DOMContentLoaded', function() {
+    // Pega os campos de texto (e-mail e senha)
+    const camposLogin = document.querySelectorAll('input[type="email"], input[type="password"], input[type="text"]');
+    
+    // Procura exatamente pelo ID que já existe no seu HTML
+    const btnEntrar = document.getElementById('btn-login');
+
+    if (camposLogin.length > 0 && btnEntrar) {
+        camposLogin.forEach(campo => {
+            campo.addEventListener('keypress', function(e) {
+                // Se a tecla apertada for o Enter
+                if (e.key === 'Enter') {
+                    e.preventDefault(); // Evita que o formulário recarregue a página do zero
+                    btnEntrar.click();  // Simula um clique real no botão "Entrar"
+                }
+            });
+        });
+    }
 });

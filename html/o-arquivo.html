@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nossa História - O Arquivo | ARCHITECH</title>
+    <link rel="icon" type="image/png" href="img/Design sem nome (5).png">
+    <link rel="stylesheet" href="../css/inicial.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        /* Estilos específicos para esta página */
+        .secao-sobre {
+            background: #ffffff;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+        }
+        .secao-sobre h2 {
+            color: #6f42c1;
+            font-size: 24px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .secao-sobre p {
+            color: #555;
+            line-height: 1.8;
+            margin-bottom: 15px;
+            font-size: 15px;
+            text-align: justify;
+        }
+        
+        /* O Grid da Galeria de Fotos */
+        .galeria-fotos {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        .foto-item {
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            height: 200px;
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .foto-item:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 20px rgba(111, 66, 193, 0.2);
+        }
+        .foto-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        .foto-item:hover img {
+            transform: scale(1.1); /* Dá um zoom leve na foto ao passar o mouse */
+        }
+        .legenda-foto {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: linear-gradient(transparent, rgba(0,0,0,0.8));
+            color: white;
+            padding: 20px 15px 10px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="painel-container" id="main-content">
+        <aside class="barra-lateral-esquerda">
+            <div class="logotipo">
+                <i class="fa-solid fa-layer-group"></i>
+                <h1>ARCHITECH</h1>
+            </div>
+          <nav class="menu-navegacao">
+                <ul>
+                   <li><a href="inicial.html"><i class="fa-solid fa-house"></i> Início</a></li>
+                    <li><a href="relatorio.html"><i class="fa-solid fa-chart-pie"></i> Relatório de gestão</a></li>
+                    <li><a href="automacao.html"><i class="fa-solid fa-robot"></i> Gestão de documentos</a></li>
+                    <li><a href="suporte.html"><i class="fa-solid fa-circle-question"></i> Suporte</a></li>
+<li><a href="painel-chamados.html"><i class="fa-solid fa-clipboard-list"></i> Gestão de Chamados</a></li>
+                    <li><a href="monitor.html"><i class="fa-solid fa-temperature-half"></i> Monitoramento</a></li>
+                    
+                    <li><a href="mensagem.html"><i class="fa-solid fa-message"></i> Mensagem</a></li>
+                    <li><a href="seguranca.html"><i class="fa-solid fa-shield-halved"></i> Segurança e Compliance</a></li>
+                    <li><a href="configuracoes.html"><i class="fa-solid fa-gear"></i> Gerenciar Equipe</a></li>
+                </ul>
+            </nav>
+           <div class="rodape-barra-lateral">
+    <ul>
+        <li><a href="conta.html"><i class="fa-solid fa-user"></i> Conta</a></li>
+       <a href="#" id="btn-logout"> <i class="fa-solid fa-right-from-bracket"></i> Sair </a>
+        <li><a href="ajuda.html"><i class="fa-solid fa-circle-info"></i> Ajuda</a></li>
+    </ul>
+</div>
+        </aside>
+
+        <main class="conteudo-principal">
+            
+            <div style="padding: 20px;">
+                <div class="secao-sobre">
+                    <h2><i class="fa-solid fa-building-columns"></i> História do Acervo</h2>
+                    
+                    <p>Bem-vindo ao Acervo Digital. Este espaço foi fundado com o objetivo de preservar, organizar e democratizar o acesso à informação e aos registros históricos da nossa instituição.</p>
+                    
+                    <p>Ao longo das décadas, reunimos milhares de documentos, plantas, ofícios e registros fotográficos que contam a nossa trajetória. A transição para o sistema <strong>ARCHITECH</strong> marca um novo capítulo na nossa história, garantindo que o passado esteja protegido com a mais alta tecnologia de segurança e inteligência artificial.</p>
+                    
+                    <p>Explore nosso catálogo e sinta-se à vontade para mergulhar nos registros que moldaram o que somos hoje.</p>
+                </div>
+
+                <div class="secao-sobre">
+                    <h2><i class="fa-solid fa-images"></i> Galeria Histórica</h2>
+                    <p>Conheça as instalações físicas do nosso arquivo e alguns dos nossos documentos mais raros em processo de restauração e digitalização.</p>
+
+                    <div class="galeria-fotos">
+                        
+                        <div class="foto-item">
+                            <img src="https://images.unsplash.com/photo-1507842217343-583bb7270b66?q=80&w=1000&auto=format&fit=crop" alt="Corredor do Arquivo">
+                            <div class="legenda-foto">Corredores do Acervo Principal</div>
+                        </div>
+
+                        <div class="foto-item">
+                            <img src="https://images.unsplash.com/photo-1521587760476-6c12a4b040da?q=80&w=1000&auto=format&fit=crop" alt="Documentos Antigos">
+                            <div class="legenda-foto">Documentos do Século XX</div>
+                        </div>
+
+                        <div class="foto-item">
+                            <img src="https://images.unsplash.com/photo-1450153072082-7718a8c17316?q=80&w=1000&auto=format&fit=crop" alt="Restauração">
+                            <div class="legenda-foto">Mesa de Restauração</div>
+                        </div>
+
+                        <div class="foto-item">
+                            <img src="https://images.unsplash.com/photo-1606761568499-6d2451b23c66?q=80&w=1000&auto=format&fit=crop" alt="Arquivos Deslizantes">
+                            <div class="legenda-foto">Arquivos Deslizantes Modernos</div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
+    <script src="../js/inicial.js"></script>
+</body>
+</html>

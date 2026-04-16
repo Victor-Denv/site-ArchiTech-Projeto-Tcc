@@ -22,35 +22,34 @@
             <div class="loader"></div>
         </div>
     </div>
-
-    <div class="painel-container" id="main-content" style="display: none;">
-        
+<div class="painel-container" id="main-content">
         <aside class="barra-lateral-esquerda">
             <div class="logotipo">
                 <i class="fa-solid fa-layer-group"></i>
                 <h1>ARCHITECH</h1>
             </div>
-            <nav class="menu-navegacao">
+          <nav class="menu-navegacao">
                 <ul>
-                    <li class="ativo"><a href="inicial.html"><i class="fa-solid fa-house"></i> Início</a></li>
+                   <li><a href="inicial.html"><i class="fa-solid fa-house"></i> Início</a></li>
                     <li><a href="relatorio.html"><i class="fa-solid fa-chart-pie"></i> Relatório de gestão</a></li>
                     <li><a href="automacao.html"><i class="fa-solid fa-robot"></i> Gestão de documentos</a></li>
                     <li><a href="suporte.html"><i class="fa-solid fa-circle-question"></i> Suporte</a></li>
-                    <li><a href="painel-chamados.html"><i class="fa-solid fa-clipboard-list"></i> Gestão de Chamados</a></li>
+<li><a href="painel-chamados.html"><i class="fa-solid fa-clipboard-list"></i> Gestão de Chamados</a></li>
                     <li><a href="monitor.html"><i class="fa-solid fa-temperature-half"></i> Monitoramento</a></li>
+                    
                     <li><a href="mensagem.html"><i class="fa-solid fa-message"></i> Mensagem</a></li>
                     <li><a href="seguranca.html"><i class="fa-solid fa-shield-halved"></i> Segurança e Compliance</a></li>
-                    <li><a href="configuracoes.html"><i class="fa-solid fa-gear"></i> Configuração</a></li>
+                    <li><a href="configuracoes.html"><i class="fa-solid fa-gear"></i> Gerenciar Equipe</a></li>
                 </ul>
             </nav>
-            <div class="rodape-barra-lateral">
-                <ul>
-                    <li><a href="conta.html"><i class="fa-solid fa-user"></i> Conta</a></li>
-                    <li><a href="index.html" id="btn-logout"><i class="fa-solid fa-right-from-bracket"></i> Sair</a></li>
-                    <li><a href="suporte.html"><i class="fa-solid fa-circle-question"></i> Ajuda</a></li>
-                </ul>
-            </div>
-            </aside>
+           <div class="rodape-barra-lateral">
+    <ul>
+        <li><a href="conta.html"><i class="fa-solid fa-user"></i> Conta</a></li>
+       <a href="#" id="btn-logout"> <i class="fa-solid fa-right-from-bracket"></i> Sair </a>
+        <li><a href="ajuda.html"><i class="fa-solid fa-circle-info"></i> Ajuda</a></li>
+    </ul>
+</div>
+        </aside>
 
         <main class="conteudo-principal">
             <header class="cabecalho-principal">
@@ -59,55 +58,68 @@
                     <input type="text" placeholder="Pesquisar">
                 </div>
                 <div class="icones-cabecalho">
-                    <i class="fa-solid fa-sliders"></i>
-                    <i class="fa-solid fa-bell"></i>
+                  <i class="fa-solid fa-sliders" id="btn-config-topo" style="cursor:pointer;" onclick="window.location.href='configuracoes.html'"></i>
+
+<i class="fa-solid fa-bell" id="btn-notificacao-topo" style="cursor:pointer;" onclick="abrirNovidades()"></i>
                 </div>
             </header>
 
             <section class="banner-destaque">
-                <h2>Arquivista, veja algumas das atualizações do nosso acervo enquanto você esteve fora...</h2>
-                <button class="botao-principal">Saiba mais</button>
-            </section>
+    <h2 id="texto-saudacao">Arquivista, veja algumas das atualizações do nosso acervo enquanto você esteve fora...</h2>
+    <button id="btnSaibaMais" class="botao-principal" style="cursor:pointer;">Saiba mais</button>
+</section>
+
+<div id="modalNovidades" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:1000; align-items:center; justify-content:center; font-family: 'Poppins', sans-serif;">
+    <div style="background:white; padding:30px; border-radius:15px; width:90%; max-width:450px; box-shadow: 0 10px 30px rgba(0,0,0,0.3);">
+        <h3 style="color:#6f42c1; margin-bottom:15px;"><i class="fa-solid fa-bell"></i> Novidades no Acervo</h3>
+        <p style="font-size:14px; color:#666; margin-bottom:20px;">Estes foram os últimos documentos carregados no sistema:</p>
+        
+        <div id="listaNovidadesAcervo" style="max-height: 250px; overflow-y: auto;">
+            <p style="text-align:center; color:#999;">Buscando atualizações...</p>
+        </div>
+        
+        <button onclick="document.getElementById('modalNovidades').style.display='none'" style="width:100%; margin-top:20px; padding:12px; background:#6f42c1; color:white; border:none; border-radius:8px; cursor:pointer; font-weight:600;">Entendido</button>
+    </div>
+</div>
 
             <section class="acesso-rapido">
                 <div class="cabecalho-secao">
                     <h3>Acesso rápido</h3>
-                    <a href="#" class="botao-ver-tudo">ver tudo</a>
+                    
                 </div>
                 <div class="grade-cartoes">
-                    <a href="listar.html" style="text-decoration: none; color: inherit;">
-                        <div class="item-cartao cartao-ativo">
-                            <i class="fa-solid fa-building-columns"></i>
-                            <span>O arquivo</span>
+                    <a href="o-arquivo.html" style="text-decoration: none; color: inherit;">
+        <div class="item-cartao cartao-ativo">
+            <i class="fa-solid fa-building-columns"></i>
+            <span>O arquivo</span>
                         </div>
                     </a>
                     
-                    <a href="configuracoes.html" style="text-decoration: none; color: inherit;">
+                    <a href="equipe.html" style="text-decoration: none; color: inherit;">
                         <div class="item-cartao">
                             <i class="fa-solid fa-user-tie"></i>
                             <span>A arquivista</span>
                         </div>
                     </a>
                     
-                    <a href="painel-chamados.html" style="text-decoration: none; color: inherit;">
-                        <div class="item-cartao">
-                            <i class="fa-solid fa-calendar-days"></i>
-                            <span>Visitas agendadas</span>
-                        </div>
+                    <div class="item-cartao" onclick="irParaAgenda()" style="cursor: pointer;">
+    <i class="fa-solid fa-calendar-days"></i>
+    <span>Visitas agendadas</span>
+</div>
                     </a>
                     
                     <a href="relatorio.html" style="text-decoration: none; color: inherit;">
-                        <div class="item-cartao">
-                            <i class="fa-solid fa-chart-line"></i>
-                            <span>Painel de controle</span>
-                        </div>
+                       <div class="item-cartao" id="card-painel-controle">
+    <i class="fa-solid fa-chart-line"></i>
+    <span>Painel de controle</span>
+</div>
                     </a>
                     
                     <a href="seguranca.html" style="text-decoration: none; color: inherit;">
-                        <div class="item-cartao">
-                            <i class="fa-solid fa-lock"></i>
-                            <span>Segurança da Informação</span>
-                        </div>
+                       <div class="item-cartao" id="card-seguranca-info">
+    <i class="fa-solid fa-lock"></i>
+    <span>Segurança da Informação</span>
+</div>
                     </a>
                 </div>
                 
@@ -167,22 +179,19 @@
                     <li style="text-align: center; color: #999; font-size: 12px;">Buscando arquivos...</li>
                 </ul>
             </section>
+<div class="cartao-perfil-agenda" style="background: white; border-radius: 15px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-top: 20px;">
+    <h3 style="color: #333; font-size: 16px; margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
+        <i class="fa-solid fa-calendar-star" style="color: #6f42c1;"></i> Meus Eventos e Atividades
+    </h3>
 
-            <section class="secao-agenda" style="background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
-                <div class="cabecalho-secao" style="margin-bottom: 15px;">
-                    <h4 style="margin: 0; color: #333; font-size: 14px; font-weight: bold;"><i class="fa-solid fa-calendar-check" style="color:#6f42c1; margin-right:5px;"></i> Manutenção Programada</h4>
-                </div>
-                <div class="datas-agenda" style="display: flex; flex-direction: column; gap: 10px;">
-                    <div style="background: #fff3cd; border-left: 4px solid #ffc107; padding: 10px 15px; border-radius: 5px;">
-                        <strong style="color: #856404; display: block; font-size: 13px;">Dedetização do Acervo</strong>
-                        <span style="color: #666; font-size: 11px;">Previsto: 15 Maio 2026</span>
-                    </div>
-                     <div style="background: #d4edda; border-left: 4px solid #28a745; padding: 10px 15px; border-radius: 5px;">
-                        <strong style="color: #155724; display: block; font-size: 13px;">Auditoria Semestral LGPD</strong>
-                        <span style="color: #666; font-size: 11px;">Previsto: 22 Junho 2026</span>
-                    </div>
-                </div>
-            </section>
+    <div id="listaAtividadesVisitante">
+        <p style="color: #888; font-size: 13px; text-align: center; padding: 10px;">Você ainda não tem atividades agendadas.</p>
+    </div>
+
+    <a href="agenda.html" style="display: block; text-align: center; color: #6f42c1; font-size: 12px; font-weight: bold; text-decoration: none; margin-top: 15px; border-top: 1px solid #eee; padding-top: 10px;">
+        Ver Agenda Completa
+    </a>
+</div>
 
         </aside>
     </div> 

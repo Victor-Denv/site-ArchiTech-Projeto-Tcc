@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ajuda & FAQ | ARCHITECH</title>
+    <link rel="icon" type="image/png" href="img/Design sem nome (5).png">
+    <link rel="stylesheet" href="../css/inicial.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        .faq-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .faq-item {
+            background: white;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .faq-pergunta {
+            padding: 20px;
+            background: #fff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            font-weight: 600;
+            color: #333;
+            transition: background 0.3s;
+        }
+        .faq-pergunta:hover {
+            background: #f8f5ff;
+        }
+        .faq-resposta {
+            padding: 0 20px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out, padding 0.3s ease;
+            color: #666;
+            font-size: 14px;
+            line-height: 1.6;
+            background: #fdfcff;
+        }
+        .faq-item.ativo .faq-resposta {
+            max-height: 200px;
+            padding: 20px;
+            border-top: 1px solid #eee;
+        }
+        .faq-item.ativo i {
+            transform: rotate(180deg);
+            color: #6f42c1;
+        }
+        i { transition: transform 0.3s; }
+    </style>
+</head>
+<body>
+    <div class="painel-container" id="main-content">
+        <aside class="barra-lateral-esquerda">
+            <div class="logotipo">
+                <i class="fa-solid fa-layer-group"></i>
+                <h1>ARCHITECH</h1>
+            </div>
+          <nav class="menu-navegacao">
+                <ul>
+                   <li><a href="inicial.html"><i class="fa-solid fa-house"></i> Início</a></li>
+                    <li><a href="relatorio.html"><i class="fa-solid fa-chart-pie"></i> Relatório de gestão</a></li>
+                    <li><a href="automacao.html"><i class="fa-solid fa-robot"></i> Gestão de documentos</a></li>
+                    <li><a href="suporte.html"><i class="fa-solid fa-circle-question"></i> Suporte</a></li>
+<li><a href="painel-chamados.html"><i class="fa-solid fa-clipboard-list"></i> Gestão de Chamados</a></li>
+                    <li><a href="monitor.html"><i class="fa-solid fa-temperature-half"></i> Monitoramento</a></li>
+                    
+                    <li><a href="mensagem.html"><i class="fa-solid fa-message"></i> Mensagem</a></li>
+                    <li><a href="seguranca.html"><i class="fa-solid fa-shield-halved"></i> Segurança e Compliance</a></li>
+                    <li><a href="configuracoes.html"><i class="fa-solid fa-gear"></i> Gerenciar Equipe</a></li>
+                </ul>
+            </nav>
+           <div class="rodape-barra-lateral">
+    <ul>
+        <li><a href="conta.html"><i class="fa-solid fa-user"></i> Conta</a></li>
+       <a href="#" id="btn-logout"> <i class="fa-solid fa-right-from-bracket"></i> Sair </a>
+        <li><a href="ajuda.html"><i class="fa-solid fa-circle-info"></i> Ajuda</a></li>
+    </ul>
+</div>
+        </aside>
+
+        <main class="conteudo-principal">
+            <div class="faq-container">
+                <h2 style="color: #6f42c1; margin-bottom: 25px;"><i class="fa-solid fa-circle-info"></i> Perguntas Frequentes</h2>
+
+                <div class="faq-item">
+                    <div class="faq-pergunta">
+                        Como faço para anexar uma imagem no chamado?
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-resposta">
+                        Ao abrir um chamado na aba "Suporte", clique no botão "Escolher arquivo" abaixo da descrição. Selecione o print do erro e clique em enviar. Lembre-se que o limite é de 2MB por imagem.
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-pergunta">
+                        Quem pode visualizar meus chamados?
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-resposta">
+                        Apenas você e a equipe de TI (Administradores e Chefes) têm acesso aos seus chamados abertos.
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-pergunta">
+                        Esqueci minha senha, o que fazer?
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-resposta">
+                        Na tela de login, clique em "Esqueceu a senha?". Um e-mail de redefinição será enviado para o seu endereço cadastrado no sistema.
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Lógica simples para abrir/fechar o FAQ
+        document.querySelectorAll('.faq-pergunta').forEach(pergunta => {
+            pergunta.addEventListener('click', () => {
+                const item = pergunta.parentElement;
+                item.classList.toggle('ativo');
+            });
+        });
+    </script>
+</body>
+</html>

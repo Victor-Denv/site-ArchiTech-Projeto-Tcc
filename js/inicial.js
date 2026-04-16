@@ -74,67 +74,79 @@ firebase.auth().onAuthStateChanged(function(user) {
         if (!isLoginPage) window.location.href = "../index.html";
     }
 });
+// ==========================================================
+// MESTRE DE PERMISSÕES DA INTERFACE
+// ==========================================
 window.aplicarPermissoes = function(cargo) {
     console.log("🔐 Aplicando travas para o nível:", cargo);
 
+    // ADICIONAMOS '.item-cartao' NA LISTA ABAIXO:
     const linksMenu = document.querySelectorAll('.menu-navegacao a, nav a, .sidebar a');
-    const cardsDashboard = document.querySelectorAll('.card, .item-acesso-rapido, a.box-atalho');
+    const cardsDashboard = document.querySelectorAll('.card, .item-acesso-rapido, a.box-atalho, .item-cartao');
 
-    // Função interna para facilitar o esconderijo
+    // Função que faz o botão/link sumir de verdade
     const esconderElemento = (el) => {
         if (!el) return;
-        // Se for um link dentro de uma lista (li), esconde o li inteiro
+        // Se for um link dentro de um LI, esconde o LI. Senão, esconde o próprio elemento.
         const alvo = (el.tagName === 'A' && el.parentElement.tagName === 'LI') ? el.parentElement : el;
         alvo.style.setProperty('display', 'none', 'important');
     };
-
-    // --- REGRAS PARA VISITANTE OU CONSULTA ---
-    if (cargo === 'visitante' || cargo === 'consulta') {
+    // --------------------------------------------------------
+    // REGRA 1: VISITANTE
+    // Vê: Início, Gestão de Documentos e Chamados.
+    // NÃO Vê: Relatórios, Configurações, Segurança, Monitoramento.
+    // --------------------------------------------------------
+    if (cargo === 'visitante') {
         [...linksMenu, ...cardsDashboard].forEach(el => {
-            const href = el.getAttribute('href') || '';
+            const href = (el.getAttribute('href') || '').toLowerCase();
             const texto = (el.innerText || '').toLowerCase();
 
-            // O Visitante NÃO PODE ver nada que envolva automação, relatórios, config ou segurança
-            if (href.includes('automacao.html') || href.includes('relatorio.html') || 
-                href.includes('configuracoes.html') || href.includes('monitor.html') || 
-                href.includes('seguranca.html') || href.includes('mensagem.html') ||
-                texto.includes('arquivista') || texto.includes('painel') || 
-                texto.includes('segurança') || texto.includes('visitas')) {
+            if (href.includes('relatorio.html') || href.includes('configuracoes.html') || 
+                href.includes('monitor.html') || href.includes('seguranca.html') ||
+                texto.includes('relatório') || texto.includes('painel de controle') || 
+                texto.includes('segurança') || texto.includes('configuração') || 
+                texto.includes('monitoramento')) {
                 
                 esconderElemento(el);
             }
         });
     } 
     
-    // --- REGRAS PARA FUNCIONÁRIO ---
-    // (Ele é mais potente que o visitante, então a lista de bloqueio é MENOR)
+    // --------------------------------------------------------
+    // REGRA 2: FUNCIONÁRIO
+    // Vê: Documentos, Relatórios e Chamados.
+    // NÃO Vê: Configurações e Segurança.
+    // --------------------------------------------------------
     else if (cargo === 'funcionario') {
         [...linksMenu, ...cardsDashboard].forEach(el => {
-            const href = el.getAttribute('href') || '';
+            const href = (el.getAttribute('href') || '').toLowerCase();
             const texto = (el.innerText || '').toLowerCase();
 
-            // O Funcionário PODE ver Automacao e Visitas, mas NÃO vê Painel, Relatório e Segurança
-            if (href.includes('relatorio.html') || href.includes('configuracoes.html') || 
-                href.includes('monitor.html') || href.includes('seguranca.html') ||
-                texto.includes('painel') || texto.includes('segurança')) {
+            if (href.includes('configuracoes.html') || href.includes('seguranca.html') ||
+                texto.includes('configuração') || texto.includes('segurança')) {
                 
                 esconderElemento(el);
             }
         });
     }
 
-    // --- REGRAS PARA TI ---
+    // --------------------------------------------------------
+    // REGRA 3: EQUIPE DE TI
+    // Vê: Quase tudo.
+    // NÃO Vê: Configurações da Equipe (Isso é papel do Chefe).
+    // --------------------------------------------------------
     else if (cargo === 'ti') {
         [...linksMenu, ...cardsDashboard].forEach(el => {
-            const href = el.getAttribute('href') || '';
-            // TI vê tudo, exceto as Configurações de Equipe (aba restrita ao Chefe)
-            if (href.includes('configuracoes.html')) {
+            const href = (el.getAttribute('href') || '').toLowerCase();
+            const texto = (el.innerText || '').toLowerCase();
+
+            if (href.includes('configuracoes.html') || texto.includes('configuração')) {
                 esconderElemento(el);
             }
         });
     }
-    
-    // Se o cargo for 'chefe', ele ignora todos os IFs acima e vê TUDO normalmente.
+
+    // Se o cargo for 'chefe', ele não entra em nenhum bloqueio e vê tudo.
 };
 function aplicarTravasDeConsulta(cargo) {
     // REGRA DE BLOQUEIO DE TELA:
@@ -576,15 +588,17 @@ document.addEventListener('DOMContentLoaded', function() {
     if (btnSalvarChamado) {
         const descInput = document.getElementById('descChamado');
         const impactoInput = document.getElementById('impactoChamado');
+        const anexoInput = document.getElementById('anexoChamado'); 
 
-        btnSalvarChamado.addEventListener('click', function() {
-            // TRAVA DE SEGURANÇA: Só salva se soubermos a qual biblioteca o usuário pertence
+        btnSalvarChamado.addEventListener('click', function(e) {
+            e.preventDefault(); // Previne qualquer reload acidental
+
             if (!window.idEmpresa) { 
                 alert("Erro de sessão. Recarregue a página."); 
                 return; 
             }
 
-            const descricao = descInput.value;
+            const descricao = descInput.value.trim();
             const impacto = impactoInput.value;
 
             if (!descricao || !impacto) { 
@@ -592,32 +606,70 @@ document.addEventListener('DOMContentLoaded', function() {
                 return; 
             }
 
-            btnSalvarChamado.innerText = "Enviando...";
+            btnSalvarChamado.innerText = "Processando arquivo...";
             btnSalvarChamado.disabled = true;
 
-            // QUEM ESTÁ LOGADO? Pega o e-mail do usuário atual
             const usuarioLogado = firebase.auth().currentUser;
             const emailDoUsuario = usuarioLogado ? usuarioLogado.email : "Usuário Desconhecido";
 
-            // ISOLAMENTO (Parte 4): Salva na gaveta 'chamados' DENTRO da sua 'workspace'
-            db.ref('workspaces/' + window.idEmpresa + '/chamados').push({
-                aberto_por: emailDoUsuario, // IDENTIFICAÇÃO (Parte 1)
-                descricao: descricao,
-                impacto: impacto,
-                status: 'Aberto', 
-                data_abertura: firebase.database.ServerValue.TIMESTAMP
-            }).then(() => {
-                alert("Chamado enviado com sucesso! A equipe de TI já foi notificada.");
-                descInput.value = "";
-                impactoInput.value = "";
-                btnSalvarChamado.innerText = "Enviar Chamado";
-                btnSalvarChamado.disabled = false;
-            }).catch((error) => {
-                console.error("Erro ao salvar chamado:", error);
-                alert("Ocorreu um erro ao enviar.");
-                btnSalvarChamado.innerText = "Enviar Chamado";
-                btnSalvarChamado.disabled = false;
-            });
+            // Função principal que escreve no Firebase
+            const finalizarEnvio = (base64Imagem) => {
+                btnSalvarChamado.innerText = "Enviando para a TI...";
+                
+                db.ref('workspaces/' + window.idEmpresa + '/chamados').push({
+                    aberto_por: emailDoUsuario, 
+                    descricao: descricao,
+                    impacto: impacto,
+                    status: 'Aberto', 
+                    anexoUrl: base64Imagem, // Salva o Base64 AQUI
+                    data_abertura: firebase.database.ServerValue.TIMESTAMP
+                }).then(() => {
+                    alert("Chamado enviado com sucesso! A equipe de TI já foi notificada.");
+                    descInput.value = "";
+                    impactoInput.value = "";
+                    if (anexoInput) anexoInput.value = ""; 
+                    btnSalvarChamado.innerText = "Enviar Chamado";
+                    btnSalvarChamado.disabled = false;
+                }).catch((error) => {
+                    console.error("Erro ao salvar chamado no banco:", error);
+                    alert("Ocorreu um erro de conexão ao enviar.");
+                    btnSalvarChamado.innerText = "Enviar Chamado";
+                    btnSalvarChamado.disabled = false;
+                });
+            };
+
+            // Lógica de captura da Imagem
+            if (anexoInput && anexoInput.files && anexoInput.files.length > 0) {
+                const arquivo = anexoInput.files[0];
+                
+                // Validação de segurança de tamanho (Evita travar o Firebase)
+                if (arquivo.size > 2000000) { // Limite de 2MB
+                    alert("A imagem é muito pesada! Por favor, escolha um arquivo com menos de 2MB.");
+                    btnSalvarChamado.innerText = "Enviar Chamado";
+                    btnSalvarChamado.disabled = false;
+                    return;
+                }
+
+                const reader = new FileReader();
+                
+                reader.onload = function(evento) {
+                    // Quando terminar de ler, envia o resultado (o Base64)
+                    finalizarEnvio(evento.target.result);
+                };
+                
+                reader.onerror = function() {
+                    alert("Erro ao ler a imagem. Tente enviar o chamado sem anexo.");
+                    btnSalvarChamado.innerText = "Enviar Chamado";
+                    btnSalvarChamado.disabled = false;
+                };
+
+                // Inicia a leitura do arquivo
+                reader.readAsDataURL(arquivo);
+                
+            } else {
+                // Se não escolheu nenhuma imagem, envia null
+                finalizarEnvio(null); 
+            }
         });
     }
 });
@@ -659,7 +711,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             });
                         }
 
-                        // 2. BUSCA OS CHAMADOS (Agora com a gaveta certa garantida)
+                        // 2. BUSCA OS CHAMADOS
                         chamadosRef.on('value', (snapshot) => {
                             listaDeChamados.innerHTML = "";
                             const dados = snapshot.val();
@@ -683,16 +735,20 @@ document.addEventListener('DOMContentLoaded', function() {
                                     const responsavelTexto = chamado.responsavel ? `<span style="color: #3498db; font-weight: bold;"><i class="fa-solid fa-user-gear"></i> ${chamado.responsavel}</span>` : `<span style="color: #e74c3c;">Aguardando Atendimento</span>`;
                                     const anexoIcone = chamado.anexoUrl ? `<a href="${chamado.anexoUrl}" target="_blank" title="Ver anexo" style="color: #3498db; margin-left: 10px;"><i class="fa-solid fa-paperclip"></i></a>` : '';
 
+                                    // Botão de Ação Principal
                                     const botaoAcao = isEquipeTI 
-                                        ? `<button onclick="editarChamado('${key}')" style="padding: 10px 15px; background-color: #6f42c1; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;"><i class="fa-solid fa-pen-to-square"></i> Atender</button>`
-                                        : `<div style="padding: 8px 12px; background-color: #333; color: ${corStatus}; border: 1px solid ${corStatus}; border-radius: 5px; font-weight: bold; text-align: center;">${chamado.status}</div>`;
+                                        ? `<button onclick="editarChamado('${key}')" style="padding: 10px 15px; background-color: #6f42c1; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; height: 100%;"><i class="fa-solid fa-pen-to-square"></i> Atender</button>`
+                                        : `<div style="padding: 8px 12px; background-color: #333; color: ${corStatus}; border: 1px solid ${corStatus}; border-radius: 5px; font-weight: bold; text-align: center; height: 100%; display: flex; align-items: center;">${chamado.status}</div>`;
+
+                                    // NOVO: Botão de Excluir
+                                    const botaoExcluir = `<button onclick="excluirChamado('${key}')" title="Excluir Chamado" style="padding: 10px 15px; background-color: rgba(220, 53, 69, 0.1); color: #dc3545; border: 1px solid #dc3545; border-radius: 5px; cursor: pointer; height: 100%; transition: 0.2s;" onmouseover="this.style.backgroundColor='#dc3545'; this.style.color='#fff'" onmouseout="this.style.backgroundColor='rgba(220, 53, 69, 0.1)'; this.style.color='#dc3545'"><i class="fa-solid fa-trash"></i></button>`;
 
                                     const infoSolucao = (!isEquipeTI && chamado.solucao) 
                                         ? `<div style="margin-top: 10px; padding: 10px; background: #1e1e2d; border-left: 3px solid #28a745; border-radius: 4px; font-size: 13px;"><strong>Resposta da TI:</strong> ${chamado.solucao}</div>` : '';
 
                                     listaDeChamados.innerHTML += `
                                         <div style="background-color: #2c2c3e; padding: 15px; border-radius: 8px; margin-bottom: 10px; border-left: 5px solid ${corStatus}; display: flex; justify-content: space-between; align-items: flex-start; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-                                            <div style="width: 80%;">
+                                            <div style="width: 75%;">
                                                 <div style="margin-bottom: 5px;">
                                                     <strong style="color: #fff; font-size: 16px;">[#${idCurto}] ${chamado.descricao}</strong> ${anexoIcone}
                                                 </div>
@@ -702,8 +758,9 @@ document.addEventListener('DOMContentLoaded', function() {
                                                 </div>
                                                 ${infoSolucao}
                                             </div>
-                                            <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 10px;">
+                                            <div style="display: flex; gap: 10px; align-items: stretch; justify-content: flex-end;">
                                                 ${botaoAcao}
+                                                ${botaoExcluir}
                                             </div>
                                         </div>
                                     `;
@@ -717,7 +774,23 @@ document.addEventListener('DOMContentLoaded', function() {
                             }
                         });
 
-                        // 3. FUNÇÕES DE EDIÇÃO DA TI
+                        // 3. FUNÇÕES DE EDIÇÃO E EXCLUSÃO
+                        
+                        // Função de Excluir
+                        window.excluirChamado = function(id) {
+                            if (confirm("Tem certeza que deseja apagar este chamado permanentemente?")) {
+                                db.ref('workspaces/' + window.idEmpresa + '/chamados/' + id).remove()
+                                    .then(() => {
+                                        // Se o chamado que está sendo editado na tela for o mesmo que acabou de ser excluído, fecha a caixa de edição
+                                        const idEmEdicao = document.getElementById('editChamadoId');
+                                        if (idEmEdicao && idEmEdicao.value === id) {
+                                            document.getElementById('areaEdicaoChamado').style.display = "none";
+                                        }
+                                    })
+                                    .catch(error => alert("Erro ao excluir: " + error.message));
+                            }
+                        };
+
                         window.editarChamado = function(id) {
                             if (!isEquipeTI) return;
                             db.ref('workspaces/' + idEmpresaReal + '/chamados/' + id).once('value').then((snapshot) => {
@@ -741,6 +814,20 @@ document.addEventListener('DOMContentLoaded', function() {
                                         if (data.anexoUrl) { linkAnexo.href = data.anexoUrl; linkAnexo.style.display = "inline-block"; } 
                                         else { linkAnexo.style.display = "none"; }
                                     }
+
+                                    // LÓGICA DA IMAGEM
+                                    const containerImagem = document.getElementById('containerImagemChamado');
+                                    if (containerImagem) {
+                                        containerImagem.innerHTML = ""; 
+                                        if (data.anexoUrl && data.anexoUrl.startsWith('data:image')) {
+                                            const img = document.createElement('img');
+                                            img.src = data.anexoUrl;
+                                            img.style.cssText = "display: block; max-width: 100%; max-height: 250px; margin: 10px 0; border-radius: 8px; border: 2px solid #6f42c1; cursor: pointer; object-fit: contain; background: #1e1e2d; padding: 5px;";
+                                            img.title = "Clique para ampliar a imagem";
+                                            img.onclick = () => window.open(data.anexoUrl, '_blank');
+                                            containerImagem.appendChild(img);
+                                        }
+                                    } 
                                     
                                     areaEdicaoChamado.style.display = "block";
                                 }
@@ -749,7 +836,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
                         const btnAtualizarChamado = document.getElementById('btnAtualizarChamado');
                         if (btnAtualizarChamado) {
-                            // Limpa eventos antigos para não duplicar cliques
                             const novoBtn = btnAtualizarChamado.cloneNode(true);
                             btnAtualizarChamado.parentNode.replaceChild(novoBtn, btnAtualizarChamado);
                             
@@ -1068,11 +1154,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     } else {
                         // DROPDOWN BONITÃO (Estilo moderno)
                         controlesHTML = `
-                            <select onchange="abrirModalPromocao('${uid}', this.value)" style="padding: 8px 12px; border-radius: 8px; border: 1px solid #d1d5db; background-color: #f8f9fa; color: #4b5563; font-size: 13px; font-weight: 600; cursor: pointer; outline: none; box-shadow: 0 2px 4px rgba(0,0,0,0.02); transition: all 0.2s;">
-                                <option value="visitante" ${user.cargo === 'visitante' ? 'selected' : ''}>Visitante</option>
-                                <option value="consulta" ${user.cargo === 'consulta' ? 'selected' : ''}>Consulta</option>
-                                <option value="funcionario" ${user.cargo === 'funcionario' ? 'selected' : ''}>Funcionário</option>
-                                <option value="ti" ${user.cargo === 'ti' ? 'selected' : ''}>Equipe TI</option>
+                           <select onchange="abrirModalPromocao('${uid}', this.value)" style="padding: 8px 12px; border-radius: 8px; border: 1px solid #d1d5db; background-color: #f8f9fa; color: #4b5563; font-size: 13px; font-weight: 600; cursor: pointer; outline: none;">
+                             <option value="visitante" ${user.cargo === 'visitante' ? 'selected' : ''}>Visitante</option>
+                             <option value="funcionario" ${user.cargo === 'funcionario' ? 'selected' : ''}>Funcionário</option>
+                             <option value="ti" ${user.cargo === 'ti' ? 'selected' : ''}>Equipe TI</option>
                             </select>
                         `;
                     }
@@ -1222,60 +1307,71 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
 // =======================================================
-//     LÓGICA DA BARRA LATERAL DIREITA (PÁGINA INICIAL)
+//   LÓGICA DA BARRA LATERAL DIREITA (PERFIL E FEED) - UNIFICADO
 // =======================================================
 window.addEventListener('load', function() {
-    const nomeUsuarioSidebar = document.getElementById('nomeUsuarioSidebar');
-    const cargoUsuarioSidebar = document.getElementById('cargoUsuarioSidebar');
-    const listaUltimosArquivos = document.getElementById('listaUltimosArquivosSidebar');
+    const nomeUsuarioSidebar = document.getElementById('nomeUsuarioSidebar') || document.querySelector('.info-perfil h4');
+    const cargoUsuarioSidebar = document.getElementById('cargoUsuarioSidebar') || document.querySelector('.info-perfil span');
+    const listaUltimosArquivos = document.getElementById('listaUltimosArquivosSidebar') || document.querySelector('.atividades-disponiveis ul');
 
-    // Só executa se estivermos na página inicial (onde essa barra existe)
-    if (nomeUsuarioSidebar && listaUltimosArquivos) {
-        
-        // 1. Puxa o Nome e o Cargo do Usuário Logado
+    if (nomeUsuarioSidebar && cargoUsuarioSidebar) {
         auth.onAuthStateChanged((user) => {
             if (user) {
-                // Pega só a primeira parte do e-mail (ex: vitor@... vira "vitor")
-                nomeUsuarioSidebar.innerText = user.email.split('@')[0]; 
-                
                 db.ref('usuarios/' + user.uid).once('value').then((snapshot) => {
                     const dados = snapshot.val();
                     
-                    // SE O BANCO NÃO TIVER CARGO, ELE É VISITANTE POR PADRÃO
-                    const cargo = dados ? dados.cargo : 'visitante';
+                    // ==========================================
+                    // 1. A MÁGICA DO NOME: 
+                    // Se tiver nome salvo no banco, usa ele. Se não, usa o e-mail.
+                    // ==========================================
+                    if (dados && dados.nome) {
+                        nomeUsuarioSidebar.innerText = dados.nome;
+                    } else {
+                        nomeUsuarioSidebar.innerText = user.email.split('@')[0]; 
+                    }
                     
-                    let nomeCargoFormatado = "Visitante";
-                    if (cargo === 'chefe') nomeCargoFormatado = "Arquivista Chefe";
-                    else if (cargo === 'ti') nomeCargoFormatado = "Equipe de TI";
-                    else if (cargo === 'consulta') nomeCargoFormatado = "Usuário de Consulta";
-                    else if (cargo === 'funcionario') nomeCargoFormatado = "Funcionário";
+                    const cargo = dados ? dados.cargo : 'visitante';
+                    const idEmpresaLogada = dados ? dados.id_empresa : null;
+                    
+                    // 2. APLICAR CORES E NOMES DE CARGO
+                    let nomeCargoFormatado = "Visitante do Acervo"; 
+                    let corFundo = "#f3ebff"; 
+                    let corTexto = "#6f42c1"; 
+                    
+                    if (cargo === 'chefe') {
+                        nomeCargoFormatado = "Arquivista Chefe";
+                        corFundo = "#fcebea"; corTexto = "#e74c3c"; 
+                    } else if (cargo === 'ti') {
+                        nomeCargoFormatado = "Suporte Técnico (TI)";
+                        corFundo = "#eaf2f8"; corTexto = "#3498db"; 
+                    } else if (cargo === 'funcionario') {
+                        nomeCargoFormatado = "Assistente de Acervo";
+                        corFundo = "#eafaf1"; corTexto = "#2ecc71"; 
+                    }
                     
                     cargoUsuarioSidebar.innerText = nomeCargoFormatado;
-
-                    // --- A MÁGICA DO ISOLAMENTO NO FEED ---
-                    // Só busca os arquivos se o ID da empresa estiver na ficha do usuário
-                    const idEmpresaLogada = dados ? dados.id_empresa : null;
-
-                    if (idEmpresaLogada) {
-                        // 2. Puxa os últimos 3 arquivos cadastrados APENAS desta empresa
+                    cargoUsuarioSidebar.style.backgroundColor = corFundo;
+                    cargoUsuarioSidebar.style.color = corTexto;
+                    
+                    // 3. BUSCAR ÚLTIMOS ARQUIVOS (COM ISOLAMENTO)
+                    if (listaUltimosArquivos && idEmpresaLogada) {
                         db.ref('workspaces/' + idEmpresaLogada + '/arquivos').limitToLast(3).on('value', (snapArquivos) => {
                             listaUltimosArquivos.innerHTML = "";
                             const dadosArqs = snapArquivos.val();
                             
                             if (dadosArqs) {
-                                const chaves = Object.keys(dadosArqs).reverse(); // Mais novos primeiro
+                                const chaves = Object.keys(dadosArqs).reverse(); 
                                 chaves.forEach(key => {
                                     const arq = dadosArqs[key];
-                                    
                                     let icone = "fa-file";
                                     let cor = "#6f42c1"; 
                                     if(arq.tipo === 'documento') { icone = 'fa-file-pdf'; cor = '#28a745'; } 
                                     if(arq.tipo === 'imagem') { icone = 'fa-file-image'; cor = '#ffc107'; } 
 
                                     listaUltimosArquivos.innerHTML += `
-                                        <li style="display: flex; align-items: center; gap: 12px; padding-bottom: 12px; border-bottom: 1px solid #f0f0f0; margin-bottom: 10px;">
-                                            <div style="background: ${cor}20; color: ${cor}; width: 35px; height: 35px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0;">
-                                                <i class="fa-solid ${icone}"></i>
+                                        <li class="item-atividade" style="display: flex; align-items: center; gap: 15px; padding: 12px 0; border-bottom: 1px solid #f0f0f0;">
+                                            <div class="fundo-icone" style="background-color: ${cor}20; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 8px; flex-shrink: 0;">
+                                                <i class="fa-solid ${icone}" style="color: ${cor}; font-size: 18px;"></i>
                                             </div>
                                             <div style="overflow: hidden; width: 100%;">
                                                 <strong style="display: block; font-size: 13px; color: #333; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${arq.nome}</strong>
@@ -1285,49 +1381,11 @@ window.addEventListener('load', function() {
                                     `;
                                 });
                             } else {
-                                listaUltimosArquivos.innerHTML = '<li style="text-align: center; color: #999; font-size: 12px; padding: 10px;">Nenhum arquivo recente.</li>';
+                                listaUltimosArquivos.innerHTML = '<li style="text-align: center; color: #999; padding: 15px; font-size: 12px;">Nenhum arquivo no acervo.</li>';
                             }
                         });
                     }
                 });
-            }
-        });
-    }
-});
-
-// =======================================================
-// FUNCIONALIDADES DO CABEÇALHO (PESQUISA, SINO E CONFIG)
-// =======================================================
-document.addEventListener('DOMContentLoaded', function() {
-    
-    // 1. Clicar nos Ícones (Sino e Configurações)
-    const icones = document.querySelectorAll('.icones-cabecalho i');
-    if (icones.length >= 2) {
-        // Ícone 1 (Configurações / Sliders)
-        icones[0].style.cursor = 'pointer';
-        icones[0].addEventListener('click', function() {
-            window.location.href = 'configuracoes.html';
-        });
-
-        // Ícone 2 (Sino de Notificações)
-        icones[1].style.cursor = 'pointer';
-        icones[1].addEventListener('click', function() {
-            window.location.href = 'mensagem.html';
-        });
-    }
-
-    // 2. Funcionalidade de Pesquisa (Apertar Enter)
-    const inputPesquisa = document.querySelector('.barra-pesquisa input');
-    if (inputPesquisa) {
-        inputPesquisa.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') { 
-                e.preventDefault(); // Evita recarregar a tela do zero
-                const palavraBuscada = inputPesquisa.value.trim();
-                
-                if (palavraBuscada !== "") {
-                    // Joga o usuário para a página de listar com a palavra na URL
-                    window.location.href = `listar.html?busca=${encodeURIComponent(palavraBuscada)}`;
-                }
             }
         });
     }
@@ -1433,85 +1491,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-// =======================================================
-// LÓGICA DA BARRA LATERAL DIREITA (PERFIL E FEED)
-// =======================================================
-document.addEventListener('DOMContentLoaded', function() {
-    
-    // 1. CARREGAR NOME E CARGO DO USUÁRIO LOGADO
-    auth.onAuthStateChanged((user) => {
-        if (user) {
-            // Procura o local de colocar o nome e cargo (tenta por ID ou pela Classe do CSS)
-            const nomeEl = document.getElementById('nomeUsuarioSidebar') || document.querySelector('.info-perfil strong') || document.querySelector('.info-perfil h4');
-            const cargoEl = document.getElementById('cargoUsuarioSidebar') || document.querySelector('.info-perfil span');
 
-            if (nomeEl) {
-                // Vai no banco ver se o usuário já salvou um nome personalizado
-                db.ref('usuarios/' + user.uid).once('value').then((snapshot) => {
-                    const dados = snapshot.val();
-                    
-                    // Se tiver nome no banco, usa. Se não, usa a primeira parte do e-mail
-                    if (dados && dados.nome) {
-                        nomeEl.innerText = dados.nome;
-                    } else {
-                        nomeEl.innerText = user.email.split('@')[0];
-                    }
-
-                    // Formata o cargo bonitinho
-                    if (cargoEl) {
-                        const cargo = dados ? dados.cargo : 'chefe';
-                        let nomeCargoFormatado = "Funcionário";
-                        if (cargo === 'chefe') nomeCargoFormatado = "Arquivista Chefe";
-                        else if (cargo === 'ti') nomeCargoFormatado = "Equipe de TI";
-                        else if (cargo === 'consulta') nomeCargoFormatado = "Consulta";
-
-                        cargoEl.innerText = nomeCargoFormatado;
-                    }
-                });
-            }
-        }
-    });
-
-    // 2. CARREGAR OS ARQUIVOS RECENTES DO ACERVO
-    const listaUltimosArquivos = document.getElementById('listaUltimosArquivosSidebar') || document.querySelector('.atividades-disponiveis ul');
-
-    if (listaUltimosArquivos) {
-        db.ref('arquivos').limitToLast(3).on('value', (snapshot) => {
-            listaUltimosArquivos.innerHTML = ""; // Limpa o "Buscando arquivos..."
-            const dados = snapshot.val();
-
-            if (dados) {
-                const chaves = Object.keys(dados).reverse(); // Inverte para mostrar o mais novo no topo
-                chaves.forEach(key => {
-                    const arq = dados[key];
-
-                    let icone = "fa-file";
-                    let cor = "#6f42c1"; // Roxo
-                    if(arq.tipo === 'documento') { icone = 'fa-file-pdf'; cor = '#28a745'; } // Verde
-                    if(arq.tipo === 'imagem') { icone = 'fa-file-image'; cor = '#ffc107'; } // Amarelo
-
-                    listaUltimosArquivos.innerHTML += `
-                        <li class="item-atividade" style="display: flex; align-items: center; gap: 15px; padding: 12px 0; border-bottom: 1px solid #f0f0f0;">
-                            <div class="fundo-icone" style="background-color: ${cor}20; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 8px; flex-shrink: 0;">
-                                <i class="fa-solid ${icone}" style="color: ${cor}; font-size: 18px;"></i>
-                            </div>
-                            <div style="overflow: hidden; width: 100%;">
-                                <strong style="display: block; font-size: 13px; color: #333; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${arq.nome}</strong>
-                                <span style="font-size: 11px; color: #888;"><i class="fa-solid fa-location-dot" style="margin-right:3px;"></i>${arq.localizacao}</span>
-                            </div>
-                        </li>
-                    `;
-                });
-            } else {
-                listaUltimosArquivos.innerHTML = '<li style="text-align: center; color: #999; padding: 15px; font-size: 12px;">Nenhum arquivo no acervo.</li>';
-            }
-        });
-    }
-});
-
-// =======================================================
-//   PODERES DO ARQUIVISTA CHEFE (EXPULSAR E RESETAR)
-// =======================================================
 
 window.expulsarUsuario = function(uidUsuario, emailUsuario) {
     if (window.cargoAtual !== 'chefe') {
@@ -1556,3 +1536,433 @@ window.resetTotalEmpresa = function() {
         alert("E-mail incorreto. Reset cancelado.");
     }
 };
+
+
+// =======================================================
+//      LÓGICA DA PÁGINA 'conta.html' (PERFIL DO USUÁRIO)
+// =======================================================
+window.addEventListener('load', function() {
+    // Só roda esse código se o usuário estiver na página de Perfil
+    if (window.location.pathname.includes('conta.html')) {
+        console.log("⚙️ Carregando dados da tela de Perfil...");
+
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                // Busca a ficha do usuário no banco
+                db.ref('usuarios/' + user.uid).once('value').then((snapshot) => {
+                    const dados = snapshot.val();
+                    
+                    // Se o usuário não tiver salvo um nome, usa o começo do e-mail
+                    const nomeExibicao = (dados && dados.nome) ? dados.nome : user.email.split('@')[0];
+
+                    // 1. ATUALIZA O NOME GRANDE (Substitui o primeiro "Carregando...")
+                    const titulos = document.querySelectorAll('h2, h3, h1, span, div');
+                    titulos.forEach(t => {
+                        if (t.innerText.trim() === 'Carregando...') {
+                            t.innerText = nomeExibicao;
+                        }
+                    });
+
+                    // 2. ATUALIZA O E-MAIL (Substitui o segundo "Carregando...")
+                    // Esperamos um pouquinho pra garantir que o primeiro já mudou
+                    setTimeout(() => {
+                        const textos = document.querySelectorAll('p, span, div');
+                        textos.forEach(txt => {
+                            if (txt.innerText.trim() === 'Carregando...') {
+                                txt.innerText = user.email;
+                            }
+                        });
+                    }, 100);
+
+                    // 3. LÓGICA DO BOTÃO "SALVAR NOME"
+                    const inputNome = document.querySelector('input[placeholder*="nome"]');
+                    const botoes = document.querySelectorAll('button, .btn, a');
+                    let btnSalvar = null;
+                    
+                    // Acha qual é o botão de salvar
+                    botoes.forEach(b => { 
+                        if (b.innerText.toLowerCase().includes('salvar')) btnSalvar = b; 
+                    });
+
+                    if (btnSalvar && inputNome) {
+                        btnSalvar.addEventListener('click', (e) => {
+                            e.preventDefault(); // Evita a tela piscar
+                            const novoNome = inputNome.value.trim();
+                            
+                            if (novoNome === "") {
+                                alert("Por favor, digite um nome válido.");
+                                return;
+                            }
+
+                            btnSalvar.innerText = "Salvando...";
+                            
+                            // Atualiza no Firebase
+                            db.ref('usuarios/' + user.uid).update({ nome: novoNome }).then(() => {
+                                alert("Perfil atualizado com sucesso!");
+                                
+                                // Atualiza o nome gigante na tela na mesma hora
+                                const titulosAtualizados = document.querySelectorAll('h2, h3, h1, span, div');
+                                titulosAtualizados.forEach(t => { 
+                                    if (t.innerText === nomeExibicao) t.innerText = novoNome; 
+                                });
+                                
+                                inputNome.value = "";
+                                btnSalvar.innerText = "Salvar Nome";
+                                
+                            }).catch(error => {
+                                alert("Erro ao salvar: " + error.message);
+                                btnSalvar.innerText = "Salvar Nome";
+                            });
+                        });
+                    }
+                });
+            }
+        });
+    }
+});
+
+window.irParaAgenda = function() {
+    // Verifica o cargo que salvamos no banco de dados
+    const user = firebase.auth().currentUser;
+    if (!user) return;
+
+    db.ref('usuarios/' + user.uid).once('value').then((snapshot) => {
+        const dados = snapshot.val();
+        const cargo = dados.cargo;
+
+        // SE FOR TI OU CHEFE (ARQUIVISTA), VAI PARA A TABELA
+        if (cargo === 'ti' || cargo === 'chefe') {
+            window.location.href = 'painel-agenda.html';
+        } else {
+            // SE FOR USUÁRIO COMUM, VAI PARA OS CARDS COLORIDOS
+            window.location.href = 'agenda.html';
+        }
+    });
+};
+
+
+// Função para o visitante solicitar participação
+window.registrarInteresse = function(nomeEvento, dataEvento) {
+    const user = firebase.auth().currentUser;
+    if (!user) {
+        alert("Faça login para solicitar o agendamento!");
+        return;
+    }
+
+    const novoAgendamento = {
+        email: user.email,
+        evento: nomeEvento,
+        dataEvento: dataEvento,
+        status: "Pendente",
+        dataSolicitacao: new Date().toLocaleDateString('pt-BR')
+    };
+
+    // Salva no Firebase
+    db.ref('workspaces/' + window.idEmpresa + '/agendamentos').push(novoAgendamento)
+        .then(() => alert("Solicitação enviada! O arquivista revisará seu pedido."))
+        .catch(erro => console.error("Erro:", erro));
+};
+
+
+// Função para o arquivista criar o evento
+const formEvento = document.getElementById('formEvento');
+if(formEvento) {
+    formEvento.addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        const eventoData = {
+            titulo: document.getElementById('tituloEv').value,
+            data: document.getElementById('dataEv').value,
+            local: document.getElementById('localEv').value,
+            capa: document.getElementById('capaEv').value || 'https://via.placeholder.com/350x150',
+            descricao: document.getElementById('descEv').value,
+            tipo: 'CULTURAL'
+        };
+
+        db.ref('workspaces/' + window.idEmpresa + '/eventos_publicados').push(eventoData)
+            .then(() => {
+                alert("Evento publicado com sucesso!");
+                formEvento.reset();
+            });
+    });
+}
+
+
+// Procure a função e garanta que ela comece exatamente assim:
+window.registrarInteresse = function(nomeEvento, dataEvento) {
+    console.log("Abrindo modal para:", nomeEvento); // Isso ajuda a testar no console
+    const modal = document.getElementById('modalInscricao');
+    if (modal) {
+        modal.style.display = 'flex';
+        document.getElementById('tituloModal').innerText = nomeEvento;
+        document.getElementById('dataModal').innerText = "Data: " + dataEvento;
+        document.getElementById('eventoIdModal').value = nomeEvento;
+    } else {
+        console.error("Erro: O modalInscricao não foi encontrado no HTML!");
+    }
+};
+
+// 2. Função para fechar o modal
+window.fecharModal = function() {
+    document.getElementById('modalInscricao').style.display = 'none';
+};
+
+// 3. Função para salvar os dados da inscrição no Firebase
+const formInscricao = document.getElementById('formConfirmarInscricao');
+if (formInscricao) {
+    formInscricao.addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        const user = firebase.auth().currentUser;
+        const eventoNome = document.getElementById('eventoIdModal').value;
+
+        const dadosInscricao = {
+            usuarioEmail: user ? user.email : "Anônimo",
+            nomeCompleto: document.getElementById('nomeInscrito').value,
+            qtdPessoas: document.getElementById('qtdInscritos').value,
+            observacao: document.getElementById('obsInscrito').value,
+            evento: eventoNome,
+            status: "Pendente",
+            dataSolicitacao: new Date().toLocaleString('pt-BR')
+        };
+
+        // Salva na pasta 'agendamentos' para o arquivista ver
+        db.ref('workspaces/' + window.idEmpresa + '/agendamentos').push(dadosInscricao)
+            .then(() => {
+                alert("Inscrição realizada com sucesso! Aguarde a confirmação do arquivista.");
+                fecharModal();
+                formInscricao.reset();
+            })
+            .catch(erro => alert("Erro ao inscrever: " + erro.message));
+    });
+}
+
+
+// Função para o Arquivista ver as inscrições
+function carregarPedidosAgendamento() {
+    const tabela = document.getElementById('tabelaAgendamentos');
+    if (!tabela) return;
+
+    // Escuta em tempo real a pasta de agendamentos
+    db.ref('workspaces/' + window.idEmpresa + '/agendamentos').on('value', (snapshot) => {
+        tabela.innerHTML = ""; // Limpa a tabela antes de carregar
+        const dados = snapshot.val();
+
+        if (dados) {
+            Object.keys(dados).reverse().forEach(id => {
+                const p = dados[id];
+                tabela.innerHTML += `
+                    <tr>
+                        <td>
+                            <strong>${p.nomeCompleto}</strong><br>
+                            <small>${p.usuarioEmail}</small>
+                        </td>
+                        <td>${p.evento}</td>
+                        <td>${p.dataSolicitacao}</td>
+                        <td><span class="badge ${p.status === 'Pendente' ? 'pendente' : 'confirmado'}">${p.status}</span></td>
+                        <td>
+                            <button class="btn-acao btn-check" onclick="confirmarAgendamento('${id}')" title="Confirmar"><i class="fa-solid fa-check"></i></button>
+                            <button class="btn-acao btn-del" onclick="excluirAgendamento('${id}')" title="Excluir"><i class="fa-solid fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `;
+            });
+        } else {
+            tabela.innerHTML = "<tr><td colspan='5' style='text-align:center;'>Nenhum pedido encontrado.</td></tr>";
+        }
+    });
+}
+
+// Chamar a função quando a página carregar
+document.addEventListener('DOMContentLoaded', carregarPedidosAgendamento);
+
+// Funções de ação para os botões da tabela
+window.confirmarAgendamento = (id) => {
+    db.ref('workspaces/' + window.idEmpresa + '/agendamentos/' + id).update({ status: 'Confirmado' });
+};
+
+window.excluirAgendamento = (id) => {
+    if(confirm("Deseja remover este pedido?")) {
+        db.ref('workspaces/' + window.idEmpresa + '/agendamentos/' + id).remove();
+    }
+};
+
+
+// Função para o usuário ver se foi confirmado
+function verificarMinhasConfirmacoes() {
+    const alerta = document.getElementById('alertaConfirmacao');
+    const texto = document.getElementById('textoConfirmacao');
+    
+    if (!alerta) return;
+
+    auth.onAuthStateChanged((user) => {
+        if (user) {
+            db.ref('workspaces/' + window.idEmpresa + '/agendamentos')
+                .orderByChild('usuarioEmail')
+                .equalTo(user.email)
+                .on('value', (snapshot) => {
+                    const agendamentos = snapshot.val();
+                    let mensagem = "";
+                    let temConfirmado = false;
+
+                    if (agendamentos) {
+                        Object.values(agendamentos).forEach(ag => {
+                            if (ag.status === 'Confirmado') {
+                                temConfirmado = true;
+                                mensagem += `• ${ag.evento} (${ag.dataEvento || 'Data a combinar'}) <br>`;
+                            }
+                        });
+                    }
+
+                    if (temConfirmado) {
+                        alerta.style.display = 'flex';
+                        texto.innerHTML = "O arquivista confirmou sua participação em:<br>" + mensagem;
+                    } else {
+                        alerta.style.display = 'none';
+                    }
+                });
+        }
+    });
+}
+
+// Chamar a função quando a página carregar
+
+document.addEventListener('DOMContentLoaded', verificarMinhasConfirmacoes);
+
+
+function carregarAgendaNoPerfil() {
+    const container = document.getElementById('listaAtividadesVisitante');
+    if (!container) return;
+
+    auth.onAuthStateChanged((user) => {
+        if (user) {
+            db.ref('workspaces/' + window.idEmpresa + '/agendamentos')
+                .orderByChild('usuarioEmail')
+                .equalTo(user.email)
+                .on('value', (snapshot) => {
+                    const dados = snapshot.val();
+                    if (!dados) return; // Mantém a mensagem de "vazio" se não houver nada
+
+                    container.innerHTML = ""; // Limpa para carregar os reais
+
+                    Object.values(dados).forEach(ag => {
+                        // Define a cor baseada no status
+                        const corBorda = ag.status === 'Confirmado' ? '#28a745' : '#ffc107';
+                        const corFundo = ag.status === 'Confirmado' ? '#e8f5e9' : '#fff9e6';
+                        const corTexto = ag.status === 'Confirmado' ? '#155724' : '#856404';
+
+                        container.innerHTML += `
+                            <div style="background: ${corFundo}; border-left: 5px solid ${corBorda}; padding: 12px; border-radius: 8px; margin-bottom: 10px;">
+                                <strong style="display: block; font-size: 14px; color: ${corTexto};">${ag.evento}</strong>
+                                <span style="font-size: 12px; color: #666;">
+                                    <i class="fa-solid fa-calendar-day"></i> ${ag.dataEvento || 'A definir'} 
+                                    | <strong>${ag.status}</strong>
+                                </span>
+                            </div>
+                        `;
+                    });
+                });
+        }
+    });
+}
+
+// Inicializa a função
+document.addEventListener('DOMContentLoaded', carregarAgendaNoPerfil);
+
+// Função para configurar o Banner de Novidades
+function configurarBannerNovidades() {
+    const saudacao = document.getElementById('texto-saudacao');
+    const btn = document.getElementById('btnSaibaMais');
+
+    // 1. Personaliza o nome (Usa o nome que já pegamos do Firebase no login)
+    if (saudacao && window.nomeUsuario) {
+        const primeiroNome = window.nomeUsuario.split(' ')[0];
+        saudacao.innerText = `${primeiroNome}, veja algumas das atualizações do nosso acervo enquanto você esteve fora...`;
+    }
+
+    // 2. Lógica do Botão Saiba Mais
+    if (btn) {
+        btn.addEventListener('click', () => {
+            const modal = document.getElementById('modalNovidades');
+            const lista = document.getElementById('listaNovidadesAcervo');
+            
+            modal.style.display = 'flex';
+            lista.innerHTML = ""; // Limpa a lista anterior
+
+            // Busca os últimos 5 arquivos carregados
+            db.ref('workspaces/' + window.idEmpresa + '/arquivos')
+                .limitToLast(5)
+                .once('value', (snapshot) => {
+                    const arquivos = snapshot.val();
+                    
+                    if (arquivos) {
+                        // Converte em array e inverte para o mais novo ficar no topo
+                        Object.keys(arquivos).reverse().forEach(id => {
+                            const file = arquivos[id];
+                            lista.innerHTML += `
+                                <div style="display:flex; align-items:center; gap:12px; padding:12px 0; border-bottom:1px solid #f0f0f0;">
+                                    <i class="fa-solid fa-file-circle-check" style="color:#6f42c1; font-size:18px;"></i>
+                                    <div style="flex:1;">
+                                        <strong style="display:block; font-size:14px; color:#333; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 250px;">${file.nome}</strong>
+                                        <small style="color:#aaa; font-size:11px;">Carregado por: ${file.autor || 'Sistema'}</small>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                    } else {
+                        lista.innerHTML = "<p style='text-align:center; color:#999; padding:20px;'>Nenhuma novidade recente por aqui.</p>";
+                    }
+                });
+        });
+    }
+}
+
+// Executa a função após o Firebase carregar os dados do usuário
+// Você pode chamar isso dentro do seu firebase.auth().onAuthStateChanged
+setTimeout(configurarBannerNovidades, 2000);
+
+
+// Função para abrir as novidades (pode ser chamada pelo botão ou pelo sino)
+window.abrirNovidades = function() {
+    const modal = document.getElementById('modalNovidades');
+    const lista = document.getElementById('listaNovidadesAcervo');
+    
+    if (!modal) {
+        console.error("Modal de novidades não encontrado!");
+        return;
+    }
+
+    modal.style.display = 'flex';
+    lista.innerHTML = "<p style='text-align:center; color:#999;'>Buscando atualizações...</p>";
+
+    // Busca os últimos arquivos no Firebase
+    db.ref('workspaces/' + window.idEmpresa + '/arquivos')
+        .limitToLast(5)
+        .once('value', (snapshot) => {
+            const arquivos = snapshot.val();
+            lista.innerHTML = ""; // Limpa o carregando
+            
+            if (arquivos) {
+                Object.keys(arquivos).reverse().forEach(id => {
+                    const file = arquivos[id];
+                    lista.innerHTML += `
+                        <div style="display:flex; align-items:center; gap:12px; padding:10px; border-bottom:1px solid #eee;">
+                            <i class="fa-solid fa-circle-check" style="color:#6f42c1;"></i>
+                            <div style="flex:1;">
+                                <strong style="display:block; font-size:14px;">${file.nome}</strong>
+                                <small style="color:#aaa;">${file.data_upload || 'Recente'}</small>
+                            </div>
+                        </div>
+                    `;
+                });
+            } else {
+                lista.innerHTML = "<p style='text-align:center; color:#999;'>Nenhuma atualização nova.</p>";
+            }
+        });
+};
+
+// Agora ajuste o clique do botão "Saiba Mais" do banner para usar a mesma função
+const btnSaibaMais = document.getElementById('btnSaibaMais');
+if (btnSaibaMais) {
+    btnSaibaMais.onclick = window.abrirNovidades;
+}
