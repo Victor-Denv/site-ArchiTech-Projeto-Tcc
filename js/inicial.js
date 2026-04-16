@@ -233,27 +233,96 @@ window.addEventListener('load', () => {
             const iaStatus = document.getElementById('iaStatus');
 
             // --- 1. LÓGICA DO PROCESSAMENTO COM IA ---
-            if (btnProcessarIA) {
-                btnProcessarIA.addEventListener('click', function() {
-                    if (!arquivoUploadInput || !arquivoUploadInput.files[0]) {
-                        alert("Por favor, anexe um arquivo primeiro."); return;
-                    }
-                    const file = arquivoUploadInput.files[0];
-                    if(iaStatus) { iaStatus.innerText = "Analisando contexto..."; iaStatus.style.color = "#ffc107"; }
-                    btnProcessarIA.disabled = true;
+           if (btnProcessarIA) {
+    btnProcessarIA.addEventListener('click', async function() {
+        if (!arquivoUploadInput || !arquivoUploadInput.files[0]) {
+            alert("Por favor, anexe um arquivo primeiro."); return;
+        }
 
-                    setTimeout(() => {
-                        const nomeOriginal = file.name;
-                        let nomeLimpo = nomeOriginal.replace(/\.[^/.]+$/, "").replace(/[-_]/g, " ");
-                        nomeLimpo = nomeLimpo.replace(/\b\w/g, l => l.toUpperCase());
+        const file = arquivoUploadInput.files[0];
+        if(iaStatus) { 
+            iaStatus.innerText = "Lendo conteúdo do documento..."; 
+            iaStatus.style.color = "#ffc107"; 
+        }
+        btnProcessarIA.disabled = true;
 
-                        if (nomeArquivoInput) nomeArquivoInput.value = nomeLimpo;
-                        if(iaStatus) { iaStatus.innerText = "Análise concluída!"; iaStatus.style.color = "#28a745"; }
-                        btnProcessarIA.innerText = "Processar com IA";
-                        btnProcessarIA.disabled = false;
-                    }, 1500); 
-                });
-            }
+        // 1. Lógica para "limpar" o nome do arquivo (já funciona)
+        let nomeLimpo = file.name.replace(/\.[^/.]+$/, "").replace(/[-_]/g, " ");
+        nomeLimpo = nomeLimpo.replace(/\b\w/g, l => l.toUpperCase());
+        if (nomeArquivoInput) nomeArquivoInput.value = nomeLimpo;
+
+        // 2. LÓGICA DE IA REAL (Simulação de extração de metadados)
+        // Em um sistema real, aqui você enviaria o 'file' para a API do Gemini
+        setTimeout(() => {
+    const dataAtual = new Date().toLocaleDateString('pt-BR');
+    const nomeMinusculo = nomeLimpo.toLowerCase();
+    let descricaoAssunto = "documento geral de arquivo administrativo"; // Assunto padrão
+
+    // 🧠 LÓGICA DE IDENTIFICAÇÃO DE CONTEXTO (20+ CATEGORIAS)
+    if (nomeMinusculo.includes("curriculo") || nomeMinusculo.includes("cv")) {
+        descricaoAssunto = "currículo profissional com dados de experiência e formação";
+    } else if (nomeMinusculo.includes("contrato") || nomeMinusculo.includes("aluguel") || nomeMinusculo.includes("adesao")) {
+        descricaoAssunto = "instrumento jurídico de contrato ou termo de adesão formal";
+    } else if (nomeMinusculo.includes("nota") || nomeMinusculo.includes("fiscal") || nomeMinusculo.includes("danfe")) {
+        descricaoAssunto = "comprovante fiscal de operação mercantil ou serviço (NF-e)";
+    } else if (nomeMinusculo.includes("fatura") || nomeMinusculo.includes("boleto") || nomeMinusculo.includes("pagamento")) {
+        descricaoAssunto = "documento financeiro de cobrança ou liquidação de títulos";
+    } else if (nomeMinusculo.includes("relatorio") || nomeMinusculo.includes("parecer")) {
+        descricaoAssunto = "documento técnico contendo análise detalhada e parecer de especialista";
+    } else if (nomeMinusculo.includes("rg") || nomeMinusculo.includes("cpf") || nomeMinusculo.includes("cnh") || nomeMinusculo.includes("identidade")) {
+        descricaoAssunto = "documento de identificação pessoal de porte oficial";
+    } else if (nomeMinusculo.includes("atestado") || nomeMinusculo.includes("medico")) {
+        descricaoAssunto = "atestado de saúde para fins de justificativa ou comprovação médica";
+    } else if (nomeMinusculo.includes("oficio") || nomeMinusculo.includes("memorando")) {
+        descricaoAssunto = "comunicação oficial administrativa interna ou externa";
+    } else if (nomeMinusculo.includes("recibo") || nomeMinusculo.includes("quitacao")) {
+        descricaoAssunto = "comprovante de recebimento de valores ou entrega de bens";
+    } else if (nomeMinusculo.includes("procuracao")) {
+        descricaoAssunto = "instrumento de mandato para representação legal de terceiros";
+    } else if (nomeMinusculo.includes("ata") || nomeMinusculo.includes("reuniao")) {
+        descricaoAssunto = "registro formal de deliberações e fatos ocorridos em reunião";
+    } else if (nomeMinusculo.includes("estatuto") || nomeMinusculo.includes("social")) {
+        descricaoAssunto = "documento constituinte com normas de organização da entidade";
+    } else if (nomeMinusculo.includes("edital") || nomeMinusculo.includes("licitacao")) {
+        descricaoAssunto = "documento de convocação pública para certame ou processo seletivo";
+    } else if (nomeMinusculo.includes("projeto") || nomeMinusculo.includes("planta") || nomeMinusculo.includes("mapa")) {
+        descricaoAssunto = "documentação técnica de engenharia, arquitetura ou planejamento";
+    } else if (nomeMinusculo.includes("certificado") || nomeMinusculo.includes("diploma")) {
+        descricaoAssunto = "título comprobatório de conclusão de curso ou competência";
+    } else if (nomeMinusculo.includes("folha") || nomeMinusculo.includes("holerite") || nomeMinusculo.includes("contra-cheque")) {
+        descricaoAssunto = "demonstrativo mensal de vencimentos e descontos salariais";
+    } else if (nomeMinusculo.includes("inventario") || nomeMinusculo.includes("estoque")) {
+        descricaoAssunto = "listagem detalhada de bens, produtos ou patrimônio físico";
+    } else if (nomeMinusculo.includes("declaracao") || nomeMinusculo.includes("termo")) {
+        descricaoAssunto = "documento afirmativo para fins de comprovação de fatos";
+    } else if (nomeMinusculo.includes("manual") || nomeMinusculo.includes("norma") || nomeMinusculo.includes("pop")) {
+        descricaoAssunto = "guia de instruções ou procedimento operacional padrão";
+    } else if (nomeMinusculo.includes("circular") || nomeMinusculo.includes("aviso")) {
+        descricaoAssunto = "comunicado de caráter geral destinado a múltiplos destinatários";
+    }
+
+    // --- MONTAGEM DO RESUMO FINAL ---
+    let resumoGerado = `ANÁLISE DE CONTEÚDO ARQUIVÍSTICO (IA)\n`;
+    resumoGerado += `DATA DA ANÁLISE: ${dataAtual}\n`;
+    resumoGerado += `TIPO DETECTADO: ${file.type || 'Documento Digital'}\n`;
+    resumoGerado += `----------------------------------\n`;
+    resumoGerado += `ASSUNTO: Este arquivo trata-se de um(a) ${descricaoAssunto}.\n\n`;
+    resumoGerado += `ANÁLISE CONTEXTUAL: O sistema ARCHITECH processou os metadados de "${nomeLimpo}" e identificou sua relevância para o acervo digital. O documento foi classificado para indexação automática na base de dados da empresa ${window.idEmpresa || ''}.`;
+    resumoGerado += `\n\nSugestão de Tags: #AcervoDigital #GestãoDeDocumentos #Automacao`;
+
+    if (textoExtraidoIA) {
+        textoExtraidoIA.value = resumoGerado; // Injeta o texto na textarea
+    }
+
+    if(iaStatus) { 
+        iaStatus.innerText = "Análise concluída com sucesso!"; 
+        iaStatus.style.color = "#28a745"; 
+    }
+    btnProcessarIA.disabled = false;
+    btnProcessarIA.innerText = "Processar com IA";
+}, 2000);
+    });
+}
 
             // --- 2. LÓGICA DO BOTÃO SALVAR ---
             btnSalvar.addEventListener('click', function() {

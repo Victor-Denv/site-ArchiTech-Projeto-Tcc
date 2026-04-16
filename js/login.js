@@ -144,3 +144,116 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+
+function toggleModal(id) {
+    const modal = document.getElementById(id);
+    if (modal.style.display === 'flex') {
+        modal.style.display = 'none';
+    } else {
+        modal.style.display = 'flex'; // Usamos flex para centralizar
+    }
+}
+
+// Lógica para o formulário de suporte (apenas visual para o TCC)
+document.getElementById('form-suporte')?.addEventListener('submit', function(e) {
+    e.preventDefault();
+    alert("Chamado enviado com sucesso! Nossa equipe responderá em até 24h.");
+    toggleModal('suporte-modal');
+    this.reset();
+});
+
+// Fecha ao clicar fora
+window.onclick = function(event) {
+    if (event.target.classList.contains('modal-ajuda')) {
+        event.target.style.display = "none";
+    }
+}
+
+
+function recuperarSenha() {
+    const emailInput = document.getElementById('email'); // Certifique-se que o ID do campo de email é este
+    const email = emailInput.value;
+
+    if (!email) {
+        alert("Por favor, digite seu e-mail no campo de login para recuperar a senha.");
+        emailInput.focus();
+        return;
+    }
+
+    // Função nativa do Firebase Auth
+    firebase.auth().sendPasswordResetEmail(email)
+        .then(() => {
+            alert("E-mail de recuperação enviado! Verifique sua caixa de entrada e o lixo eletrônico (SPAM).");
+        })
+        .catch((error) => {
+            console.error("Erro ao recuperar:", error.code);
+            if (error.code === 'auth/user-not-found') {
+                alert("Este e-mail não está cadastrado no sistema.");
+            } else {
+                alert("Erro ao enviar e-mail: " + error.message);
+            }
+        });
+}
+
+function enviarLinkRedefinicao() {
+    const email = document.getElementById('email-recuperacao').value;
+
+    if (!email) {
+        alert("Por favor, digite o seu e-mail.");
+        return;
+    }
+
+    // O Firebase verifica se o e-mail existe e envia o link de redefinição
+    firebase.auth().sendPasswordResetEmail(email)
+        .then(() => {
+            alert("Sucesso! Se este e-mail estiver cadastrado, você receberá um link de redefinição em instantes.");
+            toggleModal('recuperar-modal'); // Fecha o modal
+        })
+        .catch((error) => {
+            console.error("Erro:", error.code);
+            if (error.code === 'auth/user-not-found') {
+                alert("Este e-mail não foi encontrado no nosso sistema.");
+            } else if (error.code === 'auth/invalid-email') {
+                alert("O formato do e-mail é inválido.");
+            } else {
+                alert("Ocorreu um erro ao tentar enviar o e-mail. Tente novamente.");
+            }
+        });
+}
+
+// Função para mostrar avisos bonitos em vez de alert()
+function mostrarAviso(titulo, mensagem, isSucesso = true) {
+    document.getElementById('feedback-titulo').innerText = titulo;
+    document.getElementById('feedback-mensagem').innerText = mensagem;
+    
+    const icone = document.getElementById('feedback-icon');
+    icone.innerHTML = isSucesso ? '<i class="fas fa-check-circle"></i>' : '<i class="fas fa-exclamation-circle"></i>';
+    icone.style.color = isSucesso ? '#28a745' : '#ff4757';
+
+    toggleModal('modal-feedback');
+}
+
+// Sua nova função de enviar e-mail usando o modal novo
+function enviarLinkRedefinicao() {
+    const email = document.getElementById('email-recuperacao').value;
+
+    if (!email) {
+        mostrarAviso("Ops!", "Por favor, digite o seu e-mail.", false);
+        return;
+    }
+
+    firebase.auth().sendPasswordResetEmail(email)
+        .then(() => {
+            // Fecha o modal de input e abre o de sucesso
+            toggleModal('recuperar-modal');
+            mostrarAviso("E-mail Enviado", "Se este e-mail estiver cadastrado, você receberá um link de redefinição em instantes.");
+        })
+        .catch((error) => {
+            console.error("Erro:", error.code);
+            let msgErro = "Ocorreu um erro ao tentar enviar o e-mail.";
+            if (error.code === 'auth/user-not-found') msgErro = "E-mail não encontrado.";
+            
+            mostrarAviso("Erro", msgErro, false);
+        });
+}

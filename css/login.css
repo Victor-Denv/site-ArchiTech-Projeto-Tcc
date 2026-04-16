@@ -184,3 +184,195 @@ h2 {
         font-size: 2rem;
     }
 }
+
+/* Fundo escuro atrás do modal */
+.modal-ajuda {
+    display: none; 
+    position: fixed; 
+    z-index: 10000; /* Garante que fique acima de tudo */
+    left: 0; 
+    top: 0; 
+    width: 100%; 
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.85); 
+    backdrop-filter: blur(8px); /* Efeito de vidro embaçado no fundo */
+    
+    /* Centralização Mágica */
+    display: none; /* O JS vai mudar para flex */
+    justify-content: center;
+    align-items: center;
+}
+
+/* O Card do Modal propriamente dito */
+.modal-content {
+    background-color: #1e272e; /* Cinza bem escuro, estilo dashboard */
+    color: white;
+    padding: 30px;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 450px; /* Não deixa ficar gigante em telas grandes */
+    position: relative;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+    border: 1px solid #485460;
+    text-align: center;
+    animation: surgindo 0.3s ease-out; /* Efeito de entrada */
+}
+
+@keyframes surgindo {
+    from { transform: translateY(-20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+/* Botão de fechar (o X) */
+.close-btn {
+    position: absolute;
+    right: 20px;
+    top: 15px;
+    cursor: pointer;
+    font-size: 24px;
+    color: #8a4fff;
+}
+
+/* Ajuste dos inputs dentro do suporte */
+.input-suporte {
+    width: 100%;
+    padding: 12px;
+    margin-top: 15px;
+    background: #2f3542;
+    border: 1px solid #57606f;
+    color: white;
+    border-radius: 8px;
+    font-family: inherit;
+}
+
+/* Botão de abrir chamado estilizado */
+.btn-enviar-suporte {
+    width: 100%;
+    padding: 14px;
+    margin-top: 20px; /* Dá um respiro entre o texto e o botão */
+    background: #8a4fff; /* Roxo padrão do Architech */
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(138, 79, 255, 0.3);
+}
+
+.btn-enviar-suporte:hover {
+    background: #763ee6;
+    transform: translateY(-2px); /* Efeito de levante */
+    box-shadow: 0 6px 20px rgba(138, 79, 255, 0.4);
+}
+
+.btn-enviar-suporte:active {
+    transform: translateY(0); /* Efeito de clique */
+}
+
+/* Pequeno ajuste no título do modal para destacar o ícone */
+.modal-content h3 {
+    margin-bottom: 10px;
+    color: #a29bfe;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+/* Container dos links de suporte */
+.support-bar {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px; /* Espaço entre FAQ e Suporte */
+    font-family: 'Poppins', sans-serif; /* Ou a fonte que você estiver usando */
+}
+
+/* Estilo geral dos links */
+.support-bar a {
+    color: #8a4fff !important; /* Roxo da marca */
+    text-decoration: none !important; /* Remove o sublinhado feio */
+    font-size: 0.9rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px; /* Espaço entre o ícone e o texto */
+    transition: all 0.3s ease;
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+
+/* Efeito ao passar o mouse */
+.support-bar a:hover {
+    background: rgba(138, 79, 255, 0.1); /* Fundo roxo bem clarinho */
+    transform: translateY(-1px);
+}
+
+/* Estilo do divisor (|) */
+.separator {
+    color: #485460;
+    font-weight: 300;
+    user-select: none;
+}
+
+/* Estilo dos ícones do Font Awesome */
+.support-bar i {
+    font-size: 1.1rem;
+}
+
+/* Estilo dos Itens do FAQ */
+.faq-items {
+    text-align: left;
+    margin-top: 20px;
+}
+
+.faq-items details {
+    background: #2f3542; /* Fundo um pouco mais claro que o modal */
+    border-radius: 8px;
+    margin-bottom: 12px;
+    padding: 12px;
+    border: 1px solid #485460;
+    transition: all 0.3s ease;
+}
+
+.faq-items details[open] {
+    border-color: #8a4fff; /* Brilha roxo quando aberto */
+    background: #353b48;
+}
+
+/* Título da Pergunta (Summary) */
+.faq-items summary {
+    list-style: none; /* Remove o triângulo padrão feio */
+    cursor: pointer;
+    font-weight: 600;
+    color: #a29bfe;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    outline: none;
+}
+
+/* Criando um ícone personalizado no lugar do triângulo */
+.faq-items summary::after {
+    content: '+';
+    font-size: 1.2rem;
+    color: #8a4fff;
+    transition: transform 0.3s ease;
+}
+
+.faq-items details[open] summary::after {
+    content: '-';
+    transform: rotate(180deg);
+}
+
+/* Texto da Resposta */
+.faq-items p {
+    margin-top: 10px;
+    font-size: 0.9rem;
+    color: #dcdde1;
+    line-height: 1.5;
+    padding-top: 10px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}

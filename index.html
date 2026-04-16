@@ -56,7 +56,7 @@
                         <input type="checkbox" id="remember">
                         <label for="remember">Lembrar-me</label>
                     </div>
-                    <a href="#" class="forgot-password">Esqueceu a senha?</a>
+                   <a href="javascript:void(0)" onclick="toggleModal('recuperar-modal')">Esqueci a senha?</a>
                 </div>
 
                 <button type="button" class="btn-login" id="btn-login">Entrar</button>
@@ -64,11 +64,68 @@
             
             <div id="auth-error" style="color: red; text-align: center; margin-top: 10px; min-height: 1.2em;"></div>
 
-            <div class="signup-link">
-                <p>Não tem uma conta? <a href="#" id="signup-link">Cadastre-se</a></p>
-            </div>
+            <div class="login-footer">
+    <p>Não tem uma conta? <a href="#" id="signup-link">Cadastre-se</a></p>
+    
+    <div class="support-bar">
+        <a href="javascript:void(0)" onclick="toggleModal('faq-modal')"><i class="fas fa-question-circle"></i> FAQ</a>
+        <span class="separator">|</span>
+        <a href="javascript:void(0)" onclick="toggleModal('suporte-modal')"><i class="fas fa-headset"></i> Suporte</a>
+    </div>
+</div>
+
+<div id="faq-modal" class="modal-ajuda">
+    <div class="modal-content">
+        <span class="close-btn" onclick="toggleModal('faq-modal')">&times;</span>
+        <h3><i class="fas fa-info-circle"></i> Perguntas Frequentes</h3>
+        <div class="faq-items">
+            <details>
+                <summary>Esqueci minha senha, o que fazer?</summary>
+                <p>Utilize a opção de recuperação de senha. Um link será enviado ao seu e-mail cadastrado.</p>
+            </details>
+            <details>
+                <summary>Como cadastrar minha empresa?</summary>
+                <p>O ARCHITECH trabalha com Workspaces corporativos. Solicite o acesso ao administrador do seu setor.</p>
+            </details>
         </div>
     </div>
+</div>
+
+<div id="suporte-modal" class="modal-ajuda">
+    <div class="modal-content">
+        <span class="close-btn" onclick="toggleModal('suporte-modal')">&times;</span>
+        <h3><i class="fas fa-envelope"></i> Central de Ajuda</h3>
+        <p style="font-size: 0.9rem; margin-bottom: 15px;">Relate seu problema e nossa equipe entrará em contato.</p>
+        
+        <form id="form-suporte">
+            <input type="text" placeholder="Assunto (ex: Erro no Login)" class="input-suporte" required>
+            <textarea placeholder="Descreva o problema detalhadamente..." class="input-suporte" rows="4" required></textarea>
+            <button type="submit" class="btn-enviar-suporte">Abrir Chamado</button>
+        </form>
+    </div>
+</div>
+        </div>
+    </div>
+    <div id="recuperar-modal" class="modal-ajuda">
+    <div class="modal-content">
+        <span class="close-btn" onclick="toggleModal('recuperar-modal')">&times;</span>
+        <h3><i class="fas fa-lock-open"></i> Recuperar Senha</h3>
+        <p style="font-size: 0.9rem; margin-bottom: 15px;">Insira seu e-mail cadastrado para receber o link de redefinição.</p>
+        
+        <input type="email" id="email-recuperacao" placeholder="Seu e-mail cadastrado" class="input-suporte" required>
+        <button onclick="enviarLinkRedefinicao()" class="btn-enviar-suporte">Enviar E-mail</button>
+    </div>
+</div>
+<div id="modal-feedback" class="modal-ajuda">
+    <div class="modal-content" style="text-align: center;">
+        <div id="feedback-icon" style="font-size: 3rem; color: #28a745; margin-bottom: 15px;">
+            <i class="fas fa-check-circle"></i>
+        </div>
+        <h3 id="feedback-titulo">Sucesso!</h3>
+        <p id="feedback-mensagem" style="font-size: 0.9rem; margin-bottom: 20px; color: #dcdde1;"></p>
+        <button onclick="toggleModal('modal-feedback')" class="btn-enviar-suporte">Entendi</button>
+    </div>
+</div>
 
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>

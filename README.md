@@ -3,85 +3,98 @@
 ![Status do Projeto](https://img.shields.io/badge/status-em--produ%C3%A7%C3%A3o-green)
 ![IA](https://img.shields.io/badge/IA-Google%20Gemini-blueviolet)
 ![Database](https://img.shields.io/badge/Database-Firebase-orange)
+![Docker](https://img.shields.io/badge/Docker-Conteinerizado-blue)
 
-O **Architech** é uma solução avançada de gestão documental que integra design moderno à Inteligência Artificial. Evoluído de um conceito visual, o sistema hoje é uma aplicação funcional capaz de centralizar acervos, automatizar a extração de metadados e oferecer uma interface de alta performance para a governança de dados.
+O **Architech** é uma solução avançada de gestão documental que integra design moderno à Inteligência Artificial. Evoluído de um conceito visual para uma plataforma full-stack, o sistema hoje é capaz de centralizar acervos, automatizar a extração de metadados e oferecer uma interface de alta performance para a governança de dados em ambientes corporativos e públicos.
 
 ---
 
 ### 🎯 Objetivo do Projeto
 
-O objetivo deste Trabalho de Conclusão de Curso (TCC) é apresentar uma infraestrutura de front-end e back-end integrada para arquivamento digital. A aplicação visa otimizar o fluxo de trabalho arquivístico, facilitando a busca, o rastreamento físico-digital e a segurança da informação em conformidade com as melhores práticas de usabilidade.
+Este projeto de Conclusão de Curso (TCC) apresenta uma infraestrutura integrada para arquivamento digital. A aplicação visa otimizar o fluxo de trabalho arquivístico tradicional, facilitando a busca, o rastreamento físico-digital (via QR Code) e garantindo a integridade da informação em conformidade com as melhores práticas de segurança e usabilidade (UI/UX).
 
 ---
 
 ### 🖼️ Preview do Sistema
 
-O layout final utiliza uma arquitetura de três colunas, garantindo uma navegação fluida, conteúdo centralizado e um painel de monitoramento dinâmico.
+A arquitetura de interface utiliza um padrão de três colunas (Dashboard Estendido), garantindo que as ferramentas de IA e os logs de atividade estejam sempre ao alcance do usuário.
 
 ![Preview do Dashboard](img/interface.png)
-
-### 🚀 Acesso e Execução
-
-#### Domínio Oficial (Recomendado)
-O projeto está em produção com certificado SSL ativo e pode ser acessado publicamente:
-
-**[➡️ Acessar o Architech App](https://www.architechapp.com.br/)**
-
-#### Execução Local
-Para executar o ambiente de desenvolvimento, clone o repositório e utilize um servidor local (como Live Server) para garantir o funcionamento das integrações de API.
 
 ---
 
 ### ✨ Funcionalidades Implementadas
 
-* **Análise Documental por IA (Gemini):** Upload assistido com extração automática de dados e classificação inteligente.
-* **Hierarquia de Acesso (RBAC):** Níveis de permissão distintos para Arquivista Chefe, TI e Funcionários.
-* **Dashboard em Tempo Real:** Painel lateral dinâmico que reflete o perfil do usuário e as últimas atualizações do banco de dados.
-* **Responsividade Total:** Interface 100% adaptada para dispositivos Mobile (iOS/Android) e Desktop.
-* **Protocolo QR Code:** Geração de identificadores exclusivos para vinculação entre o acervo físico e o registro digital.
-* **Saudação Adaptativa:** Interface que reconhece o período do dia para interagir com o usuário de forma humanizada.
+#### 🤖 Inteligência Artificial Documental
+* **Categorização por IA (Google Gemini):** Sistema de upload assistido que identifica automaticamente se um documento é administrativo, financeiro ou confidencial.
+* **Extração de Metadados:** Processamento de linguagem natural para preenchimento automático de campos, reduzindo o erro humano.
+
+#### 🔐 Segurança e Governança
+* **Recuperação de Senha Segura:** Fluxo de redefinição de senha via e-mail com integração Firebase e verificação de domínio autorizado.
+* **Controle de Acesso (RBAC):** Níveis hierárquicos (Arquivista Chefe, TI e Funcionários) que limitam a visualização de documentos confidenciais.
+
+#### 📦 Gestão e Rastreabilidade
+* **Protocolo QR Code:** Geração de códigos exclusivos para cada registro, permitindo a vinculação imediata entre a pasta física e o arquivo digital.
+* **Central de Ajuda Integrada:** Modais de FAQ e Suporte ao Cliente estilizados para auxiliar o usuário sem interromper o fluxo de trabalho.
+
+#### 📱 Experiência do Usuário
+* **Responsividade:** Interface adaptada para tablets e smartphones via CSS Grid e Flexbox.
+* **Saudação Adaptativa:** Lógica em tempo real que altera a interface e saudações conforme o período do dia (Manhã, Tarde ou Noite).
 
 ---
 
 ### 💻 Tecnologias Utilizadas
 
-* **HTML5 & CSS3:** Estruturação semântica e estilização via Flexbox e CSS Grid.
-* **JavaScript (ES6+):** Lógica de aplicação, manipulação de DOM e integração assíncrona.
-* **Firebase (Google Cloud):** Autenticação (Auth), Banco de Dados (Realtime DB) e Hospedagem (Hosting).
-* **Google Gemini API:** Motor de Inteligência Artificial para processamento e visão computacional.
-* **Font Awesome & Google Fonts:** Identidade visual e bibliotecas de iconografia.
+* **Frontend:** HTML5 semântico, CSS3 (Variáveis, Grid, Flexbox) e JavaScript Vanilla (ES6+).
+* **Backend & Cloud:** Firebase (Authentication, Realtime Database e Hosting).
+* **Inteligência Artificial:** Google Gemini API para visão computacional e análise de texto.
+* **Infraestrutura:** Docker e Docker Compose para padronização do ambiente de desenvolvimento.
+* **Iconografia:** Font Awesome 6.0 e Google Fonts (Poppins/Inter).
 
 ---
 
 ### 📂 Estrutura de Arquivos
+
+```text
 /projeto-architech
-|-- /html           # Páginas do ecossistema (Login, Configurações, Arquivos)
-|-- /css            # Estilização modular e regras de responsividade
-|-- /js             # Motores do sistema: Firebase, Gemini IA e Interações
-|-- /img            # Ativos visuais e ícones do projeto
-|-- index.html      # Página de entrada e autenticação
-|-- README.md       # Documentação técnica e guia do projeto
+├── .docker/          # Configurações de containers e Dockerfile
+├── html/             # Páginas internas (Arquivos, Configurações, FAQ)
+├── css/              # Folhas de estilo modulares (Login, Dashboard, Modais)
+├── js/               # Motores do sistema (Firebase, IA, UI logic)
+├── img/              # Ativos visuais, logotipos e previews
+├── index.html        # Página principal de autenticação
+└── README.md         # Documentação técnica do projeto
 
-    ---
+🚀 Acesso e Execução
+Domínio Oficial (Recomendado)
+O projeto está em produção com certificado SSL ativo:
+➡️ Acessar o Architech App
 
-### 👥 Equipe e Contribuições
+Execução Local (Docker)
+Para rodar o ambiente espelhado ao de produção:
 
-Este projeto é o resultado da colaboração técnica e acadêmica dos seguintes integrantes:
+Certifique-se de ter o Docker instalado.
 
-* 🎨 **Design Visual & Prototipagem:** **Adriane Barreto**
-     Responsável pela concepção visual original e design de interface (UI/UX).
-* 💻 **Desenvolvimento Full-Stack:** **Vitor Lopes**
-    * Responsável pela arquitetura de software, integração Firebase/IA e responsividade.
-* 🤝 **Apoio no Desenvolvimento:** **Ana Luiza**
-    * Colaboração em testes de usabilidade e refinamento de interface.
+Execute o comando no terminal:
 
----
+docker-compose up -d --build
+Acesse http://localhost:8080.
 
-### ©️ Direitos Autorais e Licença
+👥 Equipe e Contribuições
+🎨 Design Visual & Prototipagem: Adriane Barreto
 
-Projeto desenvolvido como Trabalho de Conclusão de Curso (TCC) no SENAI Camaçari.
+Concepção visual original e arquitetura de UI/UX no Figma.
 
-**© 2026 - Todos os direitos reservados.**
-A reprodução ou plágio deste conteúdo sem autorização prévia dos autores é estritamente proibida.
+💻 Desenvolvimento Full-Stack: Vitor Lopes
 
----
+Arquitetura de software, integração Firebase/IA, DevOps e responsividade.
+
+🤝 Apoio no Desenvolvimento: Ana Luiza
+
+Testes de usabilidade, QA (Quality Assurance) e refinamento de interface.
+
+©️ Direitos Autorais e Licença
+Projeto desenvolvido no SENAI Camaçari para fins acadêmicos.
+
+© 2026 - Todos os direitos reservados.
+A reprodução ou plágio deste conteúdo sem autorização prévia dos autores é estritamente proibida e sujeita a penalidades acadêmicas.

@@ -1,0 +1,17 @@
+# Pastas de controle de versão
+.git
+.gitignore
+
+# Logs e arquivos temporários do sistema
+*.log
+.DS_Store
+thumbs.db
+
+# Pastas de ambiente (caso você use algum dia)
+node_modules/
+venv/
+.env
+
+# Documentação que não precisa ir para o servidor web
+README.md
+docs/
